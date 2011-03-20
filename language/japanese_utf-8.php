@@ -66,7 +66,9 @@ $LANG_SEARCHRANK_1 = array(
     'info' => 'Information',
     'admin' => 'Welcome to the Search Word Ranking Plugin administration page.',
     'info_main' => 'Below are the configuration options that are available for this plugin.',
-    'info_log' => 'Below you can view the search queries that have been recorded so far. Use the buttons at the bottom of this page to navigate through the log.'
+    'info_log' => 'Below you can view the search queries that have been recorded so far. Use the buttons at the bottom of this page to navigate through the log.',
+    'stats_headline' => 'Top Ten Search Queries',
+    'stats_no_hits' => 'It appears that no one has ever searched for anything, yet.'
 );
 
 // Messages for the plugin upgrade
@@ -80,6 +82,7 @@ $LANG_configsections['searchrank'] = array(
 );
 
 $LANG_confignames['searchrank'] = array(
+    'showstats' => 'Show Top Ten Search Queries In Site Statistics',
     'showblock' => '検索ランキングブロックを表示する',
     'maxresults' => 'ブロックに表示するエントリ数',
     'isleftblock' => '左側のブロックに配置する',

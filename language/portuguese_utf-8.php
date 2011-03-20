@@ -67,7 +67,9 @@ $LANG_SEARCHRANK_1 = array(
     'info' => 'Informação',
     'admin' => 'Bem-vindo à página de administração do Plugin Ordem da Pesquisa de Palavras.',
     'info_main' => 'Abaixo estão as opções de configuração disponíveis para este plugin.',
-    'info_log' => 'Abaixo pode ver as consultas de pesquisa que têm sido registradas até o momento. Use os botões na parte inferior da página para navegar pelo registro.'
+    'info_log' => 'Abaixo pode ver as consultas de pesquisa que têm sido registradas até o momento. Use os botões na parte inferior da página para navegar pelo registro.',
+    'stats_headline' => 'Top Ten Search Queries',
+    'stats_no_hits' => 'It appears that no one has ever searched for anything, yet.'
 );
 
 // Messages for the plugin upgrade
@@ -81,6 +83,7 @@ $LANG_configsections['searchrank'] = array(
 );
 
 $LANG_confignames['searchrank'] = array(
+    'showstats' => 'Show Top Ten Search Queries In Site Statistics',
     'showblock' => 'Mostrar o Bloco da Ordem da Pesquisa de Palavras',
     'maxresults' => 'Número de Inscrições no Bloco',
     'isleftblock' => 'Mostrar Bloco no Lado Esquerdo',
