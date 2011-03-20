@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Work Ranking Plugin 1.1.0                                          |
+// | Search Word Ranking Plugin 1.1.0                                          |
 // +---------------------------------------------------------------------------+
 // | functions.inc                                                             |
 // |                                                                           |
@@ -33,7 +33,7 @@
 // +---------------------------------------------------------------------------+
 
 /**
-* @package SearchWorkRanking
+* @package SearchWordRanking
 */
 
 if (strpos(strtolower($_SERVER['PHP_SELF']), 'functions.inc') !== false) {
@@ -68,7 +68,7 @@ if (!isset($_SR_CONF['maxresults'])) {
 }
 
 /**
- * Search Work Ranking plugin table(s)
+ * Search Word Ranking plugin table(s)
  */
 $_TABLES['searchrank_queries'] = $_DB_table_prefix . 'searchrank_queries';
 $_TABLES['searchrank_hits'] = $_DB_table_prefix . 'searchrank_hits';
@@ -571,7 +571,7 @@ function plugin_autouninstall_searchrank()
         /* give the name of the tables, without $_TABLES[] */
         'tables' => array('searchrank_queries', 'searchrank_hits'),
         /* give the full name of the group, as in the db */
-        'groups' => array('Search Work Ranking Admin'),
+        'groups' => array('Search Word Ranking Admin'),
         /* give the full name of the feature, as in the db */
         'features' => array('searchrank.admin', 'config.searchrank.tab_main'),
         /* give the full name of the block, including 'phpblock_', etc */

@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Work Ranking Plugin 1.1.0                                          |
+// | Search Word Ranking Plugin 1.1.0                                          |
 // +---------------------------------------------------------------------------+
 // | autoinstall.php                                                           |
 // |                                                                           |
@@ -32,7 +32,7 @@
 // +---------------------------------------------------------------------------+
 
 /**
-* @package SearchWorkRanking
+* @package SearchWordRanking
 */
 
 /**
@@ -45,7 +45,7 @@
 function plugin_autoinstall_searchrank($pi_name)
 {
     $pi_name         = 'searchrank';
-    $pi_display_name = 'Search Work Ranking';
+    $pi_display_name = 'Search Word Ranking';
     $pi_admin        = $pi_display_name . ' Admin';
 
     $info = array(
@@ -62,7 +62,7 @@ function plugin_autoinstall_searchrank($pi_name)
 
     $features = array(
         $pi_name . '.admin'    => 'Full access to ' . $pi_display_name . ' plugin', 
-        'config.' . $pi_name . '.tab_main'  => 'Access to configure Search Work Ranking main settings'
+        'config.' . $pi_name . '.tab_main'  => 'Access to configure Search Word Ranking main settings'
     );
 
     $mappings = array(

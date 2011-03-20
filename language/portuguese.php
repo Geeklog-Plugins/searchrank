@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Work Ranking Plugin 1.1.0                                          |
+// | Search Word Ranking Plugin 1.1.0                                          |
 // +---------------------------------------------------------------------------+
 // | portuguese.php                                                            |
 // |                                                                           |
@@ -32,7 +32,7 @@
 // +---------------------------------------------------------------------------+
 
 /**
-* @package SearchWorkRanking
+* @package SearchWordRanking
 */
 
 /**

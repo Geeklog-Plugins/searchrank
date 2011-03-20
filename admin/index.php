@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Work Ranking Plugin 1.1.0                                          |
+// | Search Word Ranking Plugin 1.1.0                                          |
 // +---------------------------------------------------------------------------+
 // | index.php                                                                 |
 // |                                                                           |
@@ -32,7 +32,7 @@
 // +---------------------------------------------------------------------------+
 
 /**
-* @package SearchWorkRanking
+* @package SearchWordRanking
 */
 
 require_once '../../../lib-common.php';
@@ -51,7 +51,7 @@ if (! SEC_hasRights('searchrank.admin')) {
              . COM_siteFooter();
 
     // Log attempt to access.log
-    COM_accessLog("User {$_USER['username']} tried to illegally access the Search Work Ranking plugin administration screen.");
+    COM_accessLog("User {$_USER['username']} tried to illegally access the Search Word Ranking plugin administration screen.");
 
     echo $display;
     exit;
