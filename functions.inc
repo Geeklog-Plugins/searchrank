@@ -389,11 +389,9 @@ function plugin_showstats_searchrank ($showsitestats)
 {
     global $_CONF, $_SR_CONF, $_TABLES, $LANG_SEARCHRANK_1;
 
-    // FIXME: The $showsitestats gets ignored here. What is it for anyway?
-
 	$retval = '';
 
-	if ($_SR_CONF['showstats']) {
+	if ($showsitestats != 1 && $_SR_CONF['showstats']) {
 		require_once $_CONF['path_system'] . 'lib-admin.php';
 
 		$results = SEARCHRANK_getResults(0, 10);
