@@ -391,10 +391,10 @@ function plugin_showstats_searchrank ($showsitestats)
 
     // FIXME: The $showsitestats gets ignored here. What is it for anyway?
 
+	$retval = '';
+
 	if ($_SR_CONF['showstats']) {
 		require_once $_CONF['path_system'] . 'lib-admin.php';
-
-		$retval = '';
 
 		$results = SEARCHRANK_getResults(0, 10);
 		if (count($results) > 0) {
