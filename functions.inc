@@ -387,42 +387,44 @@ function plugin_getBlocks_searchrank($side, $topic='')
 */
 function plugin_showstats_searchrank ($showsitestats)
 {
-    global $_CONF, $_TABLES, $LANG_SEARCHRANK_1;
+    global $_CONF, $_SR_CONF, $_TABLES, $LANG_SEARCHRANK_1;
 
     // FIXME: The $showsitestats gets ignored here. What is it for anyway?
 
-    require_once $_CONF['path_system'] . 'lib-admin.php';
+	if ($_SR_CONF['showstats']) {
+		require_once $_CONF['path_system'] . 'lib-admin.php';
 
-    $retval = '';
+		$retval = '';
 
-    $results = SEARCHRANK_getResults(0, 10);
-    if (count($results) > 0) {
-        $header_arr = array(
-            array('text'         => $LANG_SEARCHRANK_1['queries'],
-                  'field'        => 'query',
-                  'header_class' => 'stats-header-title'
-            ),
-            array('text'         => $LANG_SEARCHRANK_1['hits'],
-                  'field'        => 'hits',
-                  'header_class' => 'stats-header-count',
-                  'field_class'  => 'stats-list-count'
-            )
-        );
-        $text_arr = array('has_menu' => false,
-                          'title'    => $LANG_SEARCHRANK_1['stats_headline'],
-                    );
-        $data_arr = array();
-        foreach($results as $key => $value) {
-            $data_arr[] = array('query' => $value['query'],
-                                'hits' => COM_numberFormat($value['hits'])
-                          );
-        }
-        $retval .= ADMIN_simpleList ('', $header_arr, $text_arr, $data_arr);
-    } else {
-        $retval .= COM_startBlock ($LANG_SEARCHRANK_1['stats_headline']);
-        $retval .= $LANG_SEARCHRANK_1['stats_no_hits'];
-        $retval .= COM_endBlock ();
-    }
+		$results = SEARCHRANK_getResults(0, 10);
+		if (count($results) > 0) {
+		    $header_arr = array(
+		        array('text'         => $LANG_SEARCHRANK_1['queries'],
+		              'field'        => 'query',
+		              'header_class' => 'stats-header-title'
+		        ),
+		        array('text'         => $LANG_SEARCHRANK_1['hits'],
+		              'field'        => 'hits',
+		              'header_class' => 'stats-header-count',
+		              'field_class'  => 'stats-list-count'
+		        )
+		    );
+		    $text_arr = array('has_menu' => false,
+		                      'title'    => $LANG_SEARCHRANK_1['stats_headline'],
+		                );
+		    $data_arr = array();
+		    foreach($results as $key => $value) {
+		        $data_arr[] = array('query' => $value['query'],
+		                            'hits' => COM_numberFormat($value['hits'])
+		                      );
+		    }
+		    $retval .= ADMIN_simpleList ('', $header_arr, $text_arr, $data_arr);
+		} else {
+		    $retval .= COM_startBlock ($LANG_SEARCHRANK_1['stats_headline']);
+		    $retval .= $LANG_SEARCHRANK_1['stats_no_hits'];
+		    $retval .= COM_endBlock ();
+		}
+	}
 
     return $retval;
 }

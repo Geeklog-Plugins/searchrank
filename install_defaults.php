@@ -72,13 +72,14 @@ function plugin_initconfig_searchrank()
         $c->add('sg_main', NULL, 'subgroup', 0, 0, NULL, 0, true, $me, 0);
         $c->add('tab_main', NULL, 'tab', 0, 0, NULL, 0, true, $me, 0);
         $c->add('fs_main', NULL, 'fieldset', 0, 0, NULL, 0, true, $me, 0);
-        $c->add('showblock', true, 'select',0, 0, 1, 10, true, $me, 0);
-        $c->add('rootonly', false, 'select', 0, 0, 1, 20, true, $me, 0);
-        $c->add('isleftblock', true, 'select', 0, 0, 1, 30, true, $me, 0);
-        $c->add('blockorder', 1, 'text', 0, 0, null, 40, true, $me, 0);
-        $c->add('maxresults', 5, 'text', 0, 0, null, 50, true, $me, 0);
-        $c->add('itemsperpage', 20, 'text', 0, 0, null, 60, true, $me, 0);
-        $c->add('ttl', 28, 'text', 0, 0, null, 70, true, $me, 0);
+        $c->add('showstats', false, 'select',0, 0, 1, 10, true, $me, 0);
+        $c->add('showblock', true, 'select',0, 0, 1, 20, true, $me, 0);
+        $c->add('rootonly', false, 'select', 0, 0, 1, 30, true, $me, 0);
+        $c->add('isleftblock', true, 'select', 0, 0, 1, 40, true, $me, 0);
+        $c->add('blockorder', 1, 'text', 0, 0, null, 50, true, $me, 0);
+        $c->add('maxresults', 5, 'text', 0, 0, null, 60, true, $me, 0);
+        $c->add('itemsperpage', 20, 'text', 0, 0, null, 70, true, $me, 0);
+        $c->add('ttl', 28, 'text', 0, 0, null, 80, true, $me, 0);
     }
 
     return true;

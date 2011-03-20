@@ -83,6 +83,7 @@ $LANG_configsections['searchrank'] = array(
 );
 
 $LANG_confignames['searchrank'] = array(
+    'showstats' => 'Show Top Ten Search Queries In Site Statistics',
     'showblock' => 'Show Search Word Ranking Block',
     'maxresults' => 'Number of Entries in the Block',
     'isleftblock' => 'Display Block on Left',
