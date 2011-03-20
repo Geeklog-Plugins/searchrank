@@ -5,27 +5,15 @@
 | This Geeklog plugin logs search queries and provides an optional          |
 | phpblock with the rankings of these queries.                              |
 |                                                                           |
+| At the moment this plugin does not have a homepage, but if you need help  |
+| want to report a bug or request a feature, please feel free to join the   |
+| discussion at: http://www.geeklog.net/forum/viewtopic.php?showtopic=92194 |
+|                                                                           |
 +---------------------------------------------------------------------------+
 | Copyright (C) 2011 by the following authors:                              |
 |                                                                           |
 | Authors: Rouslan Placella - rouslan AT placella DOT com                   |
 +---------------------------------------------------------------------------+
 | Created with the Geeklog Plugin Toolkit.                                  |
-+---------------------------------------------------------------------------+
-|                                                                           |
-| This program is free software; you can redistribute it and/or             |
-| modify it under the terms of the GNU General Public License               |
-| as published by the Free Software Foundation; either version 2            |
-| of the License, or (at your option) any later version.                    |
-|                                                                           |
-| This program is distributed in the hope that it will be useful,           |
-| but WITHOUT ANY WARRANTY; without even the implied warranty of            |
-| MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             |
-| GNU General Public License for more details.                              |
-|                                                                           |
-| You should have received a copy of the GNU General Public License         |
-| along with this program; if not, write to the Free Software Foundation,   |
-| Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.           |
-|                                                                           |
 +---------------------------------------------------------------------------+
 
