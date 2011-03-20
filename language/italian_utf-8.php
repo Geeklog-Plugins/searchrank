@@ -4,7 +4,7 @@
 // +---------------------------------------------------------------------------+
 // | Search Work Ranking Plugin 1.1.0                                          |
 // +---------------------------------------------------------------------------+
-// | italian.php                                                               |
+// | italian_utf-8.php                                                         |
 // |                                                                           |
 // | Italian language file                                                     |
 // +---------------------------------------------------------------------------+
@@ -68,8 +68,8 @@ $LANG_SEARCHRANK_1 = array(
     'admin' => 'Benvenuto alla ricerca pagina amministrativa della plugin di Classifica dei Termini di Ricerca.',
     'info_main' => 'Sottostanti sono le opzioni di configurazione disponibili per questa plugin.',
     'info_log' => 'In basso sono mostrate i termini di ricerca che sono stati registrati finora. Utilizza i collegamenti in fondo alla pagina per navigare attraverso la lista.',
-    'stats_headline' => 'Top Ten Search Queries',
-    'stats_no_hits' => 'It appears that no one has ever searched for anything, yet.'
+    'stats_headline' => 'Top 10 Termini di Ricerca',
+    'stats_no_hits' => 'Sembra nessuno ha mai effutuato una ricerca.'
 );
 
 // Messages for the plugin upgrade
@@ -83,7 +83,7 @@ $LANG_configsections['searchrank'] = array(
 );
 
 $LANG_confignames['searchrank'] = array(
-    'showstats' => 'Show Top Ten Search Queries In Site Statistics',
+    'showstats' => 'Mostra la Top 10 dei Termini di Ricerca nelle Statistiche del Sito',
     'showblock' => 'Mostra il Blocco della Classifica dei Termini di Ricerca',
     'maxresults' => 'Numero di Elementi nel Blocco',
     'isleftblock' => 'Mostra il Blocco a Sinistra',
