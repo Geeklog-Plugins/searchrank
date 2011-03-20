@@ -36,7 +36,11 @@ $_UPDATES = array(
         "CREATE INDEX {$_TABLES['searchrank_queries']}_hid
           ON {$_TABLES['searchrank_queries']} USING btree (hid);",
         "CREATE INDEX {$_TABLES['searchrank_hits']}_hid
-          ON {$_TABLES['searchrank_hits']} USING btree (hid);"
+          ON {$_TABLES['searchrank_hits']} USING btree (hid);",
+        "UPDATE {$_TABLES['groups']} SET grp_name='Search Word Ranking Admin' WHERE grp_name='Search Work Ranking Admin'",
+        "UPDATE {$_TABLES['groups']} SET grp_descr='Users in this group can administer the Search Word Ranking plugin' WHERE grp_name='Search Word Ranking Admin'",
+        "UPDATE {$_TABLES['features']} SET ft_descr='Full access to Search Word Ranking plugin' WHERE ft_descr='Full access to Search Work Ranking plugin'",
+        "UPDATE {$_TABLES['features']} SET ft_descr='Access to configure Search Word Ranking main settings' WHERE ft_descr='Access to configure Search Work Ranking main settings'"
     )    
 );
 
