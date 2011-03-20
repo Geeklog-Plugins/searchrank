@@ -334,13 +334,11 @@ function plugin_getBlocks_searchrank($side, $topic='')
 {
     global $_TABLES, $_CONF, $_SR_CONF, $LANG_SEARCHRANK_1;
 
-
-
     SEARCHRANK_housekeeping();
     $retval = array();
 
 	// check that the correct version of the plugin is installed
-	if (DB_getItem($_TABLES['plugins'], 'pi_version', "pi_name='searchrank'") != plugin_chkVersion_searchrank()) {
+	if (! isset($_SR_CONF['rootonly'])) {
 		return $retval;
 	}
 
