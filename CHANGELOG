@@ -3,6 +3,7 @@ Version 1.1.0 - ??-March-2011
 
   New features:
    * Better database performance
+   * Option to show top ten search queries in the site statistics
    * Better log viewer
    * Proper CSS layout
    * Some new configuration settings
