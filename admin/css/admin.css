@@ -1,0 +1,42 @@
+.button a {
+  float: left;
+  margin:             15px;
+  width:              200px;
+  padding:            4px 0px 6px 0px;
+  text-align:         center;
+  text-decoration:    none;
+  font-size:          13px;
+  display:            block;
+  color:              #eeeeec;
+  background:         #6a8bb9;
+  border:             solid 1px #555753;
+}
+.button a:hover {
+  color:              #3c6aa7;
+  background:         #eeeeec;
+}
+.disabled a {
+  float: left;
+  margin:             15px;
+  width:              200px;
+  padding:            4px 0px 6px 0px;
+  text-align:         center;
+  text-decoration:    none;
+  font-size:          13px;
+  display:            block;
+  color:              #555753;
+  background:         #d3d7cf;
+  border:             solid 1px #555753;
+}
+
+.sr_menuitem {
+  float:              left;
+  text-align:         center;
+  margin:             10px;
+  width:              200px;
+}
+
+.sr_menuitem a {
+  text-decoration:    none;
+}
+

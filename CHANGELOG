@@ -1,0 +1,26 @@
+#####################################################
+Version 1.1.0 - ??-March-2011
+
+  New features:
+   * Better database performance
+   * Better log viewer
+   * Proper CSS layout
+   * Some new configuration settings
+   * Some updated icons
+   * Some small bugfixes
+
+  New translations:
+   * Japanese
+   * Italian
+   * Portuguese
+
+#####################################################
+Version 1.0.0 - 02-March-2011 - First public release.
+
+  Features:
+   * Provides a Right Block, a Left Block or Nothing (to silently log the queries).
+   * Items in the block are clickable.
+   * Provides a log viewer and an option to clear the log.
+   * Groups hits to save disk space and be faster.
+   * Deletes entries after N days.
+   * Supports MySQL and PgSQL.

@@ -1,0 +1,15 @@
+.searchrank {
+}
+
+.searchrank_item {
+  display:  block;
+  padding:  0;
+  margin:   0;
+}
+
+.searchrank_entry {
+  display:  inline;
+  float:    right;
+  padding:  0;
+  margin:   0;
+}

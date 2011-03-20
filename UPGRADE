@@ -1,0 +1,7 @@
+To upgrade from version 1.0.0 of this plugin, please follow these steps.
+
+ * Go to the plugin admin in your geeklog installation
+ * Disable the installed 'Search Word Ranking' plugin
+ * Upload the new version of the plugin
+ * Enable the plugin
+ * Click on the 'upgrade' that has appearced in the plugin admin

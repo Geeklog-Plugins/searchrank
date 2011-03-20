@@ -1,0 +1,8 @@
+This plugin uses Geeklog's autoinstall system, so it should be
+enough to just upload the compressed package to your installation
+by using the upload form provided in the plugin admin page.
+
+If for some reason that doesn't work, you can find the instructions
+on how to manually install a geeklog plugin here:
+http://wiki.geeklog.net/index.php/How_To_Install_A_Geeklog_Plugin
+
