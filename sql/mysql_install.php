@@ -44,7 +44,8 @@ CREATE TABLE {$_TABLES['searchrank_hits']} (
   hid int(8) unsigned NOT NULL default 1,
   date int(8) unsigned NOT NULL default 1,
   hits int(8) unsigned NOT NULL default 1,
-  INDEX (hid)
+  INDEX (hid),
+  INDEX (date)
 ) TYPE=MyISAM
 ";
 

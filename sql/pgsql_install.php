@@ -58,4 +58,10 @@ CREATE INDEX {$_TABLES['searchrank_hits']}_hid
   USING btree (hid);
 ";
 
+$_SQL[] = "
+CREATE INDEX {$_TABLES['searchrank_hits']}_date
+  ON {$_TABLES['searchrank_hits']}
+  USING btree (date);
+";
+
 ?>
