@@ -308,12 +308,12 @@ function plugin_getheadercode_searchrank()
 {
     global $_CONF, $_SR_CONF;
 
-	// Only include the CSS file for the block, if the block will be shown
-	if ($_SR_CONF['showblock'] && (!$_SR_CONF['rootonly'] || SEC_inGroup('Root'))) {
-		// use this css for the block
-		$retval = LB . '<link rel="stylesheet" type="text/css" href="'
-		        . $_CONF['site_admin_url'] . '/plugins/searchrank/css/block.css"' . XHTML . '>' . LB;
-	}
+    // Only include the CSS file for the block, if the block will be shown
+    if ($_SR_CONF['showblock'] && (!$_SR_CONF['rootonly'] || SEC_inGroup('Root'))) {
+        // use this css for the block
+        $retval = LB . '<link rel="stylesheet" type="text/css" href="'
+                . $_CONF['site_admin_url'] . '/plugins/searchrank/css/block.css"' . XHTML . '>' . LB;
+    }
     // use this CSS only if we are on the plugin's pages
     if (substr_count($_SERVER['PHP_SELF'], '/searchrank/') > 0) {
         $retval .= '<link rel="stylesheet" type="text/css" href="'
@@ -342,10 +342,10 @@ function plugin_getBlocks_searchrank($side, $topic='')
     SEARCHRANK_housekeeping();
     $retval = array();
 
-	// check that the correct version of the plugin is installed
-	if (! isset($_SR_CONF['rootonly'])) {
-		return $retval;
-	}
+    // check that the correct version of the plugin is installed
+    if (! isset($_SR_CONF['rootonly'])) {
+        return $retval;
+    }
 
     // check if we need to show the block
     if ($_SR_CONF['showblock'] && (!$_SR_CONF['rootonly'] || SEC_inGroup('Root'))) {
@@ -369,19 +369,19 @@ function plugin_getBlocks_searchrank($side, $topic='')
                     }
                     $url = $_CONF['site_url'] . '/search.php?mode=search&amp;type=all&amp;keyType=all&amp;query=' . urlencode($title);
                     $display .= "<div class='searchrank_item' title='{$title}'>";
-                    $display .= COM_createLink("{$value['query']}", $url);
+                    $display .= COM_createLink($value['query'], $url);
                     $display .= "<div class='searchrank_entry'>{$value['hits']} {$LANG_SEARCHRANK_1['hits']}</div></div>";
                 }
                 $display .= "</div>";
             }
-            $retval[] = array('name' => 'searchrank',
-                              'type' => 'dynamic',
-                              'onleft' => 1,
-                              'title' => $LANG_SEARCHRANK_1['title'],
-                              'blockorder' => $_SR_CONF['blockorder'],
-                              'content' => $display,
+            $retval[] = array('name'           => 'searchrank',
+                              'type'           => 'dynamic',
+                              'onleft'         => 1,
+                              'title'          => $LANG_SEARCHRANK_1['title'],
+                              'blockorder'     => $_SR_CONF['blockorder'],
+                              'content'        => $display,
                               'allow_autotags' => false,
-                              'help' => '');
+                              'help'           => '');
         }
     }
     return $retval;
@@ -400,40 +400,40 @@ function plugin_showstats_searchrank ($showsitestats)
 {
     global $_CONF, $_SR_CONF, $_TABLES, $LANG_SEARCHRANK_1;
 
-	$retval = '';
+    $retval = '';
 
-	if ($showsitestats != 1 && $_SR_CONF['showstats']) {
-		require_once $_CONF['path_system'] . 'lib-admin.php';
+    if ($showsitestats != 1 && $_SR_CONF['showstats']) {
+        require_once $_CONF['path_system'] . 'lib-admin.php';
 
-		$results = SEARCHRANK_getResults(0, 10);
-		if (count($results) > 0) {
-		    $header_arr = array(
-		        array('text'         => $LANG_SEARCHRANK_1['queries'],
-		              'field'        => 'query',
-		              'header_class' => 'stats-header-title'
-		        ),
-		        array('text'         => $LANG_SEARCHRANK_1['hits'],
-		              'field'        => 'hits',
-		              'header_class' => 'stats-header-count',
-		              'field_class'  => 'stats-list-count'
-		        )
-		    );
-		    $text_arr = array('has_menu' => false,
-		                      'title'    => $LANG_SEARCHRANK_1['stats_headline'],
-		                );
-		    $data_arr = array();
-		    foreach($results as $key => $value) {
-		        $data_arr[] = array('query' => $value['query'],
-		                            'hits' => COM_numberFormat($value['hits'])
-		                      );
-		    }
-		    $retval .= ADMIN_simpleList ('', $header_arr, $text_arr, $data_arr);
-		} else {
-		    $retval .= COM_startBlock ($LANG_SEARCHRANK_1['stats_headline']);
-		    $retval .= $LANG_SEARCHRANK_1['stats_no_hits'];
-		    $retval .= COM_endBlock ();
-		}
-	}
+        $results = SEARCHRANK_getResults(0, 10);
+        if (count($results) > 0) {
+            $header_arr = array(
+                array('text'         => $LANG_SEARCHRANK_1['queries'],
+                      'field'        => 'query',
+                      'header_class' => 'stats-header-title'
+                ),
+                array('text'         => $LANG_SEARCHRANK_1['hits'],
+                      'field'        => 'hits',
+                      'header_class' => 'stats-header-count',
+                      'field_class'  => 'stats-list-count'
+                )
+            );
+            $text_arr = array('has_menu' => false,
+                              'title'    => $LANG_SEARCHRANK_1['stats_headline'],
+                        );
+            $data_arr = array();
+            foreach($results as $key => $value) {
+                $data_arr[] = array('query' => $value['query'],
+                                    'hits' => COM_numberFormat($value['hits'])
+                              );
+            }
+            $retval .= ADMIN_simpleList ('', $header_arr, $text_arr, $data_arr);
+        } else {
+            $retval .= COM_startBlock ($LANG_SEARCHRANK_1['stats_headline']);
+            $retval .= $LANG_SEARCHRANK_1['stats_no_hits'];
+            $retval .= COM_endBlock ();
+        }
+    }
 
     return $retval;
 }
@@ -468,10 +468,10 @@ function plugin_getadminoption_searchrank()
     global $_CONF, $LANG_SEARCHRANK_1;
 
     if (SEC_hasRights('searchrank.admin')) {
-		$num = SEARCHRANK_numResults();
-		if ($num > 1000) {
-			$num = (int)($num / 1000) . 'K';
-		}
+        $num = SEARCHRANK_numResults();
+        if ($num > 1000) {
+            $num = (int)($num / 1000) . 'K';
+        }
         return array($LANG_SEARCHRANK_1['plugin_name'],
             $_CONF['site_admin_url'] . '/plugins/searchrank/index.php', $num);
     }
