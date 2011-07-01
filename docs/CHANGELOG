@@ -1,9 +1,10 @@
 #####################################################
-Version 1.1.0 - ??-May-2011
+Version 1.1.0 - ??-July-2011
 
   New features:
    * Better database performance
-   * Option to show top ten search queries in the site statistics
+   * Option to show top ten search queries
+     in the site statistics
    * Better log viewer
    * Proper CSS layout
    * Some new configuration settings
@@ -20,9 +21,11 @@ Version 1.1.0 - ??-May-2011
 Version 1.0.0 - 02-March-2011 - First public release.
 
   Features:
-   * Provides a Right Block, a Left Block or Nothing (to silently log the queries).
+   * Provides a Right Block, a Left Block or Nothing
+     (to silently log the queries).
    * Items in the block are clickable.
-   * Provides a log viewer and an option to clear the log.
+   * Provides a log viewer and an option to
+     clear the log.
    * Groups hits to save disk space and be faster.
    * Deletes entries after N days.
    * Supports MySQL and PgSQL.

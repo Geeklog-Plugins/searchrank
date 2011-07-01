@@ -276,9 +276,9 @@ function plugin_dopluginsearch_searchrank($query, $datestart, $dateend, $topic, 
         $hid = mt_rand(1000000, 9999999);
     }
     $query = substr(trim(strtolower(addslashes($query))), 0, 99); // sanitise query
-	if (empty($query)) {
-	    return array(); // Return an empty array
-	}
+    if (empty($query)) {
+        return array(); // Return an empty array
+    }
     // Check if this query is already in the database
     $q = DB_query("SELECT hid FROM {$_TABLES['searchrank_queries']} WHERE query='{$query}'");
     $rows = DB_numRows($q);
