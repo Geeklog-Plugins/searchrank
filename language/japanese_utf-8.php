@@ -10,7 +10,8 @@
 // +---------------------------------------------------------------------------+
 // | Copyright (C) 2011 by the following authors:                              |
 // |                                                                           |
-// | Authors: Ivy                                                              |
+// | Authors: Rouslan Placella - rouslan AT placella DOT com                   |
+// | Translation: Ivy                                                          |
 // +---------------------------------------------------------------------------+
 // | Created with the Geeklog Plugin Toolkit.                                  |
 // +---------------------------------------------------------------------------+
@@ -59,6 +60,7 @@ $LANG_SEARCHRANK_1 = array(
     'clear_confirm' => '検索ログを削除しますか?',
     'clear_msg' => '検索ログは削除されました',
     'entries' => '%s エントリ',
+    'queries' => 'Queries',
     'hits' => 'ヒット',
     'back' => '戻る',
     'prev' => '最新のページ',

@@ -10,7 +10,8 @@
 // +---------------------------------------------------------------------------+
 // | Copyright (C) 2011 by the following authors:                              |
 // |                                                                           |
-// | Authors: Oona                                                             |
+// | Authors: Rouslan Placella - rouslan AT placella DOT com                   |
+// | Translation: Oona                                                             |
 // +---------------------------------------------------------------------------+
 // | Created with the Geeklog Plugin Toolkit.                                  |
 // +---------------------------------------------------------------------------+
@@ -68,8 +69,8 @@ $LANG_SEARCHRANK_1 = array(
     'admin' => 'Bem-vindo à página de administração do Plugin Ordem da Pesquisa de Palavras.',
     'info_main' => 'Abaixo estão as opções de configuração disponíveis para este plugin.',
     'info_log' => 'Abaixo pode ver as consultas de pesquisa que têm sido registradas até o momento. Use os botões na parte inferior da página para navegar pelo registro.',
-    'stats_headline' => 'Top Ten Search Queries',
-    'stats_no_hits' => 'It appears that no one has ever searched for anything, yet.'
+    'stats_headline' => 'Dez Mais Procuradas Consultas de Pesquisa',
+    'stats_no_hits' => 'Parece que não há nenhuma pesquisa feita por ninguém.'
 );
 
 // Messages for the plugin upgrade
@@ -83,7 +84,7 @@ $LANG_configsections['searchrank'] = array(
 );
 
 $LANG_confignames['searchrank'] = array(
-    'showstats' => 'Show Top Ten Search Queries In Site Statistics',
+    'showstats' => 'Mostrar as Dez Mais Procuradas Consultas de Pesquisa nas Estatísticas do Site',
     'showblock' => 'Mostrar o Bloco da Ordem da Pesquisa de Palavras',
     'maxresults' => 'Número de Inscrições no Bloco',
     'isleftblock' => 'Mostrar Bloco no Lado Esquerdo',
