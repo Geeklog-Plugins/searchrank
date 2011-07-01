@@ -303,7 +303,7 @@ function plugin_dopluginsearch_searchrank($query, $datestart, $dateend, $topic, 
 
 function plugin_getheadercode_searchrank()
 {
-    global $_CONF;
+    global $_CONF, $_SR_CONF;
 
 	// Only include the CSS file for the block, if the block will be shown
 	if ($_SR_CONF['showblock'] && (!$_SR_CONF['rootonly'] || SEC_inGroup('Root'))) {
