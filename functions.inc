@@ -369,7 +369,7 @@ function plugin_getBlocks_searchrank($side, $topic='')
                     }
                     $url = $_CONF['site_url'] . '/search.php?mode=search&amp;type=all&amp;keyType=all&amp;query=' . urlencode($title);
                     $display .= "<div class='searchrank_item' title='{$title}'>";
-                    $display .= COM_createLink($value['query'], $url);
+                    $display .= COM_createLink($value['query'], $url, array('rel' => 'nofollow'));
                     $display .= "<div class='searchrank_entry'>{$value['hits']} {$LANG_SEARCHRANK_1['hits']}</div></div>";
                 }
                 $display .= "</div>";
