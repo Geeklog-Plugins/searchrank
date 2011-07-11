@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Word Ranking Plugin 1.1.0                                          |
+// | Search Word Ranking Plugin 1.1.1                                          |
 // +---------------------------------------------------------------------------+
 // | autoinstall.php                                                           |
 // |                                                                           |
@@ -51,7 +51,7 @@ function plugin_autoinstall_searchrank($pi_name)
     $info = array(
         'pi_name'         => $pi_name,
         'pi_display_name' => $pi_display_name,
-        'pi_version'      => '1.1.0',
+        'pi_version'      => '1.1.1',
         'pi_gl_version'   => '1.6.0',
         'pi_homepage'     => 'http://placella.com/'
     );
