@@ -86,3 +86,4 @@ function plugin_initconfig_searchrank()
 }
 
 ?>
+
