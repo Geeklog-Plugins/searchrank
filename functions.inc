@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Word Ranking Plugin 1.1.1                                          |
+// | Search Word Ranking Plugin 1.2.0                                          |
 // +---------------------------------------------------------------------------+
 // | functions.inc                                                             |
 // |                                                                           |
@@ -556,6 +556,10 @@ function plugin_upgrade_searchrank()
 
         case '1.1.0':
             $current_version = '1.1.1';
+            break;
+
+        case '1.1.1':
+            $current_version = '1.2.0';
             break;
 
         default:
