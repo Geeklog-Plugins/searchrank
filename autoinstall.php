@@ -53,7 +53,7 @@ function plugin_autoinstall_searchrank($pi_name)
         'pi_display_name' => $pi_display_name,
         'pi_version'      => '1.1.1',
         'pi_gl_version'   => '1.6.0',
-        'pi_homepage'     => 'http://placella.com/'
+        'pi_homepage'     => 'http://code.google.com/p/geeklog/'
     );
 
     $groups = array(
