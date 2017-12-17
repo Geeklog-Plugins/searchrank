@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Word Ranking Plugin 1.1.0                                          |
+// | Search Word Ranking Plugin 1.2.1                                          |
 // +---------------------------------------------------------------------------+
 // | index.php                                                                 |
 // |                                                                           |
@@ -46,19 +46,19 @@ if (isset($_GET['action'])) {
 
 // Ensure user even has the rights to access this page
 if (! SEC_hasRights('searchrank.admin')) {
-    $display .= COM_siteHeader('menu', $MESSAGE[30])
-             . COM_showMessageText($MESSAGE[29], $MESSAGE[30])
-             . COM_siteFooter();
+    $display .= COM_startBlock($MESSAGE[30])
+             .  COM_showMessageText($MESSAGE[29], $MESSAGE[30])
+             .  COM_endBlock();
+    $display = COM_createHTMLDocument($display, array('what' => 'meu'));
 
     // Log attempt to access.log
     COM_accessLog("User {$_USER['username']} tried to illegally access the Search Word Ranking plugin administration screen.");
 
-    echo $display;
+    COM_output($display);
     exit;
 }
 
 // MAIN
-$display .= COM_siteHeader('menu', $LANG_SEARCHRANK_1['plugin_name']);
 $display .= COM_startBlock($LANG_SEARCHRANK_1['plugin_name']);
 if ($action == 'clear') {
     SEARCHRANK_clearLog(); // assume that everything went well
@@ -81,8 +81,5 @@ if ($action == 'clear') {
 // this line is a hack to make the admin menu items disappear from professional_css theme
 $display .= "<script type='text/javascript'>if(document.getElementById('menu_fields')){document.getElementById('menu_fields').id='';}</script>";
 $display .= COM_endBlock();
-$display .= COM_siteFooter();
-
-echo $display;
-
-?>
+$display = COM_createHTMLDocument($display, array('what' => 'menu'));
+COM_output($display);

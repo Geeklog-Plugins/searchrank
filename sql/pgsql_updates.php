@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Word Ranking Plugin 1.1.0                                          |
+// | Search Word Ranking Plugin 1.2.1                                          |
 // +---------------------------------------------------------------------------+
 // | pgsql_updates.php                                                         |
 // |                                                                           |
@@ -43,7 +43,5 @@ $_UPDATES = array(
         "UPDATE {$_TABLES['groups']} SET grp_descr='Users in this group can administer the Search Word Ranking plugin' WHERE grp_name='Search Word Ranking Admin'",
         "UPDATE {$_TABLES['features']} SET ft_descr='Full access to Search Word Ranking plugin' WHERE ft_descr='Full access to Search Work Ranking plugin'",
         "UPDATE {$_TABLES['features']} SET ft_descr='Access to configure Search Word Ranking main settings' WHERE ft_descr='Access to configure Search Work Ranking main settings'"
-    )    
+    )
 );
-
-?>

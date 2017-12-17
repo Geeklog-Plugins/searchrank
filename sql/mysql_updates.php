@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Word Ranking Plugin 1.1.0                                          |
+// | Search Word Ranking Plugin 1.2.1                                          |
 // +---------------------------------------------------------------------------+
 // | mysql_updates.php                                                         |
 // |                                                                           |
@@ -42,5 +42,3 @@ $_UPDATES = array(
         "UPDATE {$_TABLES['features']} SET ft_descr='Access to configure Search Word Ranking main settings' WHERE ft_descr='Access to configure Search Work Ranking main settings'"
     )
 );
-
-?>

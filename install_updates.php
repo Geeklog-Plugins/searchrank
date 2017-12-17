@@ -16,5 +16,3 @@ function SEARCHRANK_update_ConfValues_1_0_0()
 
     return true;
 }
-
-?>

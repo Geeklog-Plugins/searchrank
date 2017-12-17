@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Word Ranking Plugin 1.2.0                                          |
+// | Search Word Ranking Plugin 1.2.1                                          |
 // +---------------------------------------------------------------------------+
 // | functions.inc                                                             |
 // |                                                                           |
@@ -275,7 +275,8 @@ function plugin_dopluginsearch_searchrank($query, $datestart, $dateend, $topic, 
     while (DB_Count($_TABLES['searchrank_queries'], 'hid', $hid) != 0) {
         $hid = mt_rand(1000000, 9999999);
     }
-    $query = substr(trim(strtolower(addslashes($query))), 0, 99); // sanitise query
+    $query = MBYTE_substr(trim(strtolower($query)), 0, 99);
+    $query = DB_escapeString($query);
     if (empty($query)) {
         return array(); // Return an empty array
     }
@@ -559,7 +560,7 @@ function plugin_upgrade_searchrank()
             break;
 
         case '1.1.1':
-            $current_version = '1.2.0';
+            $current_version = '1.2.1';
             break;
 
         default:
@@ -601,5 +602,3 @@ function plugin_autouninstall_searchrank()
 
     return $out;
 }
-
-?>

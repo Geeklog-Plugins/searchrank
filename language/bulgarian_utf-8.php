@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Word Ranking Plugin 1.1.0                                          |
+// | Search Word Ranking Plugin 1.2.1                                          |
 // +---------------------------------------------------------------------------+
 // | bulgarian.php                                                             |
 // |                                                                           |
@@ -109,5 +109,3 @@ $LANG_configselects['searchrank'] = array(
     0 => array('Да' => 1, 'Не' => 0),
     1 => array('Да' => true, 'Не' => false)
 );
-
-?>

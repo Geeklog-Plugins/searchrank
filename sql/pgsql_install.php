@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Word Ranking Plugin 1.1.0                                          |
+// | Search Word Ranking Plugin 1.2.1                                          |
 // +---------------------------------------------------------------------------+
 // | pgsql_install.php                                                         |
 // |                                                                           |
@@ -63,5 +63,3 @@ CREATE INDEX {$_TABLES['searchrank_hits']}_date
   ON {$_TABLES['searchrank_hits']}
   USING btree (date);
 ";
-
-?>

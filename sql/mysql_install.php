@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Word Ranking Plugin 1.1.0                                          |
+// | Search Word Ranking Plugin 1.2.1                                          |
 // +---------------------------------------------------------------------------+
 // | mysql_install.php                                                         |
 // |                                                                           |
@@ -36,7 +36,7 @@ CREATE TABLE {$_TABLES['searchrank_queries']} (
   hid int(8) unsigned NOT NULL default 1,
   PRIMARY KEY (query),
   INDEX (hid)
-) TYPE=MyISAM
+) ENGINE=MyISAM
 ";
 
 $_SQL[] = "
@@ -46,7 +46,5 @@ CREATE TABLE {$_TABLES['searchrank_hits']} (
   hits int(8) unsigned NOT NULL default 1,
   INDEX (hid),
   INDEX (date)
-) TYPE=MyISAM
+) ENGINE=MyISAM
 ";
-
-?>

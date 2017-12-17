@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Word Ranking Plugin 1.2.0                                          |
+// | Search Word Ranking Plugin 1.2.1                                          |
 // +---------------------------------------------------------------------------+
 // | autoinstall.php                                                           |
 // |                                                                           |
@@ -51,9 +51,9 @@ function plugin_autoinstall_searchrank($pi_name)
     $info = array(
         'pi_name'         => $pi_name,
         'pi_display_name' => $pi_display_name,
-        'pi_version'      => '1.2.0',
-        'pi_gl_version'   => '1.6.0',
-        'pi_homepage'     => 'http://code.google.com/p/geeklog/'
+        'pi_version'      => '1.2.1',
+        'pi_gl_version'   => '2.1.3',
+        'pi_homepage'     => 'https://github.com/Geeklog-Plugins/searchrank'
     );
 
     $groups = array(
@@ -120,5 +120,3 @@ function plugin_compatible_with_this_version_searchrank($pi_name)
 
     return true;
 }
-
-?>

@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Word Ranking Plugin 1.1.0                                          |
+// | Search Word Ranking Plugin 1.2.1                                          |
 // +---------------------------------------------------------------------------+
 // | german.php                                                                |
 // |                                                                           |
@@ -11,7 +11,7 @@
 // | Copyright (C) 2011 by the following authors:                              |
 // |                                                                           |
 // | Authors: Rouslan Placella - rouslan AT placella DOT com                   |
-// | Translation: Dirk Haun    - dirk AT haun-online DOT de
+// | Translation: Dirk Haun    - dirk AT haun-online DOT de                    |
 // +---------------------------------------------------------------------------+
 // | Created with the Geeklog Plugin Toolkit.                                  |
 // +---------------------------------------------------------------------------+
@@ -110,5 +110,3 @@ $LANG_configselects['searchrank'] = array(
     0 => array('Ja' => 1, 'Nein' => 0),
     1 => array('Ja' => true, 'Nein' => false)
 );
-
-?>

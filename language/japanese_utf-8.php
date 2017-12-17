@@ -2,7 +2,7 @@
 
 /* Reminder: always indent with 4 spaces (no tabs). */
 // +---------------------------------------------------------------------------+
-// | Search Word Ranking Plugin 1.1.0                                          |
+// | Search Word Ranking Plugin 1.2.1                                          |
 // +---------------------------------------------------------------------------+
 // | japanese_utf-8                                                            |
 // |                                                                           |
@@ -60,17 +60,17 @@ $LANG_SEARCHRANK_1 = array(
     'clear_confirm' => '検索ログを削除しますか?',
     'clear_msg' => '検索ログは削除されました',
     'entries' => '%s エントリ',
-    'queries' => 'Queries',
+    'queries' => '検索語句',
     'hits' => 'ヒット',
     'back' => '戻る',
-    'prev' => '最新のページ',
+    'prev' => '前のページ',
     'next' => '次のページ',
-    'info' => 'Information',
-    'admin' => 'Welcome to the Search Word Ranking Plugin administration page.',
-    'info_main' => 'Below are the configuration options that are available for this plugin.',
-    'info_log' => 'Below you can view the search queries that have been recorded so far. Use the buttons at the bottom of this page to navigate through the log.',
-    'stats_headline' => 'Top Ten Search Queries',
-    'stats_no_hits' => 'It appears that no one has ever searched for anything, yet.'
+    'info' => '情報',
+    'admin' => '検索ランキングの管理ページ',
+    'info_main' => 'このプラグインで管理している項目は以下の通りです。',
+    'info_log' => '現在までに記録されている検索語句のログです。ボタンをクリックしてログ全体を閲覧できます。',
+    'stats_headline' => '検索語句(上位10位)',
+    'stats_no_hits' => 'このサーバーで検索した人はまだいないようです。'
 );
 
 // Messages for the plugin upgrade
@@ -80,18 +80,18 @@ $PLG_searchrank_MESSAGE3002 = $LANG32[9]; // "requires a newer version of Geeklo
 // Localization of the Admin Configuration UI
 $LANG_configsections['searchrank'] = array(
     'label' => '検索ランキング',
-    'title' => '検索ランキングコンフィギュレーション'
+    'title' => '検索ランキング設定'
 );
 
 $LANG_confignames['searchrank'] = array(
-    'showstats' => 'Show Top Ten Search Queries In Site Statistics',
+    'showstats' => 'サイト情報に検索語句(上位10位)を表示する',
     'showblock' => '検索ランキングブロックを表示する',
     'maxresults' => 'ブロックに表示するエントリ数',
     'isleftblock' => '左側のブロックに配置する',
     'ttl' => '検索ログを保存する日数',
-    'itemsperpage' => 'Items Per Page in the Log Viewer',
-    'blockorder' => 'Block Order',
-    'rootonly' => 'Only Show the Block to Users of Root Group'
+    'itemsperpage' => '検索ログに表示する1ページあたりの表示件数',
+    'blockorder' => 'ブロックの順序',
+    'rootonly' => 'ブロックをRootグループのユーザーにだけ表示する'
 );
 
 $LANG_configsubgroups['searchrank'] = array(
@@ -110,5 +110,3 @@ $LANG_configselects['searchrank'] = array(
     0 => array('はい' => 1, 'いいえ' => 0),
     1 => array('はい' => true, 'いいえ' => false)
 );
-
-?>
