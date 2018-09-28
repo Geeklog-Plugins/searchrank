@@ -309,6 +309,8 @@ function plugin_getheadercode_searchrank()
 {
     global $_CONF, $_SR_CONF;
 
+    $retval = '';
+    
     // Only include the CSS file for the block, if the block will be shown
     if ($_SR_CONF['showblock'] && (!$_SR_CONF['rootonly'] || SEC_inGroup('Root'))) {
         // use this css for the block
@@ -562,6 +564,11 @@ function plugin_upgrade_searchrank()
         case '1.1.1':
             $current_version = '1.2.1';
             break;
+            
+        case '1.2.1':
+            $current_version = '1.2.2';
+            break;
+            
 
         default:
             $done = true;
