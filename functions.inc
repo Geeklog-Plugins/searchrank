@@ -568,7 +568,10 @@ function plugin_upgrade_searchrank()
         case '1.2.1':
             $current_version = '1.2.2';
             break;
-            
+			
+        case '1.2.2':
+            $current_version = '1.2.3';
+            break;			
 
         default:
             $done = true;
