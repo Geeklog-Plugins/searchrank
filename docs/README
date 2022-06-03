@@ -1,13 +1,15 @@
 +---------------------------------------------------------------------------+
-| Search Word Ranking Plugin 1.2.1                                          |
+| Search Word Ranking Plugin 1.2.3                                          |
 +---------------------------------------------------------------------------+
 |                                                                           |
 | This Geeklog plugin logs search queries and provides an optional          |
 | phpblock with the rankings of these queries.                              |
 |                                                                           |
-| At the moment this plugin does not have a homepage, but if you need help  |
-| want to report a bug or request a feature, please feel free to join the   |
-| discussion at: http://www.geeklog.net/forum/viewtopic.php?showtopic=92194 |
+| If you need help please feel free to join the discussion at:  			|
+| 	https://www.geeklog.net/forum/viewtopic.php?showtopic=92194				|
+|																			|
+| If you want to report a bug or request a feature please visit:			|
+| 	https://github.com/Geeklog-Plugins/searchrank							|
 |                                                                           |
 +---------------------------------------------------------------------------+
 | Copyright (C) 2011 by the following authors:                              |
