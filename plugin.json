@@ -2,5 +2,8 @@
   "schema": 1,
   "id": "searchrank",
   "name": "Search Word Ranking",
-  "icon": "admin/images/searchrank.png"
+  "icon": "admin/images/searchrank.png",
+  "requires": {
+    "geeklog": "2.1.3"
+  }
 }
