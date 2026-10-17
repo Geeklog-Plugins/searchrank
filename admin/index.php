@@ -83,6 +83,16 @@ if ($action == 'clear') {
                                 $LANG_SEARCHRANK_1['admin'] . '<br' . XHTML . '>' . '<br' . XHTML . '>' . $LANG_SEARCHRANK_1['info_main'],
                                 plugin_geticon_searchrank());
     $display .= SEARCHRANK_makeMenu();
+} else if ($action == 'help') {
+    $display .= '<div class="sr-admin-home">'
+        . '<h2>SearchRank — Getting started</h2>'
+        . '<p>SearchRank records searches performed on this website. It does not measure Google or Bing searches.</p>'
+        . '<h3>1. Configure</h3><p>Choose the retention duration and whether the public ranking block is visible. Searches are grouped by phrase and day.</p>'
+        . '<h3>2. View the search log</h3><p>Open the Search Log to inspect saved phrases and their total occurrences.</p>'
+        . '<h3>3. Analyze activity</h3><p>Open Analytics &amp; CSV to filter phrases and compare periods. Older data may have been removed by retention settings.</p>'
+        . '<h3>4. Privacy</h3><p>Search phrases can contain personal information. Avoid making the ranking block public on sensitive sites. The clear-log action permanently deletes recorded searches.</p>'
+        . '<h3>5. Troubleshooting</h3><p>If statistics are empty, run a public search, verify the plugin is enabled and check the configured retention period.</p>'
+        . '<p><a class="sr-action" href="index.php">Back to dashboard</a></p></div>';
 } else if ($action == 'report') {
     $display .= SEARCHRANK_reportPage();
 } else if ($action == 'showlog') {
