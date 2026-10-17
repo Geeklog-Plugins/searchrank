@@ -22,3 +22,6 @@
 .sr-report-table th,.sr-report-table td{padding:.65rem;border-bottom:1px solid #ccd;text-align:left}
 .sr-report-table th:last-child,.sr-report-table td:last-child{text-align:right}
 .sr-note{font-size:.9em;line-height:1.5}
+
+.sr-pagination{display:flex;flex-wrap:wrap;align-items:center;gap:.65rem;margin:1.25rem 0}
+.sr-page-indicator{padding:.5rem .75rem;font-variant-numeric:tabular-nums}
