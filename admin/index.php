@@ -61,7 +61,7 @@ if (! SEC_hasRights('searchrank.admin')) {
 }
 
 // Reporting only reads existing SearchRank data. Export before output headers.
-require_once $_CONF['path'] . 'plugins/searchrank/admin/reporting.inc.php';
+require_once __DIR__ . '/reporting.inc.php';
 if ($action === 'export') {
     SEARCHRANK_reportExport(SEARCHRANK_reportDays(),
         isset($_GET['q']) && is_string($_GET['q']) ? MBYTE_substr(trim($_GET['q']), 0, 100) : '');
