@@ -70,6 +70,9 @@ if (!isset($_SR_CONF['maxresults'])) {
 /**
  * Search Word Ranking plugin table(s)
  */
+// Geeklog may include functions.inc inside PLG_enableStateChange() scope.
+// Import the site's database table prefix explicitly (also in multisite).
+global $_DB_table_prefix, $_TABLES;
 $_TABLES['searchrank_queries'] = $_DB_table_prefix . 'searchrank_queries';
 $_TABLES['searchrank_hits'] = $_DB_table_prefix . 'searchrank_hits';
 
