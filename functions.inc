@@ -91,11 +91,13 @@ function SEARCHRANK_getResults($start = 0, $limit = 0)
 {
     global $_TABLES;
     $retval = array();
+    $start = max(0, (int) $start);
+    $limit = max(0, min(200, (int) $limit));
     $sql = "SELECT {$_TABLES['searchrank_queries']}.query, SUM({$_TABLES['searchrank_hits']}.hits) AS allhits "
                   . "FROM {$_TABLES['searchrank_queries']} INNER JOIN {$_TABLES['searchrank_hits']} "
                   . "ON {$_TABLES['searchrank_queries']}.hid={$_TABLES['searchrank_hits']}.hid "
                   . "WHERE 1=1 GROUP BY query "
-                  . "ORDER BY allhits DESC ";
+                  . "ORDER BY allhits DESC, {$_TABLES['searchrank_queries']}.query ASC ";
     if ($limit != 0) {
         $sql .= "LIMIT $start,$limit";
     }
@@ -186,30 +188,17 @@ function SEARCHRANK_showLog()
 {
    global $_TABLES, $LANG_SEARCHRANK_1, $_SR_CONF, $_CONF, $LANG32, $LANG_ADMIN;
 
-    $page = '';
-    if (isset($_GET['page'])) {
-        // We might not be on the initial page
-        $page = COM_applyFilter($_GET['page']);
-        if (!is_numeric($page)) {
-            // Illegal request, redirect to initial page
-            $page = 1;
-            $results = SEARCHRANK_getResults(0, $_SR_CONF['itemsperpage']);
-        } else if ($page > 0 && $page <= ceil(SEARCHRANK_numResults() / $_SR_CONF['itemsperpage'])) {
-            // Get the items for the specified page
-            $results = SEARCHRANK_getResults($_SR_CONF['itemsperpage'] * ($page-1), $_SR_CONF['itemsperpage']);
-        } else {
-            // Illegal request, redirect to initial page
-            $page = 1;
-            $results = SEARCHRANK_getResults(0, $_SR_CONF['itemsperpage']);
-        }
-    } else {
-        // We are on the initial page
-        $page = 1;
-        $results = SEARCHRANK_getResults(0, $_SR_CONF['itemsperpage']);
-    }
+    // Clamp pagination settings to avoid division by zero and SQL injection.
+    $perPage = isset($_SR_CONF['itemsperpage']) ? (int) $_SR_CONF['itemsperpage'] : 20;
+    $perPage = max(1, min(200, $perPage));
+    $total = SEARCHRANK_numResults();
+    $totalPages = max(1, (int) ceil($total / $perPage));
+    $page = isset($_GET['page']) ? (int) COM_applyFilter($_GET['page']) : 1;
+    $page = max(1, min($totalPages, $page));
+    $results = SEARCHRANK_getResults(($page - 1) * $perPage, $perPage);
 
     // Print the number of entries
-    $retval = "<p>" . sprintf($LANG_SEARCHRANK_1['entries'], SEARCHRANK_numResults()) . "<br" . XHTML . "></p>";
+    $retval = "<p>" . sprintf($LANG_SEARCHRANK_1['entries'], $total) . "<br" . XHTML . "></p>";
     // Print all other entries
     $header_arr = array(array('text' => $LANG_SEARCHRANK_1['queries'], 'field' => 'query'),
                         array('text' => $LANG_SEARCHRANK_1['hits'], 'field' => 'hits'));
@@ -232,7 +221,7 @@ function SEARCHRANK_showLog()
     // Create a button to go to the next page of queries, if possible
     $class = 'disabled';
     $next_url = '#';
-    if (ceil(SEARCHRANK_numResults() / $_SR_CONF['itemsperpage']) > $page) {
+    if ($totalPages > $page) {
         $class = 'button';
         $next_page = $page + 1;
         $next_url = $back_url . '?action=showlog&amp;page=' . $next_page;
