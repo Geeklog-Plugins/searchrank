@@ -56,7 +56,8 @@ Target branch: `develop-1.2.4` — 17 October 2026
 ## 1.4.0 — editorial intelligence
 - [x] Add daily aggregates from existing hit timestamps, without database migration (pending functional test).
 - [ ] Collect zero-result searches reliably via compatible search-engine callback (current SearchRank hook does not know result counts).
-- [ ] Add comparison periods and trend analysis, taking retention into account.
+- [x] Add comparison against the preceding equivalent period (pending on-site testing).
+- [ ] Add per-expression trend comparisons and charts, taking retention into account.
 - [ ] Evaluate Geeklog search API before counting zero-result searches.
 - [ ] New/trending queries and time-window comparisons.
 - [ ] Privacy-sensitive query filtering and retention documentation.
