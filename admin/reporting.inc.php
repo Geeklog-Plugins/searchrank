@@ -68,6 +68,20 @@ function SEARCHRANK_reportExport($days, $filter)
     fclose($out);
 }
 
+function SEARCHRANK_reportTotals($days, $offsetDays)
+{
+    global $_TABLES;
+    $days = max(1, (int) $days);
+    $offsetDays = max(0, (int) $offsetDays);
+    $start = strtotime('today') - (($days + $offsetDays - 1) * 86400);
+    $end = strtotime('today') - ($offsetDays * 86400);
+    $sql = "SELECT SUM(hits) AS total FROM {$_TABLES['searchrank_hits']} "
+         . "WHERE date >= {$start} AND date < " . ($end + 86400);
+    $result = DB_query($sql);
+    $row = DB_fetchArray($result);
+    return $row && isset($row['total']) ? (int) $row['total'] : 0;
+}
+
 function SEARCHRANK_reportPage()
 {
     global $_CONF;
@@ -90,8 +104,13 @@ function SEARCHRANK_reportPage()
     }
     $html .= '</select></label><label>Search expression <input name="q" type="search" value="' . $esc($filter) . '"></label>'
            . '<button class="sr-action" type="submit">Filter</button></form>';
+    $previous = SEARCHRANK_reportTotals($days, $days);
+    $current = SEARCHRANK_reportTotals($days, 0);
+    $trend = $previous > 0 ? round((($current - $previous) * 100) / $previous, 1) : null;
     $html .= '<div class="sr-summary"><strong>' . $total . '</strong> searches over ' . $days . ' days; '
            . count($rows) . ' matching expressions shown</div>';
+    $html .= '<p class="sr-note">Previous ' . $days . ' days: ' . $previous
+           . ' searches. ' . ($trend === null ? 'Variation not available (no previous data).' : 'Change: ' . $trend . '%.') . '</p>';
     $html .= '<p><a href="' . $esc($base . '?action=export&days=' . $days . '&q=' . rawurlencode($filter)) . '">Export CSV</a></p>';
     $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">Expression</th><th scope="col">Hits</th></tr></thead><tbody>';
     foreach ($rows as $row) {
