@@ -95,6 +95,20 @@ function SEARCHRANK_reportPage()
     foreach ($daily as $day) { $total += $day['hits']; }
     $esc = function ($v) { return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'); };
     global $LANG_SEARCHRANK_1;
+    // Until all legacy translations are updated, fall back to English labels.
+    $fallback = array(
+        'analytics' => 'Analytics & CSV',
+        'dashboard' => 'Dashboard',
+        'period' => 'Period',
+        'days' => 'days',
+        'search_expression' => 'Search expression',
+        'filter' => 'Filter'
+    );
+    foreach ($fallback as $key => $value) {
+        if (!isset($LANG_SEARCHRANK_1[$key])) {
+            $LANG_SEARCHRANK_1[$key] = $value;
+        }
+    }
     $html = '<div class="sr-admin-home"><h2>' . $esc($LANG_SEARCHRANK_1['analytics']) . '</h2>';
     $html .= '<nav class="sr-actions"><a class="sr-action" href="' . $esc($base) . '">' . $esc($LANG_SEARCHRANK_1['dashboard']) . '</a></nav>';
     $html .= '<form method="get" action="' . $esc($base) . '" class="sr-filter">'
