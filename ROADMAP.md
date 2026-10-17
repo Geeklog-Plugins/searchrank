@@ -4,7 +4,7 @@ Target branch: `develop-1.2.4` — 17 October 2026
 
 ## Release policy
 - Geeklog 2.2.2 minimum for maintained releases; PHP 5.6.40 syntax and PHP 8.1/8.3 validation required, per hostellerie/memorandum/geeklog-runtime-support-policy.md.
-- Keep PostgreSQL for now: current Geeklog Core retains pgsql drivers, schema, upgrade scripts and plugin installers. Some independent plugins are MySQL-only, which does not establish Core removal.
+- PostgreSQL support removed by request in 1.2.4; MySQL-compatible Geeklog database only. Upgrading PostgreSQL installations is unsupported; export historical data before changing database engines.
 - No official release before CI and functional acceptance. Never destroy existing logs during migration without explicit administrator action.
 
 ## 1.2.4 — immediate stabilization
@@ -16,13 +16,13 @@ Target branch: `develop-1.2.4` — 17 October 2026
 - [x] Require POST and Geeklog CSRF token for destructive clear-log operation.
 
 ### Blocking release checks
-- [ ] Test PostgreSQL and MySQL purge with old-only, new-only, mixed-age, empty, and repeated records; consider table locks, query plan and SQL portability.
+- [ ] Test MySQL purge with old-only, new-only, mixed-age, empty, and repeated records; consider table locks, query plan and SQL portability.
 - [ ] Confirm Geeklog SEC_createToken / SEC_checkToken and the administration form work on Geeklog 2.2.2 with modern themes.
 - [ ] Add strict integer bounds for page/start/limit and config parameters (ttl, maxresults, itemsperpage).
 - [ ] Harden query display and URL handling; review all HTML escape contexts.
 - [ ] Address possible concurrent duplicate inserts and colliding random hid values; evaluate suitable uniqueness constraints and an idempotent SQL migration.
-- [ ] Validate bulk clear under PostgreSQL, including orphan hits; test existing installations and upgrades.
-- [ ] Review SQL portability in aggregation, aliases, casting and non-deterministic ordering.
+- [ ] Validate bulk clear under MySQL, including orphan hits; test existing installations and upgrades.
+- [ ] Review MySQL aggregation, aliases, casting and non-deterministic ordering.
 - [ ] Ensure searches do not record sensitive strings publicly; add privacy guardrails.
 - [ ] Align installer metadata, plugin.json, compatibility checks, README, translations and release notes with tested minimum runtimes.
 - [ ] Preserve existing data; back up before migrations and test rollback.
@@ -47,7 +47,7 @@ Target branch: `develop-1.2.4` — 17 October 2026
 - [ ] Read-only query metrics service for Hub; preserve separate responsibilities for Analytics, Search Console and Bing Webmaster.
 
 ## PostgreSQL decision
-Retain support pending concrete compatibility testing and upstream Core decision. Do not delete `sql/pgsql_*.php` or disable PostgreSQL install paths based solely on independent plugins that use MySQL only.
+PostgreSQL support is deliberately removed in 1.2.4. SQL installation and upgrade files are deleted; installer compatibility check rejects unsupported database types. This does not remove existing PostgreSQL tables on remote installations. Database migrations require separate backup/export and are not automatic.
 
 ## Source documents
 - https://github.com/hostellerie/memorandum/blob/main/geeklog-runtime-support-policy.md
