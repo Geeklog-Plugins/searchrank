@@ -68,6 +68,12 @@ $LANG_SEARCHRANK_1 = array(
     'admin' => 'Welcome to the Search Word Ranking Plugin administration page.',
     'info_main' => 'Below are the configuration options that are available for this plugin.',
     'info_log' => 'Below you can view the search queries that have been recorded so far. Use the buttons at the bottom of this page to navigate through the log.',
+    'analytics' => 'Analytics & CSV',
+    'dashboard' => 'Dashboard',
+    'period' => 'Period',
+    'days' => 'days',
+    'search_expression' => 'Search expression',
+    'filter' => 'Filter',
     'stats_headline' => 'Top Ten Search Queries',
     'stats_no_hits' => 'It appears that no one has ever searched for anything, yet.'
 );
