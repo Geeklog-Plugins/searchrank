@@ -280,36 +280,40 @@ function plugin_dopluginsearch_searchrank($query, $datestart, $dateend, $topic, 
 
     SEARCHRANK_housekeeping();
     $today = strtotime(date("d-m-Y") . " 00:00:00"); // todays date
-    $hid = mt_rand(1000000, 9999999); // use random number 'hid'
-    // ensure that the random number is unique
-    while (DB_Count($_TABLES['searchrank_queries'], 'hid', $hid) != 0) {
-        $hid = mt_rand(1000000, 9999999);
+    $query = MBYTE_substr(trim(strtolower((string) $query)), 0, 99);
+    if ($query === '') {
+        return array();
     }
-    $query = MBYTE_substr(trim(strtolower($query)), 0, 99);
     $query = DB_escapeString($query);
-    if (empty($query)) {
-        return array(); // Return an empty array
-    }
-    // Check if this query is already in the database
-    $q = DB_query("SELECT hid FROM {$_TABLES['searchrank_queries']} WHERE query='{$query}'");
-    $rows = DB_numRows($q);
-    if ($rows == 0) {
-        // Add a new row
-        DB_query("INSERT INTO {$_TABLES['searchrank_queries']} (query, hid) VALUES ('$query',$hid)");
-        DB_query("INSERT INTO {$_TABLES['searchrank_hits']} (hid, date, hits) VALUES ($hid, $today, 1)");
-    } else     {
-        // Increment by a hit
-        $data = DB_fetchArray($q);
-        $hid = $data['hid'];
-        $q = DB_query("SELECT date FROM {$_TABLES['searchrank_hits']} WHERE hid='{$hid}' AND date='{$today}'");
-        if (DB_numRows($q) == 0) {
-            // there is an entry for this query, but not for today
-            $sql = "INSERT INTO {$_TABLES['searchrank_hits']} (hid, date, hits) VALUES ($hid, $today, 1)";
+
+    // Legacy MyISAM tables lack unique indexes for (hid, date).
+    // Lock both tables as a unit so parallel searches cannot lose increments.
+    // No schema migration is necessary for existing 1.2.1 installations.
+    DB_query("LOCK TABLES {$_TABLES['searchrank_queries']} WRITE, {$_TABLES['searchrank_hits']} WRITE");
+    try {
+        $result = DB_query("SELECT hid FROM {$_TABLES['searchrank_queries']} WHERE query='{$query}'");
+        if (DB_numRows($result) > 0) {
+            $row = DB_fetchArray($result);
+            $hid = (int) $row['hid'];
         } else {
-            // there is already an entry for this query for today
-            $sql = "UPDATE {$_TABLES['searchrank_hits']} SET hits = hits + 1 WHERE hid='{$hid}' AND date='{$today}'";
+            // Allocate from the current maximum while holding the table lock.
+            $maxResult = DB_query("SELECT MAX(hid) AS last_hid FROM {$_TABLES['searchrank_queries']}");
+            $maxRow = DB_fetchArray($maxResult);
+            $hid = max(0, (int) $maxRow['last_hid']) + 1;
+            if ($hid > 4294967295) {
+                COM_errorLog('SearchRank: exhausted unsigned hid range');
+                return array();
+            }
+            DB_query("INSERT INTO {$_TABLES['searchrank_queries']} (query, hid) VALUES ('{$query}', {$hid})");
         }
-        DB_query($sql);    
+        $dayResult = DB_query("SELECT hid FROM {$_TABLES['searchrank_hits']} WHERE hid={$hid} AND date={$today}");
+        if (DB_numRows($dayResult) > 0) {
+            DB_query("UPDATE {$_TABLES['searchrank_hits']} SET hits=hits+1 WHERE hid={$hid} AND date={$today}");
+        } else {
+            DB_query("INSERT INTO {$_TABLES['searchrank_hits']} (hid, date, hits) VALUES ({$hid}, {$today}, 1)");
+        }
+    } finally {
+        DB_query('UNLOCK TABLES');
     }
      // Execute query
     return array(); // Return an empty array
