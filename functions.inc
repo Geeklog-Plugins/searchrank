@@ -164,19 +164,30 @@ function SEARCHRANK_makeMenu()
     global $_CONF, $LANG_SEARCHRANK_1;
 
     SEARCHRANK_housekeeping();
-    $imgpath = $_CONF['site_admin_url'] . '/plugins/searchrank/images';
+    $base = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
+    $config = $_CONF['site_admin_url'] . '/configuration.php';
+    $count = SEARCHRANK_numResults();
 
-    return "<div class='sr_menuitem'><a href='#' onclick='document.searchrank_conf_link.submit()'>"
-         . "<img alt='' src='{$imgpath}/configuration.png'" . XHTML . "><br" . XHTML . ">{$LANG_SEARCHRANK_1['conf_link']}</a></div>"
-         . "<div class='sr_menuitem'><a href='#' onclick=\"location.href='?action=showlog'\">"
-         . "<img alt='' src='{$imgpath}/view_log.png'" . XHTML . "><br" . XHTML . ">{$LANG_SEARCHRANK_1['viewlog_link']}</a></div>"
-         . "<form method='post' action='index.php' class='sr_menuitem' onsubmit=\"return confirm('" . htmlspecialchars($LANG_SEARCHRANK_1['clear_confirm'], ENT_QUOTES, 'UTF-8') . "')\">"
-         . "<input type='hidden' name='action' value='clear'>"
-         . "<input type='hidden' name='token' value='" . SEC_createToken() . "'>"
-         . "<button type='submit'><img alt='' src='{$imgpath}/clear_log.png'" . XHTML . "><br" . XHTML . ">{$LANG_SEARCHRANK_1['clear_link']}</button></form>"
-         . "<form name='searchrank_conf_link' action='{$_CONF['site_admin_url']}/configuration.php' method='POST'>"
-         . "<input type='hidden' name='conf_group' value='searchrank'></form>"
-         . "<br" . XHTML . "><br" . XHTML . "><br" . XHTML . "><br" . XHTML . ">";
+    $html = '<section class="sr-admin-home">';
+    $html .= '<p class="sr-intro">' . htmlspecialchars($LANG_SEARCHRANK_1['info_main'], ENT_QUOTES, 'UTF-8') . '</p>';
+    $html .= '<div class="sr-summary"><strong>' . (int) $count . '</strong> '
+          . htmlspecialchars($LANG_SEARCHRANK_1['queries'], ENT_QUOTES, 'UTF-8') . '</div>';
+    $html .= '<nav class="sr-actions" aria-label="SearchRank">';
+    $html .= '<a class="sr-action" href="' . htmlspecialchars($base . '?action=showlog', ENT_QUOTES, 'UTF-8') . '">'
+          . htmlspecialchars($LANG_SEARCHRANK_1['viewlog_link'], ENT_QUOTES, 'UTF-8') . '</a>';
+    $html .= '<form class="sr-config-form" method="post" action="' . htmlspecialchars($config, ENT_QUOTES, 'UTF-8') . '">'
+          . '<input type="hidden" name="conf_group" value="searchrank">'
+          . '<button class="sr-action" type="submit">' . htmlspecialchars($LANG_SEARCHRANK_1['conf_link'], ENT_QUOTES, 'UTF-8') . '</button></form>';
+    $html .= '</nav>';
+    $html .= '<section class="sr-danger"><h3>' . htmlspecialchars($LANG_SEARCHRANK_1['clear_link'], ENT_QUOTES, 'UTF-8') . '</h3>';
+    $html .= '<form method="post" action="' . htmlspecialchars($base, ENT_QUOTES, 'UTF-8') . '" onsubmit="return confirm(this.getAttribute(\'data-confirm\'));" data-confirm="'
+          . htmlspecialchars($LANG_SEARCHRANK_1['clear_confirm'], ENT_QUOTES, 'UTF-8') . '">'
+          . '<input type="hidden" name="action" value="clear">'
+          . '<input type="hidden" name="token" value="' . htmlspecialchars(SEC_createToken(), ENT_QUOTES, 'UTF-8') . '">'
+          . '<button class="sr-clear" type="submit">' . htmlspecialchars($LANG_SEARCHRANK_1['clear_link'], ENT_QUOTES, 'UTF-8') . '</button></form>';
+    $html .= '</section></section>';
+
+    return $html;
 }
 
 /**
