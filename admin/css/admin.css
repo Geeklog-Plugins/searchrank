@@ -25,3 +25,7 @@
 
 .sr-pagination{display:flex;flex-wrap:wrap;align-items:center;gap:.65rem;margin:1.25rem 0}
 .sr-page-indicator{padding:.5rem .75rem;font-variant-numeric:tabular-nums}
+
+.sr-log-toolbar{margin:0 0 1rem}
+.sr-back-link{display:inline-block;text-decoration:underline;text-underline-offset:.2em;padding:.2rem 0}
+.sr-back-link:hover,.sr-back-link:focus{text-decoration-thickness:2px}
