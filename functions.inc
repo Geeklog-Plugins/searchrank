@@ -179,6 +179,7 @@ function SEARCHRANK_makeMenu()
           . '<input type="hidden" name="conf_group" value="searchrank">'
           . '<button class="sr-action" type="submit">' . htmlspecialchars($LANG_SEARCHRANK_1['conf_link'], ENT_QUOTES, 'UTF-8') . '</button></form>';
     $html .= '<a class="sr-action" href="' . htmlspecialchars($base . '?action=report', ENT_QUOTES, 'UTF-8') . '">Analytics &amp; CSV</a>';
+    $html .= '<a class="sr-action" href="' . htmlspecialchars($base . '?action=help', ENT_QUOTES, 'UTF-8') . '">Help</a>';
     $html .= '</nav>';
     $html .= '<section class="sr-danger"><h3>' . htmlspecialchars($LANG_SEARCHRANK_1['clear_link'], ENT_QUOTES, 'UTF-8') . '</h3>';
     $html .= '<form method="post" action="' . htmlspecialchars($base, ENT_QUOTES, 'UTF-8') . '" onsubmit="return confirm(this.getAttribute(\'data-confirm\'));" data-confirm="'
