@@ -212,18 +212,16 @@ function SEARCHRANK_showLog()
 
     // Print the number of entries
     $baseUrl = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
-    $retval = '<nav class="sr-actions" aria-label="SearchRank administration">'
-        . '<a class="sr-action" href="' . htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($LANG_SEARCHRANK_1['back'], ENT_QUOTES, 'UTF-8') . '</a>'
-        . '<a class="sr-action" href="' . htmlspecialchars($baseUrl . '?action=report', ENT_QUOTES, 'UTF-8') . '">Analytics &amp; CSV</a></nav>';
+    $retval = '<div class="sr-log-toolbar"><a class="sr-back-link" href="'
+        . htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8') . '">&larr; '
+        . htmlspecialchars($LANG_SEARCHRANK_1['back'], ENT_QUOTES, 'UTF-8') . '</a></div>';
     $retval .= '<p>' . htmlspecialchars(sprintf($LANG_SEARCHRANK_1['entries'], $total), ENT_QUOTES, 'UTF-8') . '</p>';
     // Print all other entries
     $header_arr = array(array('text' => $LANG_SEARCHRANK_1['queries'], 'field' => 'query'),
                         array('text' => $LANG_SEARCHRANK_1['hits'], 'field' => 'hits'));
     $retval .= ADMIN_simpleList('ADMIN_getListField_newplugins', $header_arr, array(), $results);
 
-    // Create a link to go back to the admin screen
-    $back_url = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
-    $back_link = '<div class="button"><a href="' . $back_url . '">' . $LANG_SEARCHRANK_1['back'] . '</a></div>';
+    $back_url = $baseUrl;
 
     // Compact pagination: unavailable controls must not appear clickable.
     $retval .= '<nav class="sr-pagination" aria-label="Search log pages">';
