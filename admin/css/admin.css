@@ -29,3 +29,12 @@
 .sr-log-toolbar{margin:0 0 1rem}
 .sr-back-link{display:inline-block;text-decoration:underline;text-underline-offset:.2em;padding:.2rem 0}
 .sr-back-link:hover,.sr-back-link:focus{text-decoration-thickness:2px}
+
+/* Shared Geeklog plugin administration navigation contract. */
+.plugin-admin-nav{margin:0 0 1.25rem}
+.plugin-admin-nav__primary{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.plugin-admin-nav__item{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-height:2.4rem;padding:.5rem .8rem;border:1px solid currentColor;border-radius:.35rem;background:transparent;color:inherit;font:inherit;text-decoration:none;cursor:pointer}
+.plugin-admin-nav__item.is-active{font-weight:700;box-shadow:inset 0 -2px 0 currentColor}
+.plugin-admin-nav__item:focus-visible{outline:3px solid currentColor;outline-offset:2px}
+.plugin-admin-nav__form{display:inline-block;margin:0}
+@media(max-width:640px){.plugin-admin-nav__primary{align-items:stretch;flex-direction:column}.plugin-admin-nav__item,.plugin-admin-nav__form,.plugin-admin-nav__form .plugin-admin-nav__item{width:100%}}
