@@ -42,7 +42,8 @@ Target branch: `develop-1.2.4` — 17 October 2026
 - [ ] Retest archive after subsequent fixes and test fresh installation.
 
 ## 1.3.0 — administration
-- [ ] Implement a coherent admin home: introduction, status, first-use instructions, statistics summary and links to Log, Configuration, and Help; use native Geeklog navigation, scoped CSS, responsive layout and a clearly separated destructive action. Backport safe admin improvements in 1.2.4 as appropriate.
+- [x] Initial admin home: explanatory introduction, query count, direct log/configuration navigation, separate token-protected destructive action and responsive theme-independent CSS.
+- [ ] Complete admin help/first-use guidance, current-section navigation, localized notices, filterable log and accessibility testing on Geeklog 2.1.3 and 2.2.2.
 - [ ] Navigation consistent with memorandum/plugin-admin-navigation.md and plugin-admin-ux-guidelines.md.
 - [ ] In-product getting started, configuration tooltips and responsive tables.
 - [ ] Time windows, date filters, safe CSV export and stable sorting.
