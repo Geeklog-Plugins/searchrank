@@ -28,10 +28,12 @@ Target branch: `develop-1.2.4` — 17 October 2026
 - [ ] Preserve existing data; back up before migrations and test rollback.
 
 ### Packaging and QA
-- [ ] Add GitHub Actions: PHP 5.6/8.1/8.3 lint, PHP compatibility checks, metadata validation.
+- [x] Add GitHub Actions PHP 5.6/8.1/8.3 lint and distributable archive (first CI runs pending).
+- [ ] Add PHP compatibility/static checks and metadata validation.
 - [ ] Test clean install, upgrades, activate/deactivate/uninstall, left/right block, statistics, anonymous/admin users.
 - [ ] Exercise multiple sites sharing files but using separate databases.
-- [ ] Produce versioned installable `dist` artifact; verify archive layout and contents.
+- [x] Configure CI to produce versioned `dist` archive.
+- [ ] Verify first GitHub Actions run and archive installation on Geeklog 2.2.2.
 
 ## 1.3.0 — administration
 - [ ] Navigation consistent with memorandum/plugin-admin-navigation.md and plugin-admin-ux-guidelines.md.
