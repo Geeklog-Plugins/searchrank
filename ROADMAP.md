@@ -41,6 +41,14 @@ Target branch: `develop-1.2.4` — 17 October 2026
 - [x] User reports successful upgrade from 1.2.1 on Geeklog 2.2.2.
 - [ ] Retest archive after subsequent fixes and test fresh installation.
 
+## Live acceptance gate (required after CI succeeds)
+- [ ] Upgrade the latest `dist/searchrank_1.2.4_2.1.3.zip` on Geeklog 2.2.2 staging (backup DB first).
+- [ ] Verify dashboard, Help, Analytics & CSV, 7/28/90/365-day filters, empty-state and CSV encoding.
+- [ ] Verify CSS cache-busting after upgrading (hard reload should not be necessary).
+- [ ] Perform three site searches, verify counts and use pagination without clearing historical data.
+- [ ] Test log-clear only on disposable/staging data after making a backup, then test repeated searches.
+- [ ] Report screenshots of admin dashboard and reporting, plus any PHP warnings.
+
 ## 1.3.0 — administration
 - [x] Add responsive analytics reports with period filters and CSV export on legacy tables (pending installation test).
 - [x] Version admin and block stylesheet URLs with deterministic `?v=1.2.4`; no JavaScript assets are currently required.
@@ -49,7 +57,8 @@ Target branch: `develop-1.2.4` — 17 October 2026
 - [x] Initial admin home: explanatory introduction, query count, direct log/configuration navigation, separate token-protected destructive action and responsive theme-independent CSS.
 - [x] Replace legacy oversized log pagination controls with compact, conditionally visible navigation.
 - [x] Add first-use admin Help view covering configuration, search log, analytics, retention, privacy and troubleshooting.
-- [ ] Localize newly added admin/help/report labels and clarify active navigation; test accessibility on Geeklog 2.1.3 and 2.2.2.
+- [x] Begin localization of report controls in English and fallback safely for older language packs.
+- [ ] Complete all new admin/help/report translations, active navigation and accessibility checks on Geeklog 2.1.3 and 2.2.2.
 - [ ] Navigation consistent with memorandum/plugin-admin-navigation.md and plugin-admin-ux-guidelines.md.
 - [ ] In-product getting started, configuration tooltips and responsive tables.
 - [ ] Time windows, date filters, safe CSV export and stable sorting.
