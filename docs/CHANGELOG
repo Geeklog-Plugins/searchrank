@@ -1,4 +1,16 @@
 #####################################################
+Version 1.2.4 - Development (unreleased)
+
+  Maintenance:
+   * Removed PostgreSQL support; MySQL only.
+   * Fixed retention unit conversion and removal of orphaned search phrases.
+   * Prevented GET-based log clearing and added CSRF verification.
+   * Escaped public search query title attribute.
+   * Added GitHub Actions PHP lint and distribution packaging.
+
+  Warning: Data from PostgreSQL installations are not migrated automatically.
+
+#####################################################
 Version 1.2.3 - 03-June-2022
 
   New features:
