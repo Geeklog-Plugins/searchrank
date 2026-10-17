@@ -40,6 +40,10 @@ if (strpos(strtolower($_SERVER['PHP_SELF']), 'functions.inc') !== false) {
     die ('This file can not be used on its own.');
 }
 
+// This file is sometimes loaded inside a Geeklog function during plugin enable.
+// Explicit globals keep runtime state available after the include returns.
+global $_SR_CONF, $dohousekeeping, $_TABLES, $_DB_table_prefix;
+
 // Remember to do housekeeping once
 $dohousekeeping = true;
 
@@ -71,8 +75,7 @@ if (!isset($_SR_CONF['maxresults'])) {
  * Search Word Ranking plugin table(s)
  */
 // Geeklog may include functions.inc inside PLG_enableStateChange() scope.
-// Import the site's database table prefix explicitly (also in multisite).
-global $_DB_table_prefix, $_TABLES;
+// Use the current site's database table prefix (also in multisite).
 $_TABLES['searchrank_queries'] = $_DB_table_prefix . 'searchrank_queries';
 $_TABLES['searchrank_hits'] = $_DB_table_prefix . 'searchrank_hits';
 
