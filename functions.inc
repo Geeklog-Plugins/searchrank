@@ -211,7 +211,11 @@ function SEARCHRANK_showLog()
     $results = SEARCHRANK_getResults(($page - 1) * $perPage, $perPage);
 
     // Print the number of entries
-    $retval = "<p>" . sprintf($LANG_SEARCHRANK_1['entries'], $total) . "<br" . XHTML . "></p>";
+    $baseUrl = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
+    $retval = '<nav class="sr-actions" aria-label="SearchRank administration">'
+        . '<a class="sr-action" href="' . htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($LANG_SEARCHRANK_1['back'], ENT_QUOTES, 'UTF-8') . '</a>'
+        . '<a class="sr-action" href="' . htmlspecialchars($baseUrl . '?action=report', ENT_QUOTES, 'UTF-8') . '">Analytics &amp; CSV</a></nav>';
+    $retval .= '<p>' . htmlspecialchars(sprintf($LANG_SEARCHRANK_1['entries'], $total), ENT_QUOTES, 'UTF-8') . '</p>';
     // Print all other entries
     $header_arr = array(array('text' => $LANG_SEARCHRANK_1['queries'], 'field' => 'query'),
                         array('text' => $LANG_SEARCHRANK_1['hits'], 'field' => 'hits'));
