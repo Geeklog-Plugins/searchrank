@@ -85,15 +85,13 @@ function SEARCHRANK_getResults($start = 0, $limit = 0)
 {
     global $_TABLES;
     $retval = array();
-    $sql['mysql'] = "SELECT {$_TABLES['searchrank_queries']}.query, SUM({$_TABLES['searchrank_hits']}.hits) AS allhits "
+    $sql = "SELECT {$_TABLES['searchrank_queries']}.query, SUM({$_TABLES['searchrank_hits']}.hits) AS allhits "
                   . "FROM {$_TABLES['searchrank_queries']} INNER JOIN {$_TABLES['searchrank_hits']} "
                   . "ON {$_TABLES['searchrank_queries']}.hid={$_TABLES['searchrank_hits']}.hid "
                   . "WHERE 1=1 GROUP BY query "
                   . "ORDER BY allhits DESC ";
-    $sql['pgsql'] = $sql['mysql'];
     if ($limit != 0) {
-        $sql['mysql'] .= "LIMIT $start,$limit";
-        $sql['pgsql'] .= "LIMIT $limit OFFSET $start";
+        $sql .= "LIMIT $start,$limit";
     }
     $query = DB_query($sql);
     while ($A = DB_fetchArray($query)) {
@@ -121,13 +119,8 @@ function SEARCHRANK_numResults()
 function SEARCHRANK_clearLog()
 {
     global $_TABLES, $LANG_SEARCHRANK_1;
-    $sql['mysql'] = "DELETE {$_TABLES['searchrank_queries']}, {$_TABLES['searchrank_hits']} "
-                  . "FROM {$_TABLES['searchrank_queries']} LEFT JOIN {$_TABLES['searchrank_hits']} "
-                  . "ON {$_TABLES['searchrank_queries']}.hid={$_TABLES['searchrank_hits']}.hid "
-                  . "WHERE 1=1";
-    $sql['pgsql'] = "DELETE FROM {$_TABLES['searchrank_queries']} USING {$_TABLES['searchrank_hits']} "
-                  . "WHERE {$_TABLES['searchrank_queries']}.hid={$_TABLES['searchrank_hits']}.hid ";
-    DB_query($sql);
+    DB_query("DELETE FROM {$_TABLES['searchrank_hits']}");
+    DB_query("DELETE FROM {$_TABLES['searchrank_queries']}");
 }
 
 /**
