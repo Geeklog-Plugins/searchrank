@@ -40,8 +40,10 @@ require_once '../../auth.inc.php';
 
 $display = '';
 $action = '';
-if (isset($_GET['action'])) {
-  $action = trim($_GET['action']);
+if (isset($_POST['action'])) {
+    $action = COM_applyFilter($_POST['action']);
+} elseif (isset($_GET['action'])) {
+    $action = COM_applyFilter($_GET['action']);
 }
 
 // Ensure user even has the rights to access this page
@@ -61,8 +63,14 @@ if (! SEC_hasRights('searchrank.admin')) {
 // MAIN
 $display .= COM_startBlock($LANG_SEARCHRANK_1['plugin_name']);
 if ($action == 'clear') {
-    SEARCHRANK_clearLog(); // assume that everything went well
-    $display .= COM_showMessageText($LANG_SEARCHRANK_1['clear_msg'], $LANG_SEARCHRANK_1['info']);
+    // Destructive operations require POST and a valid Geeklog CSRF token.
+    if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST'
+        && SEC_checkToken()) {
+        SEARCHRANK_clearLog();
+        $display .= COM_showMessageText($LANG_SEARCHRANK_1['clear_msg'], $LANG_SEARCHRANK_1['info']);
+    } else {
+        $display .= COM_showMessageText('Invalid request or security token.', $LANG_SEARCHRANK_1['info']);
+    }
     $display .= ADMIN_createMenu(array(),
                                 $LANG_SEARCHRANK_1['admin'] . '<br' . XHTML . '>' . '<br' . XHTML . '>' . $LANG_SEARCHRANK_1['info_main'],
                                 plugin_geticon_searchrank());
