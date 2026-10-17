@@ -94,16 +94,17 @@ function SEARCHRANK_reportPage()
     $total = 0;
     foreach ($daily as $day) { $total += $day['hits']; }
     $esc = function ($v) { return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'); };
-    $html = '<div class="sr-admin-home"><h2>Search analytics</h2>';
-    $html .= '<nav class="sr-actions"><a class="sr-action" href="' . $esc($base) . '">Dashboard</a></nav>';
+    global $LANG_SEARCHRANK_1;
+    $html = '<div class="sr-admin-home"><h2>' . $esc($LANG_SEARCHRANK_1['analytics']) . '</h2>';
+    $html .= '<nav class="sr-actions"><a class="sr-action" href="' . $esc($base) . '">' . $esc($LANG_SEARCHRANK_1['dashboard']) . '</a></nav>';
     $html .= '<form method="get" action="' . $esc($base) . '" class="sr-filter">'
            . '<input type="hidden" name="action" value="report">'
-           . '<label>Period <select name="days">';
+           . '<label>' . $esc($LANG_SEARCHRANK_1['period']) . ' <select name="days">';
     foreach (array(7,28,90,365) as $d) {
-        $html .= '<option value="' . $d . '"' . ($d === $days ? ' selected' : '') . '>' . $d . ' days</option>';
+        $html .= '<option value="' . $d . '"' . ($d === $days ? ' selected' : '') . '>' . $d . ' ' . $esc($LANG_SEARCHRANK_1['days']) . '</option>';
     }
     $html .= '</select></label><label>Search expression <input name="q" type="search" value="' . $esc($filter) . '"></label>'
-           . '<button class="sr-action" type="submit">Filter</button></form>';
+           . '<button class="sr-action" type="submit">' . $esc($LANG_SEARCHRANK_1['filter']) . '</button></form>';
     $previous = SEARCHRANK_reportTotals($days, $days);
     $current = SEARCHRANK_reportTotals($days, 0);
     $trend = $previous > 0 ? round((($current - $previous) * 100) / $previous, 1) : null;
