@@ -169,8 +169,10 @@ function SEARCHRANK_makeMenu()
          . "<img alt='' src='{$imgpath}/configuration.png'" . XHTML . "><br" . XHTML . ">{$LANG_SEARCHRANK_1['conf_link']}</a></div>"
          . "<div class='sr_menuitem'><a href='#' onclick=\"location.href='?action=showlog'\">"
          . "<img alt='' src='{$imgpath}/view_log.png'" . XHTML . "><br" . XHTML . ">{$LANG_SEARCHRANK_1['viewlog_link']}</a></div>"
-         . "<div class='sr_menuitem'><a href='#' onclick=\"if(confirm('{$LANG_SEARCHRANK_1['clear_confirm']}')){location.href='?action=clear'}\">"
-         . "<img alt='' src='{$imgpath}/clear_log.png'" . XHTML . "><br" . XHTML . ">{$LANG_SEARCHRANK_1['clear_link']}</a></div>"
+         . "<form method='post' action='index.php' class='sr_menuitem' onsubmit=\"return confirm('" . htmlspecialchars($LANG_SEARCHRANK_1['clear_confirm'], ENT_QUOTES, 'UTF-8') . "')\">"
+         . "<input type='hidden' name='action' value='clear'>"
+         . "<input type='hidden' name='token' value='" . SEC_createToken() . "'>"
+         . "<button type='submit'><img alt='' src='{$imgpath}/clear_log.png'" . XHTML . "><br" . XHTML . ">{$LANG_SEARCHRANK_1['clear_link']}</button></form>"
          . "<form name='searchrank_conf_link' action='{$_CONF['site_admin_url']}/configuration.php' method='POST'>"
          . "<input type='hidden' name='conf_group' value='searchrank'></form>"
          . "<br" . XHTML . "><br" . XHTML . "><br" . XHTML . "><br" . XHTML . ">";
