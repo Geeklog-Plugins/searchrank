@@ -52,7 +52,7 @@ function plugin_autoinstall_searchrank($pi_name)
         'pi_name'         => $pi_name,
         'pi_display_name' => $pi_display_name,
         'pi_version'      => '1.2.4',
-        'pi_gl_version'   => '2.2.2',
+        'pi_gl_version'   => '2.1.3',
         'pi_homepage'     => 'https://github.com/Geeklog-Plugins/searchrank'
     );
 
