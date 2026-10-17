@@ -1,0 +1,46 @@
+name: SearchRank CI and installable archive
+on:
+  push:
+    branches: [master, develop-1.2.4]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  php-lint:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['5.6', '8.1', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: none
+      - name: PHP syntax
+        run: find . -name '*.php' -type f -print0 | xargs -0 -n1 php -l
+  dist:
+    name: Installable archive
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Geeklog installable package
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/stage/searchrank
+          for item in admin autoinstall.php docs functions.inc install_defaults.php install_updates.php language plugin.json sql README; do
+            cp -R "$item" dist/stage/searchrank/
+          done
+          if find dist/stage/searchrank -iname '*pgsql*' | grep -q .; then
+            echo 'Unexpected PostgreSQL files found' >&2
+            exit 1
+          fi
+          (cd dist/stage && tar -czf ../searchrank-1.2.4.tar.gz searchrank)
+          tar -tzf dist/searchrank-1.2.4.tar.gz | grep -q '^searchrank/autoinstall.php$'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: searchrank-1.2.4-dist
+          path: dist/searchrank-1.2.4.tar.gz
+          if-no-files-found: error
