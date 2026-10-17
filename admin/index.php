@@ -60,6 +60,14 @@ if (! SEC_hasRights('searchrank.admin')) {
     exit;
 }
 
+// Reporting only reads existing SearchRank data. Export before output headers.
+require_once $_CONF['path'] . 'plugins/searchrank/admin/reporting.inc.php';
+if ($action === 'export') {
+    SEARCHRANK_reportExport(SEARCHRANK_reportDays(),
+        isset($_GET['q']) && is_string($_GET['q']) ? MBYTE_substr(trim($_GET['q']), 0, 100) : '');
+    exit;
+}
+
 // MAIN
 $display .= COM_startBlock($LANG_SEARCHRANK_1['plugin_name']);
 if ($action == 'clear') {
@@ -75,6 +83,8 @@ if ($action == 'clear') {
                                 $LANG_SEARCHRANK_1['admin'] . '<br' . XHTML . '>' . '<br' . XHTML . '>' . $LANG_SEARCHRANK_1['info_main'],
                                 plugin_geticon_searchrank());
     $display .= SEARCHRANK_makeMenu();
+} else if ($action == 'report') {
+    $display .= SEARCHRANK_reportPage();
 } else if ($action == 'showlog') {
     $display .= ADMIN_createMenu(array(),
                                 $LANG_SEARCHRANK_1['admin'] . '<br' . XHTML . '>' . '<br' . XHTML . '>' . $LANG_SEARCHRANK_1['info_log'],
