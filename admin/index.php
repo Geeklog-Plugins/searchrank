@@ -79,9 +79,6 @@ if ($action == 'clear') {
     } else {
         $display .= COM_showMessageText('Invalid request or security token.', $LANG_SEARCHRANK_1['info']);
     }
-    $display .= ADMIN_createMenu(array(),
-                                $LANG_SEARCHRANK_1['admin'] . '<br' . XHTML . '>' . '<br' . XHTML . '>' . $LANG_SEARCHRANK_1['info_main'],
-                                plugin_geticon_searchrank());
     $display .= SEARCHRANK_makeMenu();
 } else if ($action == 'help') {
     $display .= '<div class="sr-admin-home">'
@@ -96,14 +93,8 @@ if ($action == 'clear') {
 } else if ($action == 'report') {
     $display .= SEARCHRANK_reportPage();
 } else if ($action == 'showlog') {
-    $display .= ADMIN_createMenu(array(),
-                                $LANG_SEARCHRANK_1['admin'] . '<br' . XHTML . '>' . '<br' . XHTML . '>' . $LANG_SEARCHRANK_1['info_log'],
-                                plugin_geticon_searchrank());
     $display .= SEARCHRANK_showLog();
 } else {
-    $display .= ADMIN_createMenu(array(),
-                                $LANG_SEARCHRANK_1['admin'] . '<br' . XHTML . '>' . '<br' . XHTML . '>' . $LANG_SEARCHRANK_1['info_main'],
-                                plugin_geticon_searchrank());
     $display .= SEARCHRANK_makeMenu();
 }
 $display .= COM_endBlock();
