@@ -24,7 +24,8 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 - [x] Bound page/start/limit and clamp log page size to 1–200; add stable ranking ordering.
 - [ ] Validate remaining config parameters (ttl, maxresults, itemsperpage) on save and use.
 - [ ] Harden query display and URL handling; review all HTML escape contexts.
-- [ ] Address possible concurrent duplicate inserts and colliding random hid values; evaluate suitable uniqueness constraints and an idempotent SQL migration.
+- [x] Serialize search logging on legacy MyISAM installations using two-table WRITE locks and deterministic hid assignment (no schema migration); PHP lint and live concurrent-load test pending.
+- [ ] Stress-test concurrent searches, check lock failure behavior, and evaluate InnoDB migration/unique constraints for a future release.
 - [ ] Validate bulk clear under MySQL, including orphan hits; test existing installations and upgrades.
 - [ ] Review MySQL aggregation, aliases, casting and non-deterministic ordering.
 - [ ] Ensure searches do not record sensitive strings publicly; add privacy guardrails.
