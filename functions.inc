@@ -142,15 +142,14 @@ function SEARCHRANK_housekeeping()
     if ($dohousekeeping) {
         $dohousekeeping = false; // do housekeeping once only
         $today = strtotime(date("d-m-Y") . ' 00:00:00'); // today's date
-        $old = $today - ($_SR_CONF['ttl'] * 60 * 24); // cutoff date
-        $sql['mysql'] = "DELETE {$_TABLES['searchrank_queries']}, {$_TABLES['searchrank_hits']} "
-                      . "FROM {$_TABLES['searchrank_queries']} LEFT JOIN {$_TABLES['searchrank_hits']} "
-                      . "ON {$_TABLES['searchrank_queries']}.hid={$_TABLES['searchrank_hits']}.hid "
-                      . "WHERE {$_TABLES['searchrank_hits']}.date<={$old}";
-        $sql['pgsql'] = "DELETE FROM {$_TABLES['searchrank_queries']} USING {$_TABLES['searchrank_hits']} "
-                      . "WHERE {$_TABLES['searchrank_queries']}.hid={$_TABLES['searchrank_hits']}.hid "
-                      . "AND {$_TABLES['searchrank_hits']}.date<={$old}";
-        DB_query($sql);
+        // Stored dates are Unix timestamps (seconds); ttl is expressed in days.
+        $ttl = max(1, (int) $_SR_CONF['ttl']);
+        $old = $today - ($ttl * 86400);
+        // Never delete a query while it still has recent hit records.
+        DB_query("DELETE FROM {$_TABLES['searchrank_hits']} WHERE date < {$old}");
+        DB_query("DELETE FROM {$_TABLES['searchrank_queries']} WHERE NOT EXISTS "
+               . "(SELECT 1 FROM {$_TABLES['searchrank_hits']} "
+               . "WHERE {$_TABLES['searchrank_hits']}.hid = {$_TABLES['searchrank_queries']}.hid)");
     }
 }
 
@@ -371,7 +370,8 @@ function plugin_getBlocks_searchrank($side, $topic='')
                         $value['hits'] = (int)($value['hits'] / 1000) . "K";
                     }
                     $url = $_CONF['site_url'] . '/search.php?mode=search&amp;type=all&amp;keyType=all&amp;query=' . urlencode($title);
-                    $display .= "<div class='searchrank_item' title='{$title}'>";
+                    $safeTitle = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+                    $display .= "<div class='searchrank_item' title='{$safeTitle}'>";
                     $display .= COM_createLink($value['query'], $url, array('rel' => 'nofollow'));
                     $display .= "<div class='searchrank_entry'>{$value['hits']} {$LANG_SEARCHRANK_1['hits']}</div></div>";
                 }
