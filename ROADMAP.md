@@ -10,6 +10,8 @@ Target branch: `develop-1.2.4` — 17 October 2026
 ## 1.2.4 — immediate stabilization
 
 ### Landed, awaiting testing
+- [x] Fix undefined `_DB_table_prefix` and scoped configuration globals when Geeklog loads functions.inc during plugin activation.
+- [ ] Confirm disable/enable flow in Geeklog 2.2.2 multisite after upgrade from 1.2.1.
 - [x] Fix TTL conversion from days to Unix seconds.
 - [x] Remove expired hit records before removing only orphan queries (do not erase recent history for an old term).
 - [x] Escape the public block search-term HTML title attribute.
