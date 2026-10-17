@@ -3,7 +3,7 @@
 Target branch: `develop-1.2.4` — 17 October 2026
 
 ## Release policy
-- Geeklog 2.2.2 minimum for *supported/tested* releases by current memorandum policy; PHP 5.6.40 syntax and PHP 8.1/8.3 validation. This is a support-policy floor, not proof that SearchRank 1.2.4 technically requires APIs introduced in 2.2.2. Historical SearchRank 1.2.1 declared Geeklog 2.1.3. ZIP filename retains `_2.1.3` at user request but installer still declares 2.2.2.
+- Geeklog 2.1.3 minimum declared (historical baseline retained until a newer Core dependency is demonstrated); run regression tests against Geeklog 2.1.3 and 2.2.2. PHP 5.6.40 minimum syntax; validate PHP 5.6, 8.1 and 8.3. The requested ZIP suffix `_2.1.3` now matches installer and plugin.json.
 - PostgreSQL support removed by request in 1.2.4; MySQL-compatible Geeklog database only. Upgrading PostgreSQL installations is unsupported; export historical data before changing database engines.
 - No official release before CI and functional acceptance. Never destroy existing logs during migration without explicit administrator action.
 
@@ -42,6 +42,7 @@ Target branch: `develop-1.2.4` — 17 October 2026
 - [ ] Retest archive after subsequent fixes and test fresh installation.
 
 ## 1.3.0 — administration
+- [ ] Implement a coherent admin home: introduction, status, first-use instructions, statistics summary and links to Log, Configuration, and Help; use native Geeklog navigation, scoped CSS, responsive layout and a clearly separated destructive action. Backport safe admin improvements in 1.2.4 as appropriate.
 - [ ] Navigation consistent with memorandum/plugin-admin-navigation.md and plugin-admin-ux-guidelines.md.
 - [ ] In-product getting started, configuration tooltips and responsive tables.
 - [ ] Time windows, date filters, safe CSV export and stable sorting.
