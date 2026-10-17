@@ -220,28 +220,18 @@ function SEARCHRANK_showLog()
     $back_url = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
     $back_link = '<div class="button"><a href="' . $back_url . '">' . $LANG_SEARCHRANK_1['back'] . '</a></div>';
 
-    // Create a button to go to the previous page of queries, if possible
-    $class = 'disabled';
-    $prev_url = '#';
+    // Compact pagination: unavailable controls must not appear clickable.
+    $retval .= '<nav class="sr-pagination" aria-label="Search log pages">';
     if ($page > 1) {
-        $class = 'button';
-        $prev_page = $page - 1;
-        $prev_url = $back_url . '?action=showlog&amp;page=' . $prev_page;
+        $prev_url = $back_url . '?action=showlog&amp;page=' . ($page - 1);
+        $retval .= '<a class="sr-action" href="' . htmlspecialchars($prev_url, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($LANG_SEARCHRANK_1['prev'], ENT_QUOTES, 'UTF-8') . '</a>';
     }
-    $prev_link = '<div class="' . $class . '"><a href="' . $prev_url . '">' . $LANG_SEARCHRANK_1['prev'] . '</a></div>';
-
-    // Create a button to go to the next page of queries, if possible
-    $class = 'disabled';
-    $next_url = '#';
-    if ($totalPages > $page) {
-        $class = 'button';
-        $next_page = $page + 1;
-        $next_url = $back_url . '?action=showlog&amp;page=' . $next_page;
+    $retval .= '<span class="sr-page-indicator">' . (int) $page . ' / ' . (int) $totalPages . '</span>';
+    if ($page < $totalPages) {
+        $next_url = $back_url . '?action=showlog&amp;page=' . ($page + 1);
+        $retval .= '<a class="sr-action" href="' . htmlspecialchars($next_url, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($LANG_SEARCHRANK_1['next'], ENT_QUOTES, 'UTF-8') . '</a>';
     }
-    $next_link = '<div class="' . $class . '"><a href="' . $next_url . '">' . $LANG_SEARCHRANK_1['next'] . '</a></div>';
-
-    // append the new buttons to the return variable
-    $retval .= "$prev_link $back_link $next_link<br" . XHTML . "><br" . XHTML . "><br" . XHTML . ">";
+    $retval .= $back_link . '</nav>';
 
     return $retval;
 }
