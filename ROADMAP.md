@@ -1,13 +1,13 @@
-# SearchRank stabilization roadmap
+# SearchRank 1.3.0 release roadmap
 
-Target branch: `develop-1.2.4` — 17 October 2026
+Development integration branch: `develop-1.2.4` (temporary historical name) — next public release: **1.3.0**, no 1.2.4 release.
 
 ## Release policy
 - Geeklog 2.1.3 minimum declared (historical baseline retained until a newer Core dependency is demonstrated); run regression tests against Geeklog 2.1.3 and 2.2.2. PHP 5.6.40 minimum syntax; validate PHP 5.6, 8.1 and 8.3. The requested ZIP suffix `_2.1.3` now matches installer and plugin.json.
 - PostgreSQL support removed by request in 1.2.4; MySQL-compatible Geeklog database only. Upgrading PostgreSQL installations is unsupported; export historical data before changing database engines.
 - No official release before CI and functional acceptance. Never destroy existing logs during migration without explicit administrator action.
 
-## 1.2.4 — immediate stabilization
+## 1.3.0 — stabilization carried forward from 1.2.4
 
 ### Landed, awaiting testing
 - [x] Fix undefined `_DB_table_prefix` and scoped configuration globals when Geeklog loads functions.inc during plugin activation.
@@ -65,7 +65,7 @@ Target branch: `develop-1.2.4` — 17 October 2026
 - [ ] Externalized versioned CSS and theme-independent UI.
 - [ ] Explicit confirmation and success/error feedback for destructive operations.
 
-## 1.4.0 — editorial intelligence
+## 1.3.0 — editorial intelligence (formerly planned for 1.4.0)
 - [x] Add daily aggregates from existing hit timestamps, without database migration (pending functional test).
 - [ ] Collect zero-result searches reliably via compatible search-engine callback (current SearchRank hook does not know result counts).
 - [x] Add comparison against the preceding equivalent period (pending on-site testing).
@@ -74,6 +74,13 @@ Target branch: `develop-1.2.4` — 17 October 2026
 - [ ] New/trending queries and time-window comparisons.
 - [ ] Privacy-sensitive query filtering and retention documentation.
 - [ ] Read-only query metrics service for Hub; preserve separate responsibilities for Analytics, Search Console and Bing Webmaster.
+
+## Versioning and release decision (2026-10-17)
+- No SearchRank 1.2.4 official release. All completed 1.2.4 stabilization work and planned 1.3.0/1.4.0 features consolidate into the next **1.3.0** release.
+- Existing `searchrank_1.2.4_2.1.3.zip` is a development/test artifact only; retain it until the 1.3.0 metadata, workflow, archive name and migration paths are changed consistently.
+- Keep Geeklog 2.1.3 declared minimum unless a verified newer Core API dependency is introduced; test 2.1.3 and 2.2.2 before release.
+- The next code phase must update all version sources, GitHub Actions packaging and cache-busting to 1.3.0 together, then test the upgrade path from installed 1.2.1 and test builds of 1.2.4.
+- Release gate: working UI, search logging, daily analytics, export, translated strings, privacy safeguards, package verification and live acceptance. Features unsuitable for a safe 1.3.0 release must be explicitly deferred rather than claimed done.
 
 ## PostgreSQL decision
 PostgreSQL support is deliberately removed in 1.2.4. SQL installation and upgrade files are deleted; installer compatibility check rejects unsupported database types. This does not remove existing PostgreSQL tables on remote installations. Database migrations require separate backup/export and are not automatic.
