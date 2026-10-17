@@ -42,6 +42,9 @@ Target branch: `develop-1.2.4` — 17 October 2026
 - [ ] Retest archive after subsequent fixes and test fresh installation.
 
 ## 1.3.0 — administration
+- [x] Add responsive analytics reports with period filters and CSV export on legacy tables (pending installation test).
+- [x] Version admin and block stylesheet URLs with deterministic `?v=1.2.4`; no JavaScript assets are currently required.
+- [ ] Confirm asset cache invalidation on subsequent releases, including CSS in installer archive.
 - [x] Initial admin home: explanatory introduction, query count, direct log/configuration navigation, separate token-protected destructive action and responsive theme-independent CSS.
 - [ ] Complete admin help/first-use guidance, current-section navigation, localized notices, filterable log and accessibility testing on Geeklog 2.1.3 and 2.2.2.
 - [ ] Navigation consistent with memorandum/plugin-admin-navigation.md and plugin-admin-ux-guidelines.md.
@@ -51,6 +54,9 @@ Target branch: `develop-1.2.4` — 17 October 2026
 - [ ] Explicit confirmation and success/error feedback for destructive operations.
 
 ## 1.4.0 — editorial intelligence
+- [x] Add daily aggregates from existing hit timestamps, without database migration (pending functional test).
+- [ ] Collect zero-result searches reliably via compatible search-engine callback (current SearchRank hook does not know result counts).
+- [ ] Add comparison periods and trend analysis, taking retention into account.
 - [ ] Evaluate Geeklog search API before counting zero-result searches.
 - [ ] New/trending queries and time-window comparisons.
 - [ ] Privacy-sensitive query filtering and retention documentation.
