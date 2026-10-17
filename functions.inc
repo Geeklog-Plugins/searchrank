@@ -223,12 +223,12 @@ function SEARCHRANK_showLog()
     // Compact pagination: unavailable controls must not appear clickable.
     $retval .= '<nav class="sr-pagination" aria-label="Search log pages">';
     if ($page > 1) {
-        $prev_url = $back_url . '?action=showlog&amp;page=' . ($page - 1);
+        $prev_url = $back_url . '?action=showlog&page=' . ($page - 1);
         $retval .= '<a class="sr-action" href="' . htmlspecialchars($prev_url, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($LANG_SEARCHRANK_1['prev'], ENT_QUOTES, 'UTF-8') . '</a>';
     }
     $retval .= '<span class="sr-page-indicator">' . (int) $page . ' / ' . (int) $totalPages . '</span>';
     if ($page < $totalPages) {
-        $next_url = $back_url . '?action=showlog&amp;page=' . ($page + 1);
+        $next_url = $back_url . '?action=showlog&page=' . ($page + 1);
         $retval .= '<a class="sr-action" href="' . htmlspecialchars($next_url, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($LANG_SEARCHRANK_1['next'], ENT_QUOTES, 'UTF-8') . '</a>';
     }
     $retval .= $back_link . '</nav>';
