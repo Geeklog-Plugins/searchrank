@@ -110,7 +110,6 @@ function SEARCHRANK_reportPage()
         }
     }
     $html = '<div class="sr-admin-home"><h2>' . $esc($LANG_SEARCHRANK_1['analytics']) . '</h2>';
-    $html .= '<nav class="sr-actions"><a class="sr-action" href="' . $esc($base) . '">' . $esc($LANG_SEARCHRANK_1['dashboard']) . '</a></nav>';
     $html .= '<form method="get" action="' . $esc($base) . '" class="sr-filter">'
            . '<input type="hidden" name="action" value="report">'
            . '<label>' . $esc($LANG_SEARCHRANK_1['period']) . ' <select name="days">';
