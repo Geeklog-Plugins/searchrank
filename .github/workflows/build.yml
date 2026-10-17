@@ -43,7 +43,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          filename="searchrank_1.2.4_2.1.3.zip"
+          filename="searchrank_1.3.0_2.1.3.zip"
           mkdir -p dist
           staging="$(mktemp -d)"
           mkdir -p "$staging/searchrank"
@@ -62,8 +62,8 @@ jobs:
           rm -rf "$staging"
       - uses: actions/upload-artifact@v4
         with:
-          name: searchrank_1.2.4_2.1.3
-          path: dist/searchrank_1.2.4_2.1.3.zip
+          name: searchrank_1.3.0_2.1.3
+          path: dist/searchrank_1.3.0_2.1.3.zip
           if-no-files-found: error
       - name: Commit archive in dist on development branch
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/develop-1.2.4'
@@ -73,12 +73,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # Keep the freshly built ZIP while synchronizing source HEAD.
-          cp dist/searchrank_1.2.4_2.1.3.zip "$RUNNER_TEMP/searchrank.zip"
+          cp dist/searchrank_1.3.0_2.1.3.zip "$RUNNER_TEMP/searchrank.zip"
           git fetch origin develop-1.2.4
           git reset --hard origin/develop-1.2.4
           mkdir -p dist
-          cp "$RUNNER_TEMP/searchrank.zip" dist/searchrank_1.2.4_2.1.3.zip
-          git add -f dist/searchrank_1.2.4_2.1.3.zip
+          cp "$RUNNER_TEMP/searchrank.zip" dist/searchrank_1.3.0_2.1.3.zip
+          git add -f dist/searchrank_1.3.0_2.1.3.zip
           if ! git diff --cached --quiet; then
             git commit -m "build: refresh installable SearchRank ZIP [skip ci]"
             git push origin HEAD:develop-1.2.4
