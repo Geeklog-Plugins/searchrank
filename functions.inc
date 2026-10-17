@@ -198,15 +198,7 @@ function SEARCHRANK_makeMenu()
     $html .= '<p class="sr-intro">' . htmlspecialchars($LANG_SEARCHRANK_1['info_main'], ENT_QUOTES, 'UTF-8') . '</p>';
     $html .= '<div class="sr-summary"><strong>' . (int) $count . '</strong> '
           . htmlspecialchars($LANG_SEARCHRANK_1['queries'], ENT_QUOTES, 'UTF-8') . '</div>';
-    $html .= '<nav class="sr-actions" aria-label="SearchRank">';
-    $html .= '<a class="sr-action" href="' . htmlspecialchars($base . '?action=showlog', ENT_QUOTES, 'UTF-8') . '">'
-          . htmlspecialchars($LANG_SEARCHRANK_1['viewlog_link'], ENT_QUOTES, 'UTF-8') . '</a>';
-    $html .= '<form class="sr-config-form" method="post" action="' . htmlspecialchars($config, ENT_QUOTES, 'UTF-8') . '">'
-          . '<input type="hidden" name="conf_group" value="searchrank">'
-          . '<button class="sr-action" type="submit">' . htmlspecialchars($LANG_SEARCHRANK_1['conf_link'], ENT_QUOTES, 'UTF-8') . '</button></form>';
-    $html .= '<a class="sr-action" href="' . htmlspecialchars($base . '?action=report', ENT_QUOTES, 'UTF-8') . '">Analytics &amp; CSV</a>';
-    $html .= '<a class="sr-action" href="' . htmlspecialchars($base . '?action=help', ENT_QUOTES, 'UTF-8') . '">Help</a>';
-    $html .= '</nav>';
+
     $html .= '<section class="sr-danger"><h3>' . htmlspecialchars($LANG_SEARCHRANK_1['clear_link'], ENT_QUOTES, 'UTF-8') . '</h3>';
     $html .= '<form method="post" action="' . htmlspecialchars($base, ENT_QUOTES, 'UTF-8') . '" onsubmit="return confirm(this.getAttribute(\'data-confirm\'));" data-confirm="'
           . htmlspecialchars($LANG_SEARCHRANK_1['clear_confirm'], ENT_QUOTES, 'UTF-8') . '">'
@@ -238,9 +230,7 @@ function SEARCHRANK_showLog()
 
     // Print the number of entries
     $baseUrl = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
-    $retval = '<div class="sr-log-toolbar"><a class="sr-back-link" href="'
-        . htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8') . '">&larr; '
-        . htmlspecialchars($LANG_SEARCHRANK_1['back'], ENT_QUOTES, 'UTF-8') . '</a></div>';
+    $retval = '';
     $retval .= '<p>' . htmlspecialchars(sprintf($LANG_SEARCHRANK_1['entries'], $total), ENT_QUOTES, 'UTF-8') . '</p>';
     // Print all other entries
     $header_arr = array(array('text' => $LANG_SEARCHRANK_1['queries'], 'field' => 'query'),
