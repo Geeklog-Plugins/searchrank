@@ -1,5 +1,5 @@
 /* SearchRank admin: theme-independent, responsive controls. */
-.sr-admin-home { max-width: 920px; margin: 1rem auto; }
+.sr-admin-home { width: 100%; max-width: none; box-sizing: border-box; margin: 0; padding: 0; }
 .sr-intro { margin: 0 0 1rem; line-height: 1.55; }
 .sr-summary { padding: 1rem; margin: 0 0 1rem; border: 1px solid #c9cdd1; border-radius: 6px; }
 .sr-summary strong { font-size: 1.6rem; margin-right: .4rem; }
@@ -38,3 +38,44 @@
 .plugin-admin-nav__item:focus-visible{outline:3px solid currentColor;outline-offset:2px}
 .plugin-admin-nav__form{display:inline-block;margin:0}
 @media(max-width:640px){.plugin-admin-nav__primary{align-items:stretch;flex-direction:column}.plugin-admin-nav__item,.plugin-admin-nav__form,.plugin-admin-nav__form .plugin-admin-nav__item{width:100%}}
+
+/* Keep all admin page content aligned below the common navigation. */
+.plugin-admin-nav + .sr-admin-home,
+.plugin-admin-nav + .sr-log-content,
+.plugin-admin-nav + .sr-report-content { margin-top: 0; }
+
+/* Override theme link/button hover rules without touching other admin UI. */
+.plugin-admin-nav .plugin-admin-nav__primary > a.plugin-admin-nav__item,
+.plugin-admin-nav .plugin-admin-nav__form > button.plugin-admin-nav__item {
+    appearance: none;
+    -webkit-appearance: none;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    color: #25383b;
+    border: 1px solid #647774;
+    text-decoration: none;
+    text-shadow: none;
+    box-shadow: none;
+    font-weight: 400;
+    line-height: 1.4;
+}
+.plugin-admin-nav .plugin-admin-nav__primary > a.plugin-admin-nav__item:hover,
+.plugin-admin-nav .plugin-admin-nav__primary > a.plugin-admin-nav__item:focus,
+.plugin-admin-nav .plugin-admin-nav__form > button.plugin-admin-nav__item:hover,
+.plugin-admin-nav .plugin-admin-nav__form > button.plugin-admin-nav__item:focus {
+    background-color: #eaf1ed;
+    color: #173c30;
+    border-color: #2f6651;
+    text-decoration: none;
+    text-shadow: none;
+}
+.plugin-admin-nav .plugin-admin-nav__primary > a.plugin-admin-nav__item.is-active {
+    color: #173c30;
+    font-weight: 700;
+    border-color: #335b4e;
+    box-shadow: inset 0 -3px 0 #335b4e;
+}
+.plugin-admin-nav .plugin-admin-nav__form > button.plugin-admin-nav__item {
+    margin: 0;
+    min-width: 0;
+}
