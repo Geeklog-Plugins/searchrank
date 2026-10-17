@@ -37,12 +37,12 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 - [ ] Test clean install, upgrades, activate/deactivate/uninstall, left/right block, statistics, anonymous/admin users.
 - [ ] Exercise multiple sites sharing files but using separate databases.
 - [x] Configure CI to produce versioned `dist` archive.
-- [x] GitHub Actions run 38992700770 succeeded and committed `dist/searchrank_1.2.4_2.1.3.zip`.
+- [x] GitHub Actions run 38992700770 succeeded and committed `dist/searchrank_1.3.0_2.1.3.zip`.
 - [x] User reports successful upgrade from 1.2.1 on Geeklog 2.2.2.
 - [ ] Retest archive after subsequent fixes and test fresh installation.
 
 ## Live acceptance gate (required after CI succeeds)
-- [ ] Upgrade the latest `dist/searchrank_1.2.4_2.1.3.zip` on Geeklog 2.2.2 staging (backup DB first).
+- [ ] Upgrade the latest `dist/searchrank_1.3.0_2.1.3.zip` on Geeklog 2.2.2 staging (backup DB first).
 - [ ] Verify dashboard, Help, Analytics & CSV, 7/28/90/365-day filters, empty-state and CSV encoding.
 - [ ] Verify CSS cache-busting after upgrading (hard reload should not be necessary).
 - [ ] Perform three site searches, verify counts and use pagination without clearing historical data.
@@ -77,7 +77,7 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 
 ## Versioning and release decision (2026-10-17)
 - No SearchRank 1.2.4 official release. All completed 1.2.4 stabilization work and planned 1.3.0/1.4.0 features consolidate into the next **1.3.0** release.
-- Existing `searchrank_1.2.4_2.1.3.zip` is a development/test artifact only; retain it until the 1.3.0 metadata, workflow, archive name and migration paths are changed consistently.
+- Existing `searchrank_1.3.0_2.1.3.zip` is a development/test artifact only; retain it until the 1.3.0 metadata, workflow, archive name and migration paths are changed consistently.
 - Keep Geeklog 2.1.3 declared minimum unless a verified newer Core API dependency is introduced; test 2.1.3 and 2.2.2 before release.
 - The next code phase must update all version sources, GitHub Actions packaging and cache-busting to 1.3.0 together, then test the upgrade path from installed 1.2.1 and test builds of 1.2.4.
 - Release gate: working UI, search logging, daily analytics, export, translated strings, privacy safeguards, package verification and live acceptance. Features unsuitable for a safe 1.3.0 release must be explicitly deferred rather than claimed done.
