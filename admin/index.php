@@ -70,6 +70,8 @@ if ($action === 'export') {
 
 // MAIN
 $display .= COM_startBlock($LANG_SEARCHRANK_1['plugin_name']);
+$section = in_array($action, array('showlog', 'report', 'help'), true) ? $action : 'dashboard';
+$display .= SEARCHRANK_adminNav($section);
 if ($action == 'clear') {
     // Destructive operations require POST and a valid Geeklog CSRF token.
     if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST'
@@ -89,7 +91,7 @@ if ($action == 'clear') {
         . '<h3>3. Analyze activity</h3><p>Open Analytics &amp; CSV to filter phrases and compare periods. Older data may have been removed by retention settings.</p>'
         . '<h3>4. Privacy</h3><p>Search phrases can contain personal information. Avoid making the ranking block public on sensitive sites. The clear-log action permanently deletes recorded searches.</p>'
         . '<h3>5. Troubleshooting</h3><p>If statistics are empty, run a public search, verify the plugin is enabled and check the configured retention period.</p>'
-        . '<p><a class="sr-action" href="index.php">Back to dashboard</a></p></div>';
+        . '</div>';
 } else if ($action == 'report') {
     $display .= SEARCHRANK_reportPage();
 } else if ($action == 'showlog') {
