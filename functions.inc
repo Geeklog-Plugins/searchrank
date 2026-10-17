@@ -325,12 +325,12 @@ function plugin_getheadercode_searchrank()
     if ($_SR_CONF['showblock'] && (!$_SR_CONF['rootonly'] || SEC_inGroup('Root'))) {
         // use this css for the block
         $retval = LB . '<link rel="stylesheet" type="text/css" href="'
-                . $_CONF['site_admin_url'] . '/plugins/searchrank/css/block.css?v=1.2.4"' . XHTML . '>' . LB;
+                . $_CONF['site_admin_url'] . '/plugins/searchrank/css/block.css?v=1.3.0"' . XHTML . '>' . LB;
     }
     // use this CSS only if we are on the plugin's pages
     if (substr_count($_SERVER['PHP_SELF'], '/searchrank/') > 0) {
         $retval .= '<link rel="stylesheet" type="text/css" href="'
-                . $_CONF['site_admin_url'] . '/plugins/searchrank/css/admin.css?v=1.2.4.3"' . XHTML . '>' . LB;
+                . $_CONF['site_admin_url'] . '/plugins/searchrank/css/admin.css?v=1.3.0"' . XHTML . '>' . LB;
     }
 
     return $retval;
@@ -583,6 +583,12 @@ function plugin_upgrade_searchrank()
         case '1.2.2':
             $current_version = '1.2.3';
             break;			
+
+        case '1.2.3':
+        case '1.2.4':
+            // 1.2.4 was a development-only build; no schema changes are required.
+            $current_version = '1.3.0';
+            break;
 
         default:
             $done = true;
