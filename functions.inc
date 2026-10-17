@@ -159,6 +159,32 @@ function SEARCHRANK_housekeeping()
 *
 * @return    string     admin menu string
 */
+function SEARCHRANK_adminNav($active)
+{
+    global $_CONF, $LANG_SEARCHRANK_1;
+    $base = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
+    $sections = array(
+        'dashboard' => array($base, 'Dashboard'),
+        'showlog' => array($base . '?action=showlog', $LANG_SEARCHRANK_1['viewlog_link']),
+        'report' => array($base . '?action=report', 'Analytics & CSV'),
+        'help' => array($base . '?action=help', 'Help')
+    );
+    $out = '<nav class="plugin-admin-nav" aria-label="SearchRank administration"><div class="plugin-admin-nav__primary">';
+    foreach ($sections as $key => $section) {
+        $selected = ($key === $active);
+        $out .= '<a class="plugin-admin-nav__item' . ($selected ? ' is-active' : '') . '"'
+            . ($selected ? ' aria-current="page"' : '') . ' href="'
+            . htmlspecialchars($section[0], ENT_QUOTES, 'UTF-8') . '">'
+            . htmlspecialchars($section[1], ENT_QUOTES, 'UTF-8') . '</a>';
+    }
+    $out .= '<form class="plugin-admin-nav__form" method="post" action="'
+         . htmlspecialchars($_CONF['site_admin_url'] . '/configuration.php', ENT_QUOTES, 'UTF-8') . '">'
+         . '<input type="hidden" name="conf_group" value="searchrank">'
+         . '<button class="plugin-admin-nav__item" type="submit">'
+         . htmlspecialchars($LANG_SEARCHRANK_1['conf_link'], ENT_QUOTES, 'UTF-8') . '</button></form>';
+    return $out . '</div></nav>';
+}
+
 function SEARCHRANK_makeMenu()
 {
     global $_CONF, $LANG_SEARCHRANK_1;
