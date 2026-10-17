@@ -86,8 +86,6 @@ if ($action == 'clear') {
                                 plugin_geticon_searchrank());
     $display .= SEARCHRANK_makeMenu();
 }
-// this line is a hack to make the admin menu items disappear from professional_css theme
-$display .= "<script type='text/javascript'>if(document.getElementById('menu_fields')){document.getElementById('menu_fields').id='';}</script>";
 $display .= COM_endBlock();
 $display = COM_createHTMLDocument($display, array('what' => 'menu'));
 COM_output($display);
