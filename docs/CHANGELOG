@@ -2,6 +2,7 @@
 Version 1.2.4 - Development (unreleased)
 
   Maintenance:
+   * Fixed undefined table prefix and plugin globals when Geeklog loads the plugin on enable.
    * Removed PostgreSQL support; MySQL only.
    * Fixed retention unit conversion and removal of orphaned search phrases.
    * Prevented GET-based log clearing and added CSRF verification.
