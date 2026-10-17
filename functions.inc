@@ -236,7 +236,7 @@ function SEARCHRANK_showLog()
         $next_url = $back_url . '?action=showlog&page=' . ($page + 1);
         $retval .= '<a class="sr-action" href="' . htmlspecialchars($next_url, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($LANG_SEARCHRANK_1['next'], ENT_QUOTES, 'UTF-8') . '</a>';
     }
-    $retval .= $back_link . '</nav>';
+    $retval .= '</nav>';
 
     return $retval;
 }
