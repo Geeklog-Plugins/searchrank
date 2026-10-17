@@ -45,7 +45,9 @@ Target branch: `develop-1.2.4` — 17 October 2026
 - [x] Add responsive analytics reports with period filters and CSV export on legacy tables (pending installation test).
 - [x] Version admin and block stylesheet URLs with deterministic `?v=1.2.4`; no JavaScript assets are currently required.
 - [ ] Confirm asset cache invalidation on subsequent releases, including CSS in installer archive.
+- [ ] Confirm current Github Actions builds and dist commit after publishing workflow fix.
 - [x] Initial admin home: explanatory introduction, query count, direct log/configuration navigation, separate token-protected destructive action and responsive theme-independent CSS.
+- [x] Replace legacy oversized log pagination controls with compact, conditionally visible navigation.
 - [ ] Complete admin help/first-use guidance, current-section navigation, localized notices, filterable log and accessibility testing on Geeklog 2.1.3 and 2.2.2.
 - [ ] Navigation consistent with memorandum/plugin-admin-navigation.md and plugin-admin-ux-guidelines.md.
 - [ ] In-product getting started, configuration tooltips and responsive tables.
