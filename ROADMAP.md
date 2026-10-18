@@ -68,7 +68,7 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 - [ ] Explicit confirmation and success/error feedback for destructive operations.
 
 ## 1.3.0 — editorial intelligence (formerly planned for 1.4.0)
-- [x] Add daily aggregates from existing hit timestamps, without database migration (pending functional test).
+- [x] Add daily aggregates from existing hit timestamps, without database migration; bound report periods to exclude future-dated hits (pending functional test).
 - [ ] Collect zero-result searches reliably via compatible search-engine callback (current SearchRank hook does not know result counts).
 - [x] Add comparison against the preceding equivalent period (pending on-site testing).
 - [ ] Add per-expression trend comparisons and charts, taking retention into account.
