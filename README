@@ -1,57 +1,160 @@
-SearchRank 1.3.0 (release candidate)
-=================================
+# SearchRank 1.3.0
 
-SearchRank is a Geeklog plugin that records site-search phrases and displays
-rankings and administrative reports.
+**Release Candidate — Search Analytics Plugin for Geeklog**
 
-Requirements
-------------
-- Geeklog 2.1.3 or newer (declared minimum; regression testing still required)
-- PHP 5.6.40 or newer; CI syntax checks run on PHP 5.6, 8.1 and 8.3
-- MySQL-compatible Geeklog database; PostgreSQL is not supported
+SearchRank is a Geeklog plugin that records internal website search queries and provides search rankings, daily activity charts, and administrative reports.
 
-Installation and upgrades
--------------------------
-Use the installable ZIP in dist/searchrank_1.3.0_2.1.3.zip.
-The ZIP contains a top-level searchrank/ directory. Back up the Geeklog
-database and plugin files before upgrading an existing installation.
-Keep all existing search logs; do not uninstall merely to update plugin files.
-For legacy installations reporting version 1.0.0, upgrade through the
-Geeklog plugin updater (1.0.0 -> 1.1.0 -> 1.1.1 -> 1.2.1 -> 1.3.0).
-Back up all SearchRank tables first and verify the upgraded configuration.
-The legacy upgrade path is present but has not yet been regression tested.
+> **Important:** SearchRank 1.3.0 is currently a release candidate. Automated tests have passed, but additional functional and compatibility testing is required before the official release.
 
-Administration
---------------
-Open Admin > SearchRank:
-- Dashboard: overview and ranking
-- Search Log: recorded phrases and counts
-- Analytics & CSV: filters for 7, 28, 90 or 365 days, daily SVG activity
-  chart, reverse-chronological day links, per-expression trends and CSV export
-- Help: configuration, privacy and troubleshooting guidance
+## Requirements
 
-CSV export filenames contain the current site's hostname and export timestamp.
-The daily values list links to recorded search expressions for that date.
-Expired daily hit records are purged using local calendar-day boundaries.
-The built-in Geeklog scheduled-task hook runs retention cleanup at Geeklog's
-configured schedule; search and admin actions also trigger cleanup as a
-fallback. This is not a wall-clock cron on a site with zero traffic.
-Older search data may have been deleted by the retention policy. Counts
-reflect internal searches rather than external search engine impressions.
+| Component | Requirement |
+|---|---|
+| **Geeklog** | 2.1.3 or newer (declared minimum; regression testing pending) |
+| **PHP** | 5.6.40 or newer |
+| **Database** | MySQL-compatible database |
+| **PostgreSQL** | Not supported |
 
-Privacy and limitations
------------------------
-Search queries can include personal data. SearchRank skips a limited set
-of obvious email/card-like queries, but this is not comprehensive redaction.
-Review the public ranking block's visibility and retention settings.
-Searches with zero results are not measured separately by this version.
+PHP syntax checks are performed automatically through GitHub Actions on PHP **5.6, 8.1, and 8.3**.
 
-Release status
---------------
-This is an in-development 1.3.0 build, not an official release.
-CI success establishes syntax and packaging checks, not complete
-functional compatibility. Live checks for retention, concurrent writes,
-clean installations and Geeklog 2.1.3 are still pending.
-Additional language packs will be updated in a separate development phase.
+## Installation and Upgrades
 
-Additional documentation is in docs/ and ROADMAP.md.
+Download the installable archive:
+
+[**searchrank_1.3.0_2.1.3.zip**](https://github.com/hostellerie/searchrank/tree/develop-1.2.4/dist)
+
+The archive contains a top-level `searchrank/` directory.
+
+### Installation
+
+1. Back up your Geeklog database and existing plugin files.
+2. Install or upgrade SearchRank using Geeklog's plugin administration.
+3. Review the configuration, particularly the data retention period (`ttl`).
+4. Verify that the Dashboard, Search Log, and Analytics pages work correctly.
+
+**Important:** Do not uninstall an existing SearchRank installation before upgrading. Uninstalling may remove the stored search history.
+
+### Upgrading from SearchRank 1.0.0
+
+The plugin includes a legacy upgrade path:
+
+`1.0.0 → 1.1.0 → 1.1.1 → 1.2.1 → 1.2.2 → 1.2.3 → 1.3.0`
+
+Before upgrading an older installation:
+
+- Back up all SearchRank database tables.
+- Keep the existing configuration and historical search records.
+- Run the update through Geeklog's plugin administration.
+- Verify the configuration and recorded search data after upgrading.
+
+**Note:** This legacy upgrade path is implemented but has not yet been fully regression-tested. Testing on a staging installation is recommended before upgrading production websites.
+
+## Administration
+
+Open **Geeklog Admin → SearchRank** to access the following sections.
+
+| Section | Features |
+|---|---|
+| **Dashboard** | Overview of recorded searches and rankings |
+| **Search Log** | Search expressions, occurrence counts, and pagination |
+| **Analytics & CSV** | Daily activity charts, historical comparisons, search trends, and CSV exports |
+| **Help** | Configuration, privacy, and troubleshooting guidance |
+
+### Search Analytics
+
+SearchRank 1.3.0 introduces several reporting improvements:
+
+- **Daily Activity Chart:** A responsive SVG line chart showing daily search activity.
+- **Reporting Periods:** Select 7, 28, 90, or 365 days, depending on the configured retention period.
+- **Daily Details:** Click a date to view the search expressions recorded that day.
+- **Search Trends:** Compare frequently searched expressions with the previous equivalent period.
+- **Search Rankings:** Identify the most frequently searched expressions.
+- **CSV Export:** Export search data for further analysis.
+
+CSV filenames automatically include the website hostname and export timestamp.
+
+Example:
+
+`searchrank-report-example.com-20261018-093045.csv`
+
+Historical comparisons are unavailable when the configured retention period cannot cover both periods.
+
+SearchRank tracks **internal website searches**, not Google or Bing search engine impressions.
+
+## Automated Data Retention
+
+SearchRank automatically removes expired search records according to the configured retention period.
+
+### Default Settings
+
+- **New installations:** 365 days.
+- **Existing installations:** The previously configured retention period is preserved during upgrades.
+
+### How Cleanup Works
+
+SearchRank uses Geeklog's built-in scheduled-task mechanism to perform periodic cleanup.
+
+Searches and selected administration actions can also trigger cleanup when needed.
+
+The retention process:
+
+1. Calculates the expiration threshold using local calendar days.
+2. Removes expired daily search records.
+3. Removes search expressions only when they no longer have any retained activity.
+4. Preserves more recent records without requiring a database schema migration.
+
+**Note:** Scheduled cleanup depends on Geeklog's task execution mechanism. On websites with no activity, cleanup may not occur at an exact scheduled time.
+
+A 365-day retention setting does not mean that a newly installed website already has 365 days of search history.
+
+## Security and Privacy
+
+SearchRank includes several security and privacy improvements:
+
+- CSRF protection for destructive administration actions.
+- Improved validation and HTML output escaping.
+- Basic filtering of search queries containing obvious email addresses or payment-card-like patterns.
+- CSV export protection against spreadsheet formula injection.
+- Configurable visibility of the public search ranking block.
+- Automatic deletion of historical records according to the retention policy.
+
+**Privacy limitation:** SearchRank does not provide comprehensive personal-data detection or redaction. Administrators should review their retention and public display settings accordingly.
+
+## Known Limitations
+
+- SearchRank does not measure external search engine impressions.
+- Search queries returning zero results are not tracked separately.
+- Deleted historical data cannot be recovered through the analytics interface.
+- PostgreSQL databases are no longer supported.
+- Legacy upgrades and concurrent database writes require additional regression testing.
+- Additional language translations may be introduced in future updates.
+
+## Testing Status
+
+The following checks have been completed:
+
+- PHP syntax checks on PHP 5.6, 8.1, and 8.3.
+- Automated generation and validation of the installable ZIP archive.
+- Fresh installation testing on Geeklog 2.2.2.
+- Manual verification of the administration interface and reporting features.
+
+Additional validation is required for:
+
+- Upgrades from older SearchRank versions, especially 1.0.0.
+- Automated retention cleanup against live MySQL databases.
+- Concurrent search logging.
+- Runtime compatibility with Geeklog 2.1.3.
+
+## Release Status
+
+**SearchRank 1.3.0 is a release candidate, not yet an official stable release.**
+
+The code and installation archive are available for review and testing. The official release should follow completion of the remaining compatibility and regression tests.
+
+## Documentation
+
+For additional technical information, development notes, and outstanding tasks, see:
+
+- [Documentation](https://github.com/hostellerie/searchrank/tree/develop-1.2.4/docs)
+- [Development Roadmap](https://github.com/hostellerie/searchrank/blob/develop-1.2.4/ROADMAP.md)
+- [Source Repository](https://github.com/hostellerie/searchrank)
