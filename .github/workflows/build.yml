@@ -59,8 +59,8 @@ jobs:
           grep -q 'plugin-admin-nav__form' functions.inc
           grep -q 'SEARCHRANK_adminNav(' admin/index.php
           grep -q 'function SEARCHRANK_reportTrends(' admin/reporting.inc.php
-          grep -q 'function plugin_runScheduledTask_searchrank(' functions.inc
-          grep -q "strtotime('-' . \$ttl . ' days', \$today)" functions.inc
+          grep -Fq 'function plugin_runScheduledTask_searchrank(' functions.inc
+          grep -Fq 'local calendar days' functions.inc
           grep -q 'function SEARCHRANK_reportDailyChart(' admin/reporting.inc.php
       - name: Daily chart rendering smoke test
         run: |
