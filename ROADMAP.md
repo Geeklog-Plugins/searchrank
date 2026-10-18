@@ -76,7 +76,8 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 - [x] Add comparison against the preceding equivalent period (pending on-site testing).
 - [x] Add read-only per-expression comparisons for current versus previous equal periods (top 20); date windows now use local calendar-midnight boundaries rather than fixed 86400-second offsets to avoid DST drift. Live accuracy and retention-edge testing pending.
 - [x] Fill zero-activity days in daily reports using local calendar-midnight boundaries; do not confuse an absent day with a missing row.
-- [ ] Validate the filled daily series, retention boundary and timezone behavior in a live installation before adding charts.
+- [x] Replace Daily activity table with a responsive SVG line chart and collapsible accessible data table (live visual test pending).
+- [ ] Validate chart axes, daily series, retention boundaries and timezone behavior on a live installation.
 - [ ] Evaluate Geeklog search API before counting zero-result searches.
 - [ ] New/trending queries and time-window comparisons.
 - [ ] Privacy-sensitive query filtering and retention documentation.
