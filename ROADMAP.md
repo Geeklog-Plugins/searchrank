@@ -71,7 +71,7 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 - [x] Add daily aggregates from existing hit timestamps, without database migration; bound report periods to exclude future-dated hits (pending functional test).
 - [ ] Collect zero-result searches reliably via compatible search-engine callback (current SearchRank hook does not know result counts).
 - [x] Add comparison against the preceding equivalent period (pending on-site testing).
-- [x] Add read-only per-expression comparisons for current versus previous equal periods (top 20); live accuracy and retention-edge testing pending.
+- [x] Add read-only per-expression comparisons for current versus previous equal periods (top 20); date windows now use local calendar-midnight boundaries rather than fixed 86400-second offsets to avoid DST drift. Live accuracy and retention-edge testing pending.
 - [ ] Consider a visual trend chart after validating daily aggregation and missing-day behavior.
 - [ ] Evaluate Geeklog search API before counting zero-result searches.
 - [ ] New/trending queries and time-window comparisons.
