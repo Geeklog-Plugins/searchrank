@@ -60,7 +60,8 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 - [x] Replace legacy oversized log pagination controls with compact, conditionally visible navigation.
 - [x] Add first-use admin Help view covering configuration, search log, analytics, retention, privacy and troubleshooting.
 - [x] Begin localization of report controls in English and fallback safely for older language packs.
-- [ ] Complete all new admin/help/report translations, active navigation and accessibility checks on Geeklog 2.1.3 and 2.2.2.
+- [x] Externalize new analytics summaries, headings, trend labels and shared navigation labels to English language packs, with safe English fallbacks for older packs.
+- [ ] Translate other supported languages, localize remaining Help copy, and verify accessibility on Geeklog 2.1.3 and 2.2.2.
 - [ ] Navigation consistent with memorandum/plugin-admin-navigation.md and plugin-admin-ux-guidelines.md.
 - [ ] In-product getting started, configuration tooltips and responsive tables.
 - [ ] Time windows, date filters, safe CSV export and stable sorting.
