@@ -51,6 +51,36 @@ function SEARCHRANK_reportDaily($days)
     return $rows;
 }
 
+/**
+ * Compare current leading search expressions with the preceding equal period.
+ * Uses the existing daily-hit tables without changing their schema.
+ */
+function SEARCHRANK_reportTrends($days, $limit)
+{
+    global $_TABLES;
+    $days = max(1, (int) $days);
+    $limit = max(1, min(20, (int) $limit));
+    $today = strtotime('today');
+    $currentStart = $today - (($days - 1) * 86400);
+    $previousStart = $today - (($days * 2 - 1) * 86400);
+    $tomorrow = strtotime('tomorrow');
+    $sql = "SELECT q.query, "
+         . "SUM(CASE WHEN h.date >= {$currentStart} THEN h.hits ELSE 0 END) AS current_hits, "
+         . "SUM(CASE WHEN h.date < {$currentStart} THEN h.hits ELSE 0 END) AS previous_hits "
+         . "FROM {$_TABLES['searchrank_queries']} q "
+         . "INNER JOIN {$_TABLES['searchrank_hits']} h ON q.hid=h.hid "
+         . "WHERE h.date >= {$previousStart} AND h.date < {$tomorrow} "
+         . "GROUP BY q.query HAVING current_hits > 0 "
+         . "ORDER BY current_hits DESC, q.query ASC LIMIT {$limit}";
+    $result = DB_query($sql);
+    $rows = array();
+    while ($row = DB_fetchArray($result)) {
+        $rows[] = array('query' => $row['query'], 'current' => (int) $row['current_hits'],
+                        'previous' => (int) $row['previous_hits']);
+    }
+    return $rows;
+}
+
 function SEARCHRANK_reportExport($days, $filter)
 {
     $rows = SEARCHRANK_reportRows($days, $filter, 1000);
@@ -137,6 +167,21 @@ function SEARCHRANK_reportPage()
     $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">Date</th><th scope="col">Hits</th></tr></thead><tbody>';
     foreach ($daily as $row) {
         $html .= '<tr><td>' . $esc($row['date']) . '</td><td>' . $row['hits'] . '</td></tr>';
+    }
+    $html .= '</tbody></table></div>';
+    $trends = SEARCHRANK_reportTrends($days, 20);
+    $html .= '<h3>Search expression trends</h3>';
+    $html .= '<p class="sr-note">Leading expressions this period compared with the preceding ' . $days . ' days. Values depend on retained history.</p>';
+    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">Expression</th><th scope="col">Current</th><th scope="col">Previous</th><th scope="col">Change</th></tr></thead><tbody>';
+    foreach ($trends as $entry) {
+        $change = $entry['previous'] > 0
+            ? round(100 * ($entry['current'] - $entry['previous']) / $entry['previous'], 1) . '%'
+            : 'New / no previous data';
+        $html .= '<tr><td>' . $esc($entry['query']) . '</td><td>' . $entry['current']
+               . '</td><td>' . $entry['previous'] . '</td><td>' . $esc($change) . '</td></tr>';
+    }
+    if (!$trends) {
+        $html .= '<tr><td colspan="4">No searches recorded for this period.</td></tr>';
     }
     $html .= '</tbody></table></div>';
     $html .= '<p class="sr-note">Historical information is limited by SearchRank retention. Counts are internal searches, not Google/Bing impressions. Zero-result searches are not measured yet.</p></div>';
