@@ -162,7 +162,12 @@ function SEARCHRANK_reportPage()
         'no_previous' => 'No previous recorded hits',
         'empty_trends' => 'No searches recorded for this period.',
         'retention_note' => 'History is limited by retention. Counts are internal searches, not Google/Bing impressions. Zero-result searches are not measured yet.',
-        'export_link' => 'Export CSV (maximum 1,000 expressions)'
+        'export_link' => 'Export CSV (maximum 1,000 expressions)',
+        'daily_activity' => 'Daily activity',
+        'date' => 'Date',
+        'current' => 'Current',
+        'previous' => 'Previous',
+        'change' => 'Change'
     );
     foreach ($fallback as $key => $value) {
         if (!isset($LANG_SEARCHRANK_1[$key])) {
@@ -185,13 +190,13 @@ function SEARCHRANK_reportPage()
     $html .= '<p class="sr-note">' . $esc(sprintf($LANG_SEARCHRANK_1['previous_summary'], $days, $previous))
            . ' ' . $esc($trend === null ? $LANG_SEARCHRANK_1['no_variation'] : sprintf($LANG_SEARCHRANK_1['variation'], $trend)) . '</p>';
     $html .= '<p><a href="' . $esc($base . '?action=export&days=' . $days . '&q=' . rawurlencode($filter)) . '">' . $esc($LANG_SEARCHRANK_1['export_link']) . '</a></p>';
-    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">Expression</th><th scope="col">Hits</th></tr></thead><tbody>';
+    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">Expression</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['hits']) . '</th></tr></thead><tbody>';
     foreach ($rows as $row) {
         $html .= '<tr><td>' . $esc($row['query']) . '</td><td>' . $row['hits'] . '</td></tr>';
     }
     if (!$rows) { $html .= '<tr><td colspan="2">' . $esc($LANG_SEARCHRANK_1['no_searches']) . '</td></tr>'; }
-    $html .= '</tbody></table></div><h3>Daily activity</h3>';
-    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">Date</th><th scope="col">Hits</th></tr></thead><tbody>';
+    $html .= '</tbody></table></div><h3>' . $esc($LANG_SEARCHRANK_1['daily_activity']) . '</h3>';
+    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">' . $esc($LANG_SEARCHRANK_1['date']) . '</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['hits']) . '</th></tr></thead><tbody>';
     foreach ($daily as $row) {
         $html .= '<tr><td>' . $esc($row['date']) . '</td><td>' . $row['hits'] . '</td></tr>';
     }
@@ -199,7 +204,7 @@ function SEARCHRANK_reportPage()
     $trends = SEARCHRANK_reportTrends($days, 20);
     $html .= '<h3>' . $esc($LANG_SEARCHRANK_1['trends_title']) . '</h3>';
     $html .= '<p class="sr-note">' . $esc($LANG_SEARCHRANK_1['trends_note']) . '</p>';
-    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">Expression</th><th scope="col">Current</th><th scope="col">Previous</th><th scope="col">Change</th></tr></thead><tbody>';
+    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">Expression</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['current']) . '</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['previous']) . '</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['change']) . '</th></tr></thead><tbody>';
     foreach ($trends as $entry) {
         $change = $entry['previous'] > 0
             ? round(100 * ($entry['current'] - $entry['previous']) / $entry['previous'], 1) . '%'
