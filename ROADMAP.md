@@ -63,7 +63,7 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 - [x] Begin localization of report controls in English and fallback safely for older language packs.
 - [x] Externalize new analytics summaries, headings, trend labels and shared navigation labels to English language packs, with safe English fallbacks for older packs.
 - [x] Externalize first-use Help strings and invalid-request text to English language packs with fallbacks for older language files.
-- [ ] Translate other supported language packs, verify page content fallback and accessibility on Geeklog 2.1.3 and 2.2.2.
+- [ ] Deferred to a later localization PR: update other supported language packs. For 1.3.0, keep English labels and fallback behavior; test fallback and accessibility with Geeklog 2.1.3 and 2.2.2.
 - [ ] Navigation consistent with memorandum/plugin-admin-navigation.md and plugin-admin-ux-guidelines.md.
 - [ ] In-product getting started, configuration tooltips and responsive tables.
 - [ ] Time windows, date filters, safe CSV export and stable sorting.
@@ -88,6 +88,12 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 - Keep Geeklog 2.1.3 declared minimum unless a verified newer Core API dependency is introduced; test 2.1.3 and 2.2.2 before release.
 - The next code phase must update all version sources, GitHub Actions packaging and cache-busting to 1.3.0 together, then test the upgrade path from installed 1.2.1 and test builds of 1.2.4.
 - Release gate: working UI, search logging, daily analytics, export, translated strings, privacy safeguards, package verification and live acceptance. Features unsuitable for a safe 1.3.0 release must be explicitly deferred rather than claimed done.
+
+## PR readiness decision (2026-10-18)
+- Additional translations are explicitly **out of scope** for the 1.3.0 PR and will be developed later; English is the reference language.
+- A review/draft PR is appropriate now: current GitHub Actions are green and the 1.3.0 ZIP is generated.
+- Do not mark release-ready until live checks verify search counts, concurrent writes, retention/purge, stats and CSV, permissions/CSRF, clean install and upgrade paths. Keep Geeklog 2.1.3 compatibility provisional until tested.
+- Feature work on reliable zero-result counts and optional Hub integration may be deferred to follow-up PRs if integration testing proves unsafe for this release.
 
 ## PostgreSQL decision
 PostgreSQL support is deliberately removed in 1.2.4. SQL installation and upgrade files are deleted; installer compatibility check rejects unsupported database types. This does not remove existing PostgreSQL tables on remote installations. Database migrations require separate backup/export and are not automatic.
