@@ -115,9 +115,12 @@ function SEARCHRANK_reportDailyChart($daily, $labels)
     if ($count === 0) {
         return '<p>' . $escape($labels['empty']) . '</p>';
     }
-    $max = 1;
+    $max = 0;
     foreach ($daily as $row) {
         $max = max($max, (int) $row['hits']);
+    }
+    if ($max === 0) {
+        return '<p class="sr-note">' . $escape($labels['empty']) . '</p>';
     }
     $left = 48;
     $right = 16;
@@ -135,7 +138,7 @@ function SEARCHRANK_reportDailyChart($daily, $labels)
         $y = $top + $plotHeight * (1 - $hits / $max);
         $x = round($x, 2);
         $y = round($y, 2);
-        $points[] = $x . ',' . $y;
+        $points[] = ($i === 0 ? 'M ' : 'L ') . $x . ' ' . $y;
         if ($count <= 31) {
             $markers .= '<circle cx="' . $x . '" cy="' . $y . '" r="3" class="sr-chart-point">'
                 . '<title>' . $escape($row['date'] . ': ' . $hits . ' ' . $labels['hits']) . '</title></circle>';
@@ -157,7 +160,7 @@ function SEARCHRANK_reportDailyChart($daily, $labels)
         $svg .= '<text class="sr-chart-label" x="' . $x . '" y="' . ($height - 13)
               . '" text-anchor="middle">' . $escape($daily[$idx]['date']) . '</text>';
     }
-    $svg .= '<polyline class="sr-chart-line" points="' . implode(' ', $points) . '"/>'
+    $svg .= '<path class="sr-chart-line" d="' . implode(' ', $points) . '"/>'
           . $markers . '</svg>';
     $html = '<figure class="sr-chart-figure">' . $svg . '<figcaption class="sr-note">'
           . $escape($labels['description']) . '</figcaption></figure>';
