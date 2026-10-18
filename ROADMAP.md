@@ -2,6 +2,12 @@
 
 Development integration branch: `develop-1.2.4` (temporary historical name) — next public release: **1.3.0**, no 1.2.4 release.
 
+## Retention-aware analytics (2026-10-18)
+- [x] Default new installations to 365 days; existing stored configuration is not overwritten.
+- [x] Limit selectable report periods to the configured retention interval; when shorter than seven days show a reduced period.
+- [x] Hide previous-period trend comparisons unless TTL covers two full periods; note that available history may still be shorter than TTL on newly activated sites.
+- [ ] Verify TTL=7/28/56/90/365 and upgrades on Geeklog staging.
+
 ## Release policy
 - Geeklog 2.1.3 minimum declared (historical baseline retained until a newer Core dependency is demonstrated); run regression tests against Geeklog 2.1.3 and 2.2.2. PHP 5.6.40 minimum syntax; validate PHP 5.6, 8.1 and 8.3. The requested ZIP suffix `_2.1.3` now matches installer and plugin.json.
 - PostgreSQL support removed by request in 1.2.4; MySQL-compatible Geeklog database only. Upgrading PostgreSQL installations is unsupported; export historical data before changing database engines.
