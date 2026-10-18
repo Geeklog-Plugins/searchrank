@@ -70,7 +70,7 @@ if ($action === 'export') {
 
 // MAIN
 $display .= COM_startBlock($LANG_SEARCHRANK_1['plugin_name']);
-$section = in_array($action, array('showlog', 'report', 'help'), true) ? $action : 'dashboard';
+$section = $action === 'day' ? 'report' : (in_array($action, array('showlog', 'report', 'help'), true) ? $action : 'dashboard');
 $display .= SEARCHRANK_adminNav($section);
 if ($action == 'clear') {
     // Destructive operations require POST and a valid Geeklog CSRF token.
@@ -118,6 +118,8 @@ if ($action == 'clear') {
     $display .= '</div>';
 } else if ($action == 'report') {
     $display .= SEARCHRANK_reportPage();
+} else if ($action == 'day') {
+    $display .= SEARCHRANK_reportDayPage(isset($_GET['date']) ? $_GET['date'] : '');
 } else if ($action == 'showlog') {
     $display .= SEARCHRANK_showLog();
 } else {
