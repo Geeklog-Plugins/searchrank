@@ -176,7 +176,7 @@ function SEARCHRANK_reportPage()
     foreach (array(7,28,90,365) as $d) {
         $html .= '<option value="' . $d . '"' . ($d === $days ? ' selected' : '') . '>' . $d . ' ' . $esc($LANG_SEARCHRANK_1['days']) . '</option>';
     }
-    $html .= '</select></label><label>Search expression <input name="q" type="search" value="' . $esc($filter) . '"></label>'
+    $html .= '</select></label><label>' . $esc($LANG_SEARCHRANK_1['search_expression']) . ' <input name="q" type="search" value="' . $esc($filter) . '"></label>'
            . '<button class="sr-action" type="submit">' . $esc($LANG_SEARCHRANK_1['filter']) . '</button></form>';
     $previous = SEARCHRANK_reportTotals($days, $days);
     $current = SEARCHRANK_reportTotals($days, 0);
