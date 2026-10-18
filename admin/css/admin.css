@@ -82,7 +82,7 @@
 
 /* Search activity chart: scalable vector, theme-neutral, no JS dependency. */
 .sr-chart-figure{margin:1rem 0;max-width:100%}
-.sr-daily-chart{width:100%;height:auto;display:block;overflow:visible;background:transparent}
+.sr-daily-chart{width:100%;height:auto;display:block;overflow:hidden;background:transparent;max-width:100%}
 .sr-chart-grid{stroke:#cbd5d1;stroke-width:1;stroke-dasharray:3 4}
 .sr-chart-label{font-size:12px;fill:#51635c}
 .sr-chart-line{fill:none;stroke:#27684e;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
