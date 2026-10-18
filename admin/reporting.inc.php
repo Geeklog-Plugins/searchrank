@@ -18,6 +18,7 @@ function SEARCHRANK_reportRows($days, $filter, $limit)
 {
     global $_TABLES;
     $cutoff = strtotime('today') - (max(1, (int) $days) - 1) * 86400;
+    $tomorrow = strtotime('tomorrow');
     $filterSql = '';
     if ($filter !== '') {
         $safe = DB_escapeString('%' . $filter . '%');
@@ -26,7 +27,7 @@ function SEARCHRANK_reportRows($days, $filter, $limit)
     $limit = max(1, min(1000, (int) $limit));
     $sql = "SELECT q.query, SUM(h.hits) AS hits FROM {$_TABLES['searchrank_queries']} q "
          . "INNER JOIN {$_TABLES['searchrank_hits']} h ON q.hid=h.hid "
-         . "WHERE h.date >= {$cutoff}{$filterSql} GROUP BY q.query "
+         . "WHERE h.date >= {$cutoff} AND h.date < {$tomorrow}{$filterSql} GROUP BY q.query "
          . "ORDER BY hits DESC, q.query ASC LIMIT {$limit}";
     $query = DB_query($sql);
     $rows = array();
@@ -40,8 +41,9 @@ function SEARCHRANK_reportDaily($days)
 {
     global $_TABLES;
     $cutoff = strtotime('today') - (max(1, (int) $days) - 1) * 86400;
+    $tomorrow = strtotime('tomorrow');
     $result = DB_query("SELECT date, SUM(hits) AS hits FROM {$_TABLES['searchrank_hits']} "
-        . "WHERE date >= {$cutoff} GROUP BY date ORDER BY date ASC");
+        . "WHERE date >= {$cutoff} AND date < {$tomorrow} GROUP BY date ORDER BY date ASC");
     $rows = array();
     while ($row = DB_fetchArray($result)) {
         $rows[] = array('date' => date('Y-m-d', (int) $row['date']), 'hits' => (int) $row['hits']);
