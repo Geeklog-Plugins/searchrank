@@ -352,7 +352,7 @@ function plugin_getheadercode_searchrank()
     // use this CSS only if we are on the plugin's pages
     if (substr_count($_SERVER['PHP_SELF'], '/searchrank/') > 0) {
         $retval .= '<link rel="stylesheet" type="text/css" href="'
-                . $_CONF['site_admin_url'] . '/plugins/searchrank/css/admin.css?v=1.3.0.1"' . XHTML . '>' . LB;
+                . $_CONF['site_admin_url'] . '/plugins/searchrank/css/admin.css?v=1.3.0.2"' . XHTML . '>' . LB;
     }
 
     return $retval;
