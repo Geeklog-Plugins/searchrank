@@ -19,7 +19,8 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 - [x] Require POST and Geeklog CSRF token for destructive clear-log operation.
 
 ### Blocking release checks
-- [ ] Test MySQL purge with old-only, new-only, mixed-age, empty, and repeated records; consider table locks, query plan and SQL portability.
+- [x] Calculate retention cutoff in local calendar days and register Geeklog plugin_runScheduledTask hook; retain existing search/admin fallback triggers.
+- [ ] Test MySQL purge with old-only, new-only, mixed-age, empty, and repeated records; test scheduled-hook invocation, query plan and SQL portability.
 - [ ] Confirm Geeklog SEC_createToken / SEC_checkToken and the administration form work on Geeklog 2.2.2 with modern themes.
 - [x] Bound page/start/limit and clamp log page size to 1–200; add stable ranking ordering.
 - [ ] Validate remaining config parameters (ttl, maxresults, itemsperpage) on save and use.
@@ -38,7 +39,7 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 - [x] Add GitHub Actions PHP 5.6/8.1/8.3 lint and distributable archive (first CI runs pending).
 - [x] Add PHP-matrix CI source checks for required English translation keys, formatted report strings and shared administration navigation contract.
 - [ ] Add broader static checks and metadata validation, plus real integration tests.
-- [ ] Test clean install, upgrades, activate/deactivate/uninstall, left/right block, statistics, anonymous/admin users.
+- [ ] Test clean install and legacy 1.0.0 -> 1.3.0 upgrade on staging (backup first), activate/deactivate/uninstall, left/right block, statistics, anonymous/admin users.
 - [ ] Exercise multiple sites sharing files but using separate databases.
 - [x] Configure CI to produce versioned `dist` archive.
 - [x] GitHub Actions run 38992700770 succeeded and committed `dist/searchrank_1.3.0_2.1.3.zip`.
