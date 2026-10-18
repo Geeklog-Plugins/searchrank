@@ -54,9 +54,17 @@ function SEARCHRANK_reportDaily($days)
     $tomorrow = strtotime('tomorrow');
     $result = DB_query("SELECT date, SUM(hits) AS hits FROM {$_TABLES['searchrank_hits']} "
         . "WHERE date >= {$cutoff} AND date < {$tomorrow} GROUP BY date ORDER BY date ASC");
-    $rows = array();
+    $counts = array();
     while ($row = DB_fetchArray($result)) {
-        $rows[] = array('date' => date('Y-m-d', (int) $row['date']), 'hits' => (int) $row['hits']);
+        $counts[date('Y-m-d', (int) $row['date'])] = (int) $row['hits'];
+    }
+    // Include days without searches so daily activity reflects the full period.
+    $rows = array();
+    $days = max(1, (int) $days);
+    for ($i = $days - 1; $i >= 0; --$i) {
+        $timestamp = SEARCHRANK_reportStart($i);
+        $day = date('Y-m-d', $timestamp);
+        $rows[] = array('date' => $day, 'hits' => isset($counts[$day]) ? $counts[$day] : 0);
     }
     return $rows;
 }
@@ -185,7 +193,7 @@ function SEARCHRANK_reportPage()
     foreach ($trends as $entry) {
         $change = $entry['previous'] > 0
             ? round(100 * ($entry['current'] - $entry['previous']) / $entry['previous'], 1) . '%'
-            : 'New / no previous data';
+            : 'No previous recorded hits';
         $html .= '<tr><td>' . $esc($entry['query']) . '</td><td>' . $entry['current']
                . '</td><td>' . $entry['previous'] . '</td><td>' . $esc($change) . '</td></tr>';
     }
