@@ -79,19 +79,24 @@ if ($action == 'clear') {
         SEARCHRANK_clearLog();
         $display .= COM_showMessageText($LANG_SEARCHRANK_1['clear_msg'], $LANG_SEARCHRANK_1['info']);
     } else {
-        $display .= COM_showMessageText('Invalid request or security token.', $LANG_SEARCHRANK_1['info']);
+        $display .= COM_showMessageText($LANG_SEARCHRANK_1['invalid_request'], $LANG_SEARCHRANK_1['info']);
     }
     $display .= SEARCHRANK_makeMenu();
 } else if ($action == 'help') {
-    $display .= '<div class="sr-admin-home">'
-        . '<h2>SearchRank — Getting started</h2>'
-        . '<p>SearchRank records searches performed on this website. It does not measure Google or Bing searches.</p>'
-        . '<h3>1. Configure</h3><p>Choose the retention duration and whether the public ranking block is visible. Searches are grouped by phrase and day.</p>'
-        . '<h3>2. View the search log</h3><p>Open the Search Log to inspect saved phrases and their total occurrences.</p>'
-        . '<h3>3. Analyze activity</h3><p>Open Analytics &amp; CSV to filter phrases and compare periods. Older data may have been removed by retention settings.</p>'
-        . '<h3>4. Privacy</h3><p>Search phrases can contain personal information. Avoid making the ranking block public on sensitive sites. The clear-log action permanently deletes recorded searches.</p>'
-        . '<h3>5. Troubleshooting</h3><p>If statistics are empty, run a public search, verify the plugin is enabled and check the configured retention period.</p>'
-        . '</div>';
+    $display .= '<div class="sr-admin-home">';
+    $display .= '<h2>' . htmlspecialchars($LANG_SEARCHRANK_1['help_title'], ENT_QUOTES, 'UTF-8') . '</h2>';
+    $display .= '<p>' . htmlspecialchars($LANG_SEARCHRANK_1['help_intro'], ENT_QUOTES, 'UTF-8') . '</p>';
+    $display .= '<h3>' . htmlspecialchars($LANG_SEARCHRANK_1['help_setup_title'], ENT_QUOTES, 'UTF-8') . '</h3>';
+    $display .= '<p>' . htmlspecialchars($LANG_SEARCHRANK_1['help_setup_text'], ENT_QUOTES, 'UTF-8') . '</p>';
+    $display .= '<h3>' . htmlspecialchars($LANG_SEARCHRANK_1['help_log_title'], ENT_QUOTES, 'UTF-8') . '</h3>';
+    $display .= '<p>' . htmlspecialchars($LANG_SEARCHRANK_1['help_log_text'], ENT_QUOTES, 'UTF-8') . '</p>';
+    $display .= '<h3>' . htmlspecialchars($LANG_SEARCHRANK_1['help_analytics_title'], ENT_QUOTES, 'UTF-8') . '</h3>';
+    $display .= '<p>' . htmlspecialchars($LANG_SEARCHRANK_1['help_analytics_text'], ENT_QUOTES, 'UTF-8') . '</p>';
+    $display .= '<h3>' . htmlspecialchars($LANG_SEARCHRANK_1['help_privacy_title'], ENT_QUOTES, 'UTF-8') . '</h3>';
+    $display .= '<p>' . htmlspecialchars($LANG_SEARCHRANK_1['help_privacy_text'], ENT_QUOTES, 'UTF-8') . '</p>';
+    $display .= '<h3>' . htmlspecialchars($LANG_SEARCHRANK_1['help_troubleshooting_title'], ENT_QUOTES, 'UTF-8') . '</h3>';
+    $display .= '<p>' . htmlspecialchars($LANG_SEARCHRANK_1['help_troubleshooting_text'], ENT_QUOTES, 'UTF-8') . '</p>';
+    $display .= '</div>';
 } else if ($action == 'report') {
     $display .= SEARCHRANK_reportPage();
 } else if ($action == 'showlog') {
