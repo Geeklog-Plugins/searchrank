@@ -79,3 +79,14 @@
     margin: 0;
     min-width: 0;
 }
+
+/* Search activity chart: scalable vector, theme-neutral, no JS dependency. */
+.sr-chart-figure{margin:1rem 0;max-width:100%}
+.sr-daily-chart{width:100%;height:auto;display:block;overflow:visible;background:transparent}
+.sr-chart-grid{stroke:#cbd5d1;stroke-width:1;stroke-dasharray:3 4}
+.sr-chart-label{font-size:12px;fill:#51635c}
+.sr-chart-line{fill:none;stroke:#27684e;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.sr-chart-point{fill:#27684e;stroke:#fff;stroke-width:1.5}
+.sr-chart-data{margin:1rem 0}
+.sr-chart-data summary{cursor:pointer;text-decoration:underline;text-underline-offset:.2em}
+.sr-chart-data summary:focus-visible{outline:2px solid #27684e;outline-offset:3px}
