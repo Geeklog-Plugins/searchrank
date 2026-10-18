@@ -25,10 +25,11 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 - [ ] Validate remaining config parameters (ttl, maxresults, itemsperpage) on save and use.
 - [ ] Harden query display and URL handling; review all HTML escape contexts.
 - [x] Serialize search logging on legacy MyISAM installations using two-table WRITE locks and deterministic hid assignment (no schema migration); PHP lint and live concurrent-load test pending.
-- [ ] Stress-test concurrent searches, check lock failure behavior, and evaluate InnoDB migration/unique constraints for a future release.
+- [ ] Stress-test concurrent searches and lock failure behavior; deterministic IDs now take maxima from both query and hit tables to avoid reuse of orphaned hit identifiers. Evaluate InnoDB migration/unique constraints separately.
 - [ ] Validate bulk clear under MySQL, including orphan hits; test existing installations and upgrades.
 - [ ] Review MySQL aggregation, aliases, casting and non-deterministic ordering.
-- [ ] Ensure searches do not record sensitive strings publicly; add privacy guardrails.
+- [x] Suppress logging of obvious email addresses and long payment-card-like digit sequences (heuristic only; no claim of comprehensive PII detection).
+- [ ] Add configurable opt-out/redaction policy and tests for sensitive searches, false positives and multilingual queries.
 - [ ] Align installer metadata, plugin.json, compatibility checks, README, translations and release notes with tested minimum runtimes.
 - [ ] Preserve existing data; back up before migrations and test rollback.
 
