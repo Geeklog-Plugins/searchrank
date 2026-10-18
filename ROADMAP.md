@@ -90,6 +90,11 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 - The next code phase must update all version sources, GitHub Actions packaging and cache-busting to 1.3.0 together, then test the upgrade path from installed 1.2.1 and test builds of 1.2.4.
 - Release gate: working UI, search logging, daily analytics, export, translated strings, privacy safeguards, package verification and live acceptance. Features unsuitable for a safe 1.3.0 release must be explicitly deferred rather than claimed done.
 
+## Daily report and CSV enhancements (2026-10-18)
+- [x] CSV names contain sanitized current-site hostname and local export timestamp (`searchrank-report-example.com-YYYYMMDD-HHMMSS.csv`).
+- [x] Daily values are sorted newest first and link to a read-only admin day detail showing search expressions and hit counts.
+- [ ] Live test single-day drill-down, 1,000-row cap, authorization, local timestamp and multisite-specific CSV filename.
+
 ## PR readiness decision (2026-10-18)
 - Additional translations are explicitly **out of scope** for the 1.3.0 PR and will be developed later; English is the reference language.
 - A review/draft PR is appropriate now: current GitHub Actions are green and the 1.3.0 ZIP is generated.
