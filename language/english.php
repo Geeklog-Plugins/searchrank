@@ -79,6 +79,7 @@ $LANG_SEARCHRANK_1 = array(
     'chart_description' => 'Searches per day',
     'chart_show_data' => 'View daily values',
     'trends_title' => 'Search expression trends',
+    'ranked_queries' => 'Most searched expressions',
     'trends_note' => 'Leading expressions compared with the preceding period; values depend on retained history.',
     'current' => 'Current',
     'previous' => 'Previous',
