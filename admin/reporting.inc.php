@@ -98,6 +98,80 @@ function SEARCHRANK_reportTrends($days, $limit)
     return $rows;
 }
 
+/**
+ * Accessible, dependency-free SVG chart for daily search totals.
+ * Full values remain available in a collapsible HTML data table.
+ *
+ * @param array $daily Chronological rows containing date and hits
+ * @param array $labels Translated chart labels
+ * @return string Escaped SVG with underlying accessible data
+ */
+function SEARCHRANK_reportDailyChart($daily, $labels)
+{
+    $escape = function ($value) {
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+    };
+    $count = count($daily);
+    if ($count === 0) {
+        return '<p>' . $escape($labels['empty']) . '</p>';
+    }
+    $max = 1;
+    foreach ($daily as $row) {
+        $max = max($max, (int) $row['hits']);
+    }
+    $left = 48;
+    $right = 16;
+    $top = 16;
+    $bottom = 44;
+    $width = 900;
+    $height = 280;
+    $plotWidth = $width - $left - $right;
+    $plotHeight = $height - $top - $bottom;
+    $points = array();
+    $markers = '';
+    foreach ($daily as $i => $row) {
+        $hits = max(0, (int) $row['hits']);
+        $x = $left + ($count > 1 ? $i * $plotWidth / ($count - 1) : $plotWidth / 2);
+        $y = $top + $plotHeight * (1 - $hits / $max);
+        $x = round($x, 2);
+        $y = round($y, 2);
+        $points[] = $x . ',' . $y;
+        // Points are shown for short periods only: keep annual charts uncluttered.
+        if ($count <= 31) {
+            $markers .= '<circle cx="' . $x . '" cy="' . $y . '" r="3" class="sr-chart-point">'
+                . '<title>' . $escape($row['date'] . ': ' . $hits . ' ' . $labels['hits']) . '</title></circle>';
+        }
+    }
+    $svg = '<svg class="sr-daily-chart" viewBox="0 0 900 280" role="img" '
+         . 'aria-label="' . $escape($labels['description']) . '" xmlns="http://www.w3.org/2000/svg">';
+    for ($tick = 0; $tick <= 4; ++$tick) {
+        $value = $max * $tick / 4;
+        $y = round($top + $plotHeight * (1 - $tick / 4), 2);
+        $svg .= '<line class="sr-chart-grid" x1="' . $left . '" x2="' . ($width - $right)
+              . '" y1="' . $y . '" y2="' . $y . '"/>'
+              . '<text class="sr-chart-label" x="' . ($left - 8) . '" y="' . ($y + 4)
+              . '" text-anchor="end">' . $escape((string) round($value, 1)) . '</text>';
+    }
+    $tickIndexes = array(0, (int) floor(($count - 1) / 2), $count - 1);
+    foreach (array_unique($tickIndexes) as $idx) {
+        $x = round($left + ($count > 1 ? $idx * $plotWidth / ($count - 1) : $plotWidth / 2), 2);
+        $svg .= '<text class="sr-chart-label" x="' . $x . '" y="' . ($height - 13)
+              . '" text-anchor="middle">' . $escape($daily[$idx]['date']) . '</text>';
+    }
+    $svg .= '<polyline class="sr-chart-line" points="' . implode(' ', $points) . '"/>'
+          . $markers . '</svg>';
+    $html = '<figure class="sr-chart-figure">' . $svg . '<figcaption class="sr-note">'
+          . $escape($labels['description']) . '</figcaption></figure>';
+    $html .= '<details class="sr-chart-data"><summary>' . $escape($labels['show_data']) . '</summary>';
+    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">'
+          . $escape($labels['date']) . '</th><th scope="col">' . $escape($labels['hits'])
+          . '</th></tr></thead><tbody>';
+    foreach ($daily as $row) {
+        $html .= '<tr><td>' . $escape($row['date']) . '</td><td>' . (int) $row['hits'] . '</td></tr>';
+    }
+    return $html . '</tbody></table></div></details>';
+}
+
 function SEARCHRANK_reportExport($days, $filter)
 {
     $rows = SEARCHRANK_reportRows($days, $filter, 1000);
@@ -196,11 +270,13 @@ function SEARCHRANK_reportPage()
     }
     if (!$rows) { $html .= '<tr><td colspan="2">' . $esc($LANG_SEARCHRANK_1['no_searches']) . '</td></tr>'; }
     $html .= '</tbody></table></div><h3>' . $esc($LANG_SEARCHRANK_1['daily_activity']) . '</h3>';
-    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">' . $esc($LANG_SEARCHRANK_1['date']) . '</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['hits']) . '</th></tr></thead><tbody>';
-    foreach ($daily as $row) {
-        $html .= '<tr><td>' . $esc($row['date']) . '</td><td>' . $row['hits'] . '</td></tr>';
-    }
-    $html .= '</tbody></table></div>';
+    $html .= SEARCHRANK_reportDailyChart($daily, array(
+        'description' => isset($LANG_SEARCHRANK_1['chart_description']) ? $LANG_SEARCHRANK_1['chart_description'] : 'Searches per day',
+        'show_data' => isset($LANG_SEARCHRANK_1['chart_show_data']) ? $LANG_SEARCHRANK_1['chart_show_data'] : 'View daily values',
+        'empty' => $LANG_SEARCHRANK_1['no_searches'],
+        'date' => $LANG_SEARCHRANK_1['date'],
+        'hits' => $LANG_SEARCHRANK_1['hits']
+    ));
     $trends = SEARCHRANK_reportTrends($days, 20);
     $html .= '<h3>' . $esc($LANG_SEARCHRANK_1['trends_title']) . '</h3>';
     $html .= '<p class="sr-note">' . $esc($LANG_SEARCHRANK_1['trends_note']) . '</p>';
