@@ -30,6 +30,36 @@ jobs:
           tools: none
       - name: PHP syntax
         run: find . -path './dist' -prune -o -name '*.php' -type f -print0 | xargs -0 -n1 php -l
+      - name: English locale and admin contract
+        run: |
+          php -r '
+            $LANG09 = array(70 => "No results");
+            $LANG32 = array(9 => "Upgrade required");
+            require "language/english.php";
+            $plain = $LANG_SEARCHRANK_1;
+            require "language/english_utf-8.php";
+            $utf8 = $LANG_SEARCHRANK_1;
+            $keys = array("dashboard", "analytics", "help_link", "help_title",
+              "help_intro", "daily_activity", "trends_title", "total_summary",
+              "previous_summary", "no_variation", "variation", "export_link",
+              "invalid_request", "search_expression", "filter");
+            foreach ($keys as $key) {
+              if (!isset($plain[$key]) || !isset($utf8[$key]) ||
+                  trim($plain[$key]) === "" || trim($utf8[$key]) === "") {
+                fwrite(STDERR, "Missing English translation: " . $key . PHP_EOL);
+                exit(1);
+              }
+            }
+            if (sprintf($plain["total_summary"], 1, 7, 2) === "") {
+              exit(1);
+            }
+          '
+          grep -q 'function SEARCHRANK_adminNav(' functions.inc
+          grep -q 'aria-current="page"' functions.inc
+          grep -q 'plugin-admin-nav__form' functions.inc
+          grep -q 'SEARCHRANK_adminNav(' admin/index.php
+          grep -q 'function SEARCHRANK_reportTrends(' admin/reporting.inc.php
+
 
   dist:
     name: Build and publish installable ZIP
