@@ -116,7 +116,55 @@ function SEARCHRANK_reportDailyChart($daily, $labels)
         return '<p>' . $escape($labels['empty']) . '</p>';
     }
     $max = 1;
-    // Newest days first, with a drill-down to their recorded expressions.
+    foreach ($daily as $row) {
+        $max = max($max, (int) $row['hits']);
+    }
+    $left = 48;
+    $right = 16;
+    $top = 16;
+    $bottom = 44;
+    $width = 900;
+    $height = 280;
+    $plotWidth = $width - $left - $right;
+    $plotHeight = $height - $top - $bottom;
+    $points = array();
+    $markers = '';
+    foreach ($daily as $i => $row) {
+        $hits = max(0, (int) $row['hits']);
+        $x = $left + ($count > 1 ? $i * $plotWidth / ($count - 1) : $plotWidth / 2);
+        $y = $top + $plotHeight * (1 - $hits / $max);
+        $x = round($x, 2);
+        $y = round($y, 2);
+        $points[] = $x . ',' . $y;
+        if ($count <= 31) {
+            $markers .= '<circle cx="' . $x . '" cy="' . $y . '" r="3" class="sr-chart-point">'
+                . '<title>' . $escape($row['date'] . ': ' . $hits . ' ' . $labels['hits']) . '</title></circle>';
+        }
+    }
+    $svg = '<svg class="sr-daily-chart" viewBox="0 0 900 280" role="img" '
+         . 'aria-label="' . $escape($labels['description']) . '" xmlns="http://www.w3.org/2000/svg">';
+    for ($tick = 0; $tick <= 4; ++$tick) {
+        $value = $max * $tick / 4;
+        $y = round($top + $plotHeight * (1 - $tick / 4), 2);
+        $svg .= '<line class="sr-chart-grid" x1="' . $left . '" x2="' . ($width - $right)
+              . '" y1="' . $y . '" y2="' . $y . '"/>'
+              . '<text class="sr-chart-label" x="' . ($left - 8) . '" y="' . ($y + 4)
+              . '" text-anchor="end">' . $escape((string) round($value, 1)) . '</text>';
+    }
+    $tickIndexes = array(0, (int) floor(($count - 1) / 2), $count - 1);
+    foreach (array_unique($tickIndexes) as $idx) {
+        $x = round($left + ($count > 1 ? $idx * $plotWidth / ($count - 1) : $plotWidth / 2), 2);
+        $svg .= '<text class="sr-chart-label" x="' . $x . '" y="' . ($height - 13)
+              . '" text-anchor="middle">' . $escape($daily[$idx]['date']) . '</text>';
+    }
+    $svg .= '<polyline class="sr-chart-line" points="' . implode(' ', $points) . '"/>'
+          . $markers . '</svg>';
+    $html = '<figure class="sr-chart-figure">' . $svg . '<figcaption class="sr-note">'
+          . $escape($labels['description']) . '</figcaption></figure>';
+    $html .= '<details class="sr-chart-data"><summary>' . $escape($labels['show_data']) . '</summary>';
+    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">'
+          . $escape($labels['date']) . '</th><th scope="col">' . $escape($labels['hits'])
+          . '</th></tr></thead><tbody>';
     foreach (array_reverse($daily) as $row) {
         $url = $labels['base_url'] . '?action=day&date=' . rawurlencode($row['date']);
         $html .= '<tr><td><a href="' . $escape($url) . '">'
