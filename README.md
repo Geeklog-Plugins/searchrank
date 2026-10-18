@@ -92,4 +92,4 @@ The statistics measure **internal site searches**, not Google or Bing impression
 
 ## Documentation
 
-See the [`docs/`](docs/) directory and [`ROADMAP.md`](ROADMAP.md) for additional technical details and outstanding checks.
+See the [official SearchRank repository](https://github.com/Geeklog-Plugins/searchrank), its [`docs/`](https://github.com/Geeklog-Plugins/searchrank/tree/master/docs) directory and [`ROADMAP.md`](https://github.com/Geeklog-Plugins/searchrank/blob/master/ROADMAP.md) for additional technical details and outstanding checks.
