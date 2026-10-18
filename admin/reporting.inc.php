@@ -14,10 +14,20 @@ function SEARCHRANK_reportDays()
     return in_array($days, $allowed, true) ? $days : 28;
 }
 
+/**
+ * Midnight calendar boundaries: avoids drifting one hour on DST transitions.
+ * Legacy SearchRank records are stored as local-midnight Unix timestamps.
+ */
+function SEARCHRANK_reportStart($daysBack)
+{
+    $daysBack = max(0, (int) $daysBack);
+    return strtotime('-' . $daysBack . ' days', strtotime('today'));
+}
+
 function SEARCHRANK_reportRows($days, $filter, $limit)
 {
     global $_TABLES;
-    $cutoff = strtotime('today') - (max(1, (int) $days) - 1) * 86400;
+    $cutoff = SEARCHRANK_reportStart(max(1, (int) $days) - 1);
     $tomorrow = strtotime('tomorrow');
     $filterSql = '';
     if ($filter !== '') {
@@ -40,7 +50,7 @@ function SEARCHRANK_reportRows($days, $filter, $limit)
 function SEARCHRANK_reportDaily($days)
 {
     global $_TABLES;
-    $cutoff = strtotime('today') - (max(1, (int) $days) - 1) * 86400;
+    $cutoff = SEARCHRANK_reportStart(max(1, (int) $days) - 1);
     $tomorrow = strtotime('tomorrow');
     $result = DB_query("SELECT date, SUM(hits) AS hits FROM {$_TABLES['searchrank_hits']} "
         . "WHERE date >= {$cutoff} AND date < {$tomorrow} GROUP BY date ORDER BY date ASC");
@@ -60,9 +70,8 @@ function SEARCHRANK_reportTrends($days, $limit)
     global $_TABLES;
     $days = max(1, (int) $days);
     $limit = max(1, min(20, (int) $limit));
-    $today = strtotime('today');
-    $currentStart = $today - (($days - 1) * 86400);
-    $previousStart = $today - (($days * 2 - 1) * 86400);
+    $currentStart = SEARCHRANK_reportStart($days - 1);
+    $previousStart = SEARCHRANK_reportStart($days * 2 - 1);
     $tomorrow = strtotime('tomorrow');
     $sql = "SELECT q.query, "
          . "SUM(CASE WHEN h.date >= {$currentStart} THEN h.hits ELSE 0 END) AS current_hits, "
@@ -105,10 +114,10 @@ function SEARCHRANK_reportTotals($days, $offsetDays)
     global $_TABLES;
     $days = max(1, (int) $days);
     $offsetDays = max(0, (int) $offsetDays);
-    $start = strtotime('today') - (($days + $offsetDays - 1) * 86400);
-    $end = strtotime('today') - ($offsetDays * 86400);
+    $start = SEARCHRANK_reportStart($days + $offsetDays - 1);
+    $endExclusive = SEARCHRANK_reportStart($offsetDays - 1);
     $sql = "SELECT SUM(hits) AS total FROM {$_TABLES['searchrank_hits']} "
-         . "WHERE date >= {$start} AND date < " . ($end + 86400);
+         . "WHERE date >= {$start} AND date < {$endExclusive}";
     $result = DB_query($sql);
     $row = DB_fetchArray($result);
     return $row && isset($row['total']) ? (int) $row['total'] : 0;
