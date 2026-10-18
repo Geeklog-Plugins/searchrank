@@ -35,7 +35,8 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 
 ### Packaging and QA
 - [x] Add GitHub Actions PHP 5.6/8.1/8.3 lint and distributable archive (first CI runs pending).
-- [ ] Add PHP compatibility/static checks and metadata validation.
+- [x] Add PHP-matrix CI source checks for required English translation keys, formatted report strings and shared administration navigation contract.
+- [ ] Add broader static checks and metadata validation, plus real integration tests.
 - [ ] Test clean install, upgrades, activate/deactivate/uninstall, left/right block, statistics, anonymous/admin users.
 - [ ] Exercise multiple sites sharing files but using separate databases.
 - [x] Configure CI to produce versioned `dist` archive.
