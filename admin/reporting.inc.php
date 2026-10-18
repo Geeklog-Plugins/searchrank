@@ -331,7 +331,7 @@ function SEARCHRANK_reportPage()
         $html .= '<tr><td colspan="4">' . $esc($LANG_SEARCHRANK_1['empty_trends']) . '</td></tr>';
     }
     $html .= '</tbody></table></div>';
-    $html .= '<h3>Most searched expressions</h3>';
+    $html .= '<h3>' . $esc(isset($LANG_SEARCHRANK_1['ranked_queries']) ? $LANG_SEARCHRANK_1['ranked_queries'] : 'Most searched expressions') . '</h3>';
     $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">Expression</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['hits']) . '</th></tr></thead><tbody>';
     foreach ($rows as $row) {
         $html .= '<tr><td>' . $esc($row['query']) . '</td><td>' . $row['hits'] . '</td></tr>';
