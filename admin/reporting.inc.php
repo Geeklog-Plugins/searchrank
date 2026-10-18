@@ -116,67 +116,62 @@ function SEARCHRANK_reportDailyChart($daily, $labels)
         return '<p>' . $escape($labels['empty']) . '</p>';
     }
     $max = 1;
-    foreach ($daily as $row) {
-        $max = max($max, (int) $row['hits']);
-    }
-    $left = 48;
-    $right = 16;
-    $top = 16;
-    $bottom = 44;
-    $width = 900;
-    $height = 280;
-    $plotWidth = $width - $left - $right;
-    $plotHeight = $height - $top - $bottom;
-    $points = array();
-    $markers = '';
-    foreach ($daily as $i => $row) {
-        $hits = max(0, (int) $row['hits']);
-        $x = $left + ($count > 1 ? $i * $plotWidth / ($count - 1) : $plotWidth / 2);
-        $y = $top + $plotHeight * (1 - $hits / $max);
-        $x = round($x, 2);
-        $y = round($y, 2);
-        $points[] = $x . ',' . $y;
-        // Points are shown for short periods only: keep annual charts uncluttered.
-        if ($count <= 31) {
-            $markers .= '<circle cx="' . $x . '" cy="' . $y . '" r="3" class="sr-chart-point">'
-                . '<title>' . $escape($row['date'] . ': ' . $hits . ' ' . $labels['hits']) . '</title></circle>';
-        }
-    }
-    $svg = '<svg class="sr-daily-chart" viewBox="0 0 900 280" role="img" '
-         . 'aria-label="' . $escape($labels['description']) . '" xmlns="http://www.w3.org/2000/svg">';
-    for ($tick = 0; $tick <= 4; ++$tick) {
-        $value = $max * $tick / 4;
-        $y = round($top + $plotHeight * (1 - $tick / 4), 2);
-        $svg .= '<line class="sr-chart-grid" x1="' . $left . '" x2="' . ($width - $right)
-              . '" y1="' . $y . '" y2="' . $y . '"/>'
-              . '<text class="sr-chart-label" x="' . ($left - 8) . '" y="' . ($y + 4)
-              . '" text-anchor="end">' . $escape((string) round($value, 1)) . '</text>';
-    }
-    $tickIndexes = array(0, (int) floor(($count - 1) / 2), $count - 1);
-    foreach (array_unique($tickIndexes) as $idx) {
-        $x = round($left + ($count > 1 ? $idx * $plotWidth / ($count - 1) : $plotWidth / 2), 2);
-        $svg .= '<text class="sr-chart-label" x="' . $x . '" y="' . ($height - 13)
-              . '" text-anchor="middle">' . $escape($daily[$idx]['date']) . '</text>';
-    }
-    $svg .= '<polyline class="sr-chart-line" points="' . implode(' ', $points) . '"/>'
-          . $markers . '</svg>';
-    $html = '<figure class="sr-chart-figure">' . $svg . '<figcaption class="sr-note">'
-          . $escape($labels['description']) . '</figcaption></figure>';
-    $html .= '<details class="sr-chart-data"><summary>' . $escape($labels['show_data']) . '</summary>';
-    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">'
-          . $escape($labels['date']) . '</th><th scope="col">' . $escape($labels['hits'])
-          . '</th></tr></thead><tbody>';
-    foreach ($daily as $row) {
-        $html .= '<tr><td>' . $escape($row['date']) . '</td><td>' . (int) $row['hits'] . '</td></tr>';
+    // Newest days first, with a drill-down to their recorded expressions.
+    foreach (array_reverse($daily) as $row) {
+        $url = $labels['base_url'] . '?action=day&date=' . rawurlencode($row['date']);
+        $html .= '<tr><td><a href="' . $escape($url) . '">'
+              . $escape($row['date']) . '</a></td><td>' . (int) $row['hits'] . '</td></tr>';
     }
     return $html . '</tbody></table></div></details>';
 }
 
+/**
+ * Display terms recorded on one calendar day (administrator-only route).
+ */
+function SEARCHRANK_reportDayPage($date)
+{
+    global $_TABLES, $_CONF, $LANG_SEARCHRANK_1;
+    $esc = function ($value) { return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8'); };
+    $base = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
+    $back = '<p><a href="' . $esc($base . '?action=report') . '">&larr; '
+          . $esc(isset($LANG_SEARCHRANK_1['analytics']) ? $LANG_SEARCHRANK_1['analytics'] : 'Analytics & CSV') . '</a></p>';
+    if (!is_string($date) || !preg_match('/^\\d{4}-\\d{2}-\\d{2}$/D', $date)) {
+        return $back . '<p>Invalid date.</p>';
+    }
+    $start = strtotime($date . ' 00:00:00');
+    if ($start === false || date('Y-m-d', $start) !== $date || $start > strtotime('today')) {
+        return $back . '<p>Invalid date.</p>';
+    }
+    $end = strtotime('+1 day', $start);
+    $sql = "SELECT q.query, SUM(h.hits) AS hits FROM {$_TABLES['searchrank_queries']} q "
+         . "INNER JOIN {$_TABLES['searchrank_hits']} h ON q.hid=h.hid "
+         . "WHERE h.date >= {$start} AND h.date < {$end} "
+         . "GROUP BY q.query ORDER BY hits DESC, q.query ASC LIMIT 1000";
+    $result = DB_query($sql);
+    $html = '<section class="sr-admin-home">' . $back . '<h2>' . $esc($date) . '</h2>';
+    $html .= '<table class="sr-report-table"><thead><tr><th scope="col">'
+          . $esc(isset($LANG_SEARCHRANK_1['search_expression']) ? $LANG_SEARCHRANK_1['search_expression'] : 'Search expression')
+          . '</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['hits']) . '</th></tr></thead><tbody>';
+    $found = false;
+    while ($row = DB_fetchArray($result)) {
+        $found = true;
+        $html .= '<tr><td>' . $esc($row['query']) . '</td><td>' . (int) $row['hits'] . '</td></tr>';
+    }
+    if (!$found) { $html .= '<tr><td colspan="2">No searches recorded for this day.</td></tr>'; }
+    return $html . '</tbody></table><p class="sr-note">Up to 1,000 expressions, ranked by occurrences.</p></section>';
+}
+
 function SEARCHRANK_reportExport($days, $filter)
 {
+    global $_CONF;
     $rows = SEARCHRANK_reportRows($days, $filter, 1000);
+    $host = parse_url($_CONF['site_url'], PHP_URL_HOST);
+    $host = strtolower(preg_replace('/[^a-zA-Z0-9.-]/', '-', (string) $host));
+    $host = trim($host, '.-');
+    if ($host === '') { $host = 'site'; }
+    $filename = 'searchrank-report-' . $host . '-' . date('Ymd-His') . '.csv';
     header('Content-Type: text/csv; charset=UTF-8');
-    header('Content-Disposition: attachment; filename="searchrank-report.csv"');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
     header('Cache-Control: private, no-store');
     $out = fopen('php://output', 'w');
     fputcsv($out, array('Search query', 'Hits'));
@@ -275,7 +270,8 @@ function SEARCHRANK_reportPage()
         'show_data' => isset($LANG_SEARCHRANK_1['chart_show_data']) ? $LANG_SEARCHRANK_1['chart_show_data'] : 'View daily values',
         'empty' => $LANG_SEARCHRANK_1['no_searches'],
         'date' => $LANG_SEARCHRANK_1['date'],
-        'hits' => $LANG_SEARCHRANK_1['hits']
+        'hits' => $LANG_SEARCHRANK_1['hits'],
+        'base_url' => $base
     ));
     $trends = SEARCHRANK_reportTrends($days, 20);
     $html .= '<h3>' . $esc($LANG_SEARCHRANK_1['trends_title']) . '</h3>';
