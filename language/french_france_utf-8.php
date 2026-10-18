@@ -4,9 +4,9 @@
 // +---------------------------------------------------------------------------+
 // | Classement des recherches Plugin 1.2.1                                          |
 // +---------------------------------------------------------------------------+
-// | english.php                                                               |
+// | french_france_utf-8.php                                                |
 // |                                                                           |
-// | English language file                                                     |
+// | French (France) UTF-8 language file                                                     |
 // +---------------------------------------------------------------------------+
 // | Copyright (C) 2011 by the following authors:                              |
 // |                                                                           |
@@ -127,8 +127,8 @@ $LANG_configsections['searchrank'] = array(
 
 $LANG_confignames['searchrank'] = array(
     'showstats' => 'Afficher les dix recherches principales dans les statistiques',
-    'showblock' => 'Show Classement des recherches Block',
-    'maxresults' => 'Nombre d'entrées dans le bloc',
+    'showblock' => 'Afficher le bloc de classement des recherches',
+    'maxresults' => 'Nombre d\'entrées dans le bloc',
     'isleftblock' => 'Afficher le bloc à gauche',
     'ttl' => 'Durée de conservation des recherches (jours)',
     'itemsperpage' => 'Éléments par page du journal',
