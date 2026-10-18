@@ -280,7 +280,11 @@ function plugin_dopluginsearch_searchrank($query, $datestart, $dateend, $topic, 
 
     SEARCHRANK_housekeeping();
     $today = strtotime(date("d-m-Y") . " 00:00:00"); // todays date
+    // Do not store obvious secrets and personal identifiers from internal searches.
     $query = MBYTE_substr(trim(strtolower((string) $query)), 0, 99);
+    if (preg_match('/(?:[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,}|(?:\\b\\d[ -]?){13,19}\\b)/i', $query)) {
+        return array();
+    }
     if ($query === '') {
         return array();
     }
@@ -299,7 +303,9 @@ function plugin_dopluginsearch_searchrank($query, $datestart, $dateend, $topic, 
             // Allocate from the current maximum while holding the table lock.
             $maxResult = DB_query("SELECT MAX(hid) AS last_hid FROM {$_TABLES['searchrank_queries']}");
             $maxRow = DB_fetchArray($maxResult);
-            $hid = max(0, (int) $maxRow['last_hid']) + 1;
+            $maxHitsResult = DB_query("SELECT MAX(hid) AS last_hid FROM {$_TABLES['searchrank_hits']}");
+            $maxHitsRow = DB_fetchArray($maxHitsResult);
+            $hid = max(0, (int) $maxRow['last_hid'], (int) $maxHitsRow['last_hid']) + 1;
             if ($hid > 4294967295) {
                 COM_errorLog('SearchRank: exhausted unsigned hid range');
                 return array();
