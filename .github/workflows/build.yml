@@ -103,7 +103,7 @@ jobs:
           mkdir -p dist
           staging="$(mktemp -d)"
           mkdir -p "$staging/searchrank"
-          for item in admin autoinstall.php docs functions.inc install_defaults.php install_updates.php language plugin.json sql README; do
+          for item in admin autoinstall.php docs functions.inc install_defaults.php install_updates.php language plugin.json sql README.md; do
             cp -R "$item" "$staging/searchrank/"
           done
           if find "$staging/searchrank" -iname '*pgsql*' | grep -q .; then
