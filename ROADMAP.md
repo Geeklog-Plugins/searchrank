@@ -30,7 +30,8 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 - [ ] Review MySQL aggregation, aliases, casting and non-deterministic ordering.
 - [x] Suppress logging of obvious email addresses and long payment-card-like digit sequences (heuristic only; no claim of comprehensive PII detection).
 - [ ] Add configurable opt-out/redaction policy and tests for sensitive searches, false positives and multilingual queries.
-- [ ] Align installer metadata, plugin.json, compatibility checks, README, translations and release notes with tested minimum runtimes.
+- [x] Align current version metadata, installer, package and README for a 1.3.0 development candidate; compatibility claims remain provisional until functional tests.
+- [ ] Finalize release notes and runtime compatibility claims after live acceptance.
 - [ ] Preserve existing data; back up before migrations and test rollback.
 
 ### Packaging and QA
@@ -46,7 +47,7 @@ Development integration branch: `develop-1.2.4` (temporary historical name) — 
 
 ## Live acceptance gate (required after CI succeeds)
 - [ ] Upgrade the latest `dist/searchrank_1.3.0_2.1.3.zip` on Geeklog 2.2.2 staging (backup DB first).
-- [ ] Verify dashboard, Help, Analytics & CSV, 7/28/90/365-day filters, empty-state and CSV encoding.
+- [ ] Verify dashboard, Help, Analytics & CSV, all 7/28/90/365-day filters, empty-state and CSV encoding. User reports current report layout works (2026-10-18); detailed acceptance checklist remains open.
 - [ ] Verify CSS cache-busting after upgrading (hard reload should not be necessary).
 - [ ] Perform three site searches, verify counts and use pagination without clearing historical data.
 - [ ] Test log-clear only on disposable/staging data after making a backup, then test repeated searches.
