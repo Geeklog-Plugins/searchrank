@@ -164,10 +164,10 @@ function SEARCHRANK_adminNav($active)
     global $_CONF, $LANG_SEARCHRANK_1;
     $base = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
     $sections = array(
-        'dashboard' => array($base, 'Dashboard'),
+        'dashboard' => array($base, isset($LANG_SEARCHRANK_1['dashboard']) ? $LANG_SEARCHRANK_1['dashboard'] : 'Dashboard'),
         'showlog' => array($base . '?action=showlog', $LANG_SEARCHRANK_1['viewlog_link']),
-        'report' => array($base . '?action=report', 'Analytics & CSV'),
-        'help' => array($base . '?action=help', 'Help')
+        'report' => array($base . '?action=report', isset($LANG_SEARCHRANK_1['analytics']) ? $LANG_SEARCHRANK_1['analytics'] : 'Analytics & CSV'),
+        'help' => array($base . '?action=help', isset($LANG_SEARCHRANK_1['help_link']) ? $LANG_SEARCHRANK_1['help_link'] : 'Help')
     );
     $out = '<nav class="plugin-admin-nav" aria-label="SearchRank administration"><div class="plugin-admin-nav__primary">';
     foreach ($sections as $key => $section) {
