@@ -70,10 +70,11 @@ jobs:
             $daily = array(array("date" => "2026-10-17", "hits" => 2), array("date" => "2026-10-18", "hits" => 5));
             $labels = array("empty" => "Empty", "description" => "Searches per day", "show_data" => "View values", "date" => "Date", "hits" => "Hits", "base_url" => "/admin/plugins/searchrank/index.php");
             $html = SEARCHRANK_reportDailyChart($daily, $labels);
-            if (strpos($html, "<svg") === false || strpos($html, "<polyline") === false || strpos($html, "action=day") === false || strrpos($html, "2026-10-18") > strrpos($html, "2026-10-17")) { exit(1); }
+            if (strpos($html, "<svg") === false || strpos($html, "<path") === false || strpos($html, "action=day") === false || strrpos($html, "2026-10-18") > strrpos($html, "2026-10-17")) { exit(1); }
           '
 
           grep -q 'sr-daily-chart' admin/css/admin.css
+          test -f language/french_france_utf-8.php
 
 
   dist:
