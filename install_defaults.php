@@ -79,7 +79,7 @@ function plugin_initconfig_searchrank()
         $c->add('blockorder', 1, 'text', 0, 0, null, 50, true, $me, 0);
         $c->add('maxresults', 5, 'text', 0, 0, null, 60, true, $me, 0);
         $c->add('itemsperpage', 20, 'text', 0, 0, null, 70, true, $me, 0);
-        $c->add('ttl', 28, 'text', 0, 0, null, 80, true, $me, 0);
+        $c->add('ttl', 365, 'text', 0, 0, null, 80, true, $me, 0);
     }
 
     return true;
