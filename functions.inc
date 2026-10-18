@@ -142,16 +142,28 @@ function SEARCHRANK_housekeeping()
 
     if ($dohousekeeping) {
         $dohousekeeping = false; // do housekeeping once only
-        $today = strtotime(date("d-m-Y") . ' 00:00:00'); // today's date
-        // Stored dates are Unix timestamps (seconds); ttl is expressed in days.
-        $ttl = max(1, (int) $_SR_CONF['ttl']);
-        $old = $today - ($ttl * 86400);
+        // Retain full local calendar days, including across DST changes.
+        $today = strtotime('today');
+        $ttl = isset($_SR_CONF['ttl']) ? max(1, (int) $_SR_CONF['ttl']) : 28;
+        $old = strtotime('-' . $ttl . ' days', $today);
         // Never delete a query while it still has recent hit records.
         DB_query("DELETE FROM {$_TABLES['searchrank_hits']} WHERE date < {$old}");
         DB_query("DELETE FROM {$_TABLES['searchrank_queries']} WHERE NOT EXISTS "
                . "(SELECT 1 FROM {$_TABLES['searchrank_hits']} "
                . "WHERE {$_TABLES['searchrank_hits']}.hid = {$_TABLES['searchrank_queries']}.hid)");
     }
+}
+
+/**
+ * Geeklog built-in scheduled-task hook; respects Core cron schedule interval.
+ * Keeps inactive/low-search sites eligible for retention cleanup without
+ * requiring visits to the SearchRank administrator dashboard.
+ *
+ * @return void
+ */
+function plugin_runScheduledTask_searchrank()
+{
+    SEARCHRANK_housekeeping();
 }
 
 /**
