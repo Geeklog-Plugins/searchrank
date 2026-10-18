@@ -40,6 +40,10 @@ if (strpos(strtolower($_SERVER['PHP_SELF']), 'functions.inc') !== false) {
     die ('This file can not be used on its own.');
 }
 
+// This file is sometimes loaded inside a Geeklog function during plugin enable.
+// Explicit globals keep runtime state available after the include returns.
+global $_SR_CONF, $dohousekeeping, $_TABLES, $_DB_table_prefix;
+
 // Remember to do housekeeping once
 $dohousekeeping = true;
 
@@ -70,6 +74,8 @@ if (!isset($_SR_CONF['maxresults'])) {
 /**
  * Search Word Ranking plugin table(s)
  */
+// Geeklog may include functions.inc inside PLG_enableStateChange() scope.
+// Use the current site's database table prefix (also in multisite).
 $_TABLES['searchrank_queries'] = $_DB_table_prefix . 'searchrank_queries';
 $_TABLES['searchrank_hits'] = $_DB_table_prefix . 'searchrank_hits';
 
@@ -85,15 +91,15 @@ function SEARCHRANK_getResults($start = 0, $limit = 0)
 {
     global $_TABLES;
     $retval = array();
-    $sql['mysql'] = "SELECT {$_TABLES['searchrank_queries']}.query, SUM({$_TABLES['searchrank_hits']}.hits) AS allhits "
+    $start = max(0, (int) $start);
+    $limit = max(0, min(200, (int) $limit));
+    $sql = "SELECT {$_TABLES['searchrank_queries']}.query, SUM({$_TABLES['searchrank_hits']}.hits) AS allhits "
                   . "FROM {$_TABLES['searchrank_queries']} INNER JOIN {$_TABLES['searchrank_hits']} "
                   . "ON {$_TABLES['searchrank_queries']}.hid={$_TABLES['searchrank_hits']}.hid "
                   . "WHERE 1=1 GROUP BY query "
-                  . "ORDER BY allhits DESC ";
-    $sql['pgsql'] = $sql['mysql'];
+                  . "ORDER BY allhits DESC, {$_TABLES['searchrank_queries']}.query ASC ";
     if ($limit != 0) {
-        $sql['mysql'] .= "LIMIT $start,$limit";
-        $sql['pgsql'] .= "LIMIT $limit OFFSET $start";
+        $sql .= "LIMIT $start,$limit";
     }
     $query = DB_query($sql);
     while ($A = DB_fetchArray($query)) {
@@ -121,13 +127,8 @@ function SEARCHRANK_numResults()
 function SEARCHRANK_clearLog()
 {
     global $_TABLES, $LANG_SEARCHRANK_1;
-    $sql['mysql'] = "DELETE {$_TABLES['searchrank_queries']}, {$_TABLES['searchrank_hits']} "
-                  . "FROM {$_TABLES['searchrank_queries']} LEFT JOIN {$_TABLES['searchrank_hits']} "
-                  . "ON {$_TABLES['searchrank_queries']}.hid={$_TABLES['searchrank_hits']}.hid "
-                  . "WHERE 1=1";
-    $sql['pgsql'] = "DELETE FROM {$_TABLES['searchrank_queries']} USING {$_TABLES['searchrank_hits']} "
-                  . "WHERE {$_TABLES['searchrank_queries']}.hid={$_TABLES['searchrank_hits']}.hid ";
-    DB_query($sql);
+    DB_query("DELETE FROM {$_TABLES['searchrank_hits']}");
+    DB_query("DELETE FROM {$_TABLES['searchrank_queries']}");
 }
 
 /**
@@ -141,17 +142,28 @@ function SEARCHRANK_housekeeping()
 
     if ($dohousekeeping) {
         $dohousekeeping = false; // do housekeeping once only
-        $today = strtotime(date("d-m-Y") . ' 00:00:00'); // today's date
-        $old = $today - ($_SR_CONF['ttl'] * 60 * 24); // cutoff date
-        $sql['mysql'] = "DELETE {$_TABLES['searchrank_queries']}, {$_TABLES['searchrank_hits']} "
-                      . "FROM {$_TABLES['searchrank_queries']} LEFT JOIN {$_TABLES['searchrank_hits']} "
-                      . "ON {$_TABLES['searchrank_queries']}.hid={$_TABLES['searchrank_hits']}.hid "
-                      . "WHERE {$_TABLES['searchrank_hits']}.date<={$old}";
-        $sql['pgsql'] = "DELETE FROM {$_TABLES['searchrank_queries']} USING {$_TABLES['searchrank_hits']} "
-                      . "WHERE {$_TABLES['searchrank_queries']}.hid={$_TABLES['searchrank_hits']}.hid "
-                      . "AND {$_TABLES['searchrank_hits']}.date<={$old}";
-        DB_query($sql);
+        // Retain full local calendar days, including across DST changes.
+        $today = strtotime('today');
+        $ttl = isset($_SR_CONF['ttl']) ? max(1, (int) $_SR_CONF['ttl']) : 28;
+        $old = strtotime('-' . $ttl . ' days', $today);
+        // Never delete a query while it still has recent hit records.
+        DB_query("DELETE FROM {$_TABLES['searchrank_hits']} WHERE date < {$old}");
+        DB_query("DELETE FROM {$_TABLES['searchrank_queries']} WHERE NOT EXISTS "
+               . "(SELECT 1 FROM {$_TABLES['searchrank_hits']} "
+               . "WHERE {$_TABLES['searchrank_hits']}.hid = {$_TABLES['searchrank_queries']}.hid)");
     }
+}
+
+/**
+ * Geeklog built-in scheduled-task hook; respects Core cron schedule interval.
+ * Keeps inactive/low-search sites eligible for retention cleanup without
+ * requiring visits to the SearchRank administrator dashboard.
+ *
+ * @return void
+ */
+function plugin_runScheduledTask_searchrank()
+{
+    SEARCHRANK_housekeeping();
 }
 
 /**
@@ -159,22 +171,55 @@ function SEARCHRANK_housekeeping()
 *
 * @return    string     admin menu string
 */
+function SEARCHRANK_adminNav($active)
+{
+    global $_CONF, $LANG_SEARCHRANK_1;
+    $base = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
+    $sections = array(
+        'dashboard' => array($base, isset($LANG_SEARCHRANK_1['dashboard']) ? $LANG_SEARCHRANK_1['dashboard'] : 'Dashboard'),
+        'showlog' => array($base . '?action=showlog', $LANG_SEARCHRANK_1['viewlog_link']),
+        'report' => array($base . '?action=report', isset($LANG_SEARCHRANK_1['analytics']) ? $LANG_SEARCHRANK_1['analytics'] : 'Analytics & CSV'),
+        'help' => array($base . '?action=help', isset($LANG_SEARCHRANK_1['help_link']) ? $LANG_SEARCHRANK_1['help_link'] : 'Help')
+    );
+    $out = '<nav class="plugin-admin-nav" aria-label="SearchRank administration"><div class="plugin-admin-nav__primary">';
+    foreach ($sections as $key => $section) {
+        $selected = ($key === $active);
+        $out .= '<a class="plugin-admin-nav__item' . ($selected ? ' is-active' : '') . '"'
+            . ($selected ? ' aria-current="page"' : '') . ' href="'
+            . htmlspecialchars($section[0], ENT_QUOTES, 'UTF-8') . '">'
+            . htmlspecialchars($section[1], ENT_QUOTES, 'UTF-8') . '</a>';
+    }
+    $out .= '<form class="plugin-admin-nav__form" method="post" action="'
+         . htmlspecialchars($_CONF['site_admin_url'] . '/configuration.php', ENT_QUOTES, 'UTF-8') . '">'
+         . '<input type="hidden" name="conf_group" value="searchrank">'
+         . '<button class="plugin-admin-nav__item" type="submit">'
+         . htmlspecialchars($LANG_SEARCHRANK_1['conf_link'], ENT_QUOTES, 'UTF-8') . '</button></form>';
+    return $out . '</div></nav>';
+}
+
 function SEARCHRANK_makeMenu()
 {
     global $_CONF, $LANG_SEARCHRANK_1;
 
     SEARCHRANK_housekeeping();
-    $imgpath = $_CONF['site_admin_url'] . '/plugins/searchrank/images';
+    $base = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
+    $config = $_CONF['site_admin_url'] . '/configuration.php';
+    $count = SEARCHRANK_numResults();
 
-    return "<div class='sr_menuitem'><a href='#' onclick='document.searchrank_conf_link.submit()'>"
-         . "<img alt='' src='{$imgpath}/configuration.png'" . XHTML . "><br" . XHTML . ">{$LANG_SEARCHRANK_1['conf_link']}</a></div>"
-         . "<div class='sr_menuitem'><a href='#' onclick=\"location.href='?action=showlog'\">"
-         . "<img alt='' src='{$imgpath}/view_log.png'" . XHTML . "><br" . XHTML . ">{$LANG_SEARCHRANK_1['viewlog_link']}</a></div>"
-         . "<div class='sr_menuitem'><a href='#' onclick=\"if(confirm('{$LANG_SEARCHRANK_1['clear_confirm']}')){location.href='?action=clear'}\">"
-         . "<img alt='' src='{$imgpath}/clear_log.png'" . XHTML . "><br" . XHTML . ">{$LANG_SEARCHRANK_1['clear_link']}</a></div>"
-         . "<form name='searchrank_conf_link' action='{$_CONF['site_admin_url']}/configuration.php' method='POST'>"
-         . "<input type='hidden' name='conf_group' value='searchrank'></form>"
-         . "<br" . XHTML . "><br" . XHTML . "><br" . XHTML . "><br" . XHTML . ">";
+    $html = '<section class="sr-admin-home">';
+    $html .= '<p class="sr-intro">' . htmlspecialchars($LANG_SEARCHRANK_1['info_main'], ENT_QUOTES, 'UTF-8') . '</p>';
+    $html .= '<div class="sr-summary"><strong>' . (int) $count . '</strong> '
+          . htmlspecialchars($LANG_SEARCHRANK_1['queries'], ENT_QUOTES, 'UTF-8') . '</div>';
+
+    $html .= '<section class="sr-danger"><h3>' . htmlspecialchars($LANG_SEARCHRANK_1['clear_link'], ENT_QUOTES, 'UTF-8') . '</h3>';
+    $html .= '<form method="post" action="' . htmlspecialchars($base, ENT_QUOTES, 'UTF-8') . '" onsubmit="return confirm(this.getAttribute(\'data-confirm\'));" data-confirm="'
+          . htmlspecialchars($LANG_SEARCHRANK_1['clear_confirm'], ENT_QUOTES, 'UTF-8') . '">'
+          . '<input type="hidden" name="action" value="clear">'
+          . '<input type="hidden" name="token" value="' . htmlspecialchars(SEC_createToken(), ENT_QUOTES, 'UTF-8') . '">'
+          . '<button class="sr-clear" type="submit">' . htmlspecialchars($LANG_SEARCHRANK_1['clear_link'], ENT_QUOTES, 'UTF-8') . '</button></form>';
+    $html .= '</section></section>';
+
+    return $html;
 }
 
 /**
@@ -186,61 +231,38 @@ function SEARCHRANK_showLog()
 {
    global $_TABLES, $LANG_SEARCHRANK_1, $_SR_CONF, $_CONF, $LANG32, $LANG_ADMIN;
 
-    $page = '';
-    if (isset($_GET['page'])) {
-        // We might not be on the initial page
-        $page = COM_applyFilter($_GET['page']);
-        if (!is_numeric($page)) {
-            // Illegal request, redirect to initial page
-            $page = 1;
-            $results = SEARCHRANK_getResults(0, $_SR_CONF['itemsperpage']);
-        } else if ($page > 0 && $page <= ceil(SEARCHRANK_numResults() / $_SR_CONF['itemsperpage'])) {
-            // Get the items for the specified page
-            $results = SEARCHRANK_getResults($_SR_CONF['itemsperpage'] * ($page-1), $_SR_CONF['itemsperpage']);
-        } else {
-            // Illegal request, redirect to initial page
-            $page = 1;
-            $results = SEARCHRANK_getResults(0, $_SR_CONF['itemsperpage']);
-        }
-    } else {
-        // We are on the initial page
-        $page = 1;
-        $results = SEARCHRANK_getResults(0, $_SR_CONF['itemsperpage']);
-    }
+    // Clamp pagination settings to avoid division by zero and SQL injection.
+    $perPage = isset($_SR_CONF['itemsperpage']) ? (int) $_SR_CONF['itemsperpage'] : 20;
+    $perPage = max(1, min(200, $perPage));
+    $total = SEARCHRANK_numResults();
+    $totalPages = max(1, (int) ceil($total / $perPage));
+    $page = isset($_GET['page']) ? (int) COM_applyFilter($_GET['page']) : 1;
+    $page = max(1, min($totalPages, $page));
+    $results = SEARCHRANK_getResults(($page - 1) * $perPage, $perPage);
 
     // Print the number of entries
-    $retval = "<p>" . sprintf($LANG_SEARCHRANK_1['entries'], SEARCHRANK_numResults()) . "<br" . XHTML . "></p>";
+    $baseUrl = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
+    $retval = '';
+    $retval .= '<p>' . htmlspecialchars(sprintf($LANG_SEARCHRANK_1['entries'], $total), ENT_QUOTES, 'UTF-8') . '</p>';
     // Print all other entries
     $header_arr = array(array('text' => $LANG_SEARCHRANK_1['queries'], 'field' => 'query'),
                         array('text' => $LANG_SEARCHRANK_1['hits'], 'field' => 'hits'));
     $retval .= ADMIN_simpleList('ADMIN_getListField_newplugins', $header_arr, array(), $results);
 
-    // Create a link to go back to the admin screen
-    $back_url = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
-    $back_link = '<div class="button"><a href="' . $back_url . '">' . $LANG_SEARCHRANK_1['back'] . '</a></div>';
+    $back_url = $baseUrl;
 
-    // Create a button to go to the previous page of queries, if possible
-    $class = 'disabled';
-    $prev_url = '#';
+    // Compact pagination: unavailable controls must not appear clickable.
+    $retval .= '<nav class="sr-pagination" aria-label="Search log pages">';
     if ($page > 1) {
-        $class = 'button';
-        $prev_page = $page - 1;
-        $prev_url = $back_url . '?action=showlog&amp;page=' . $prev_page;
+        $prev_url = $back_url . '?action=showlog&page=' . ($page - 1);
+        $retval .= '<a class="sr-action" href="' . htmlspecialchars($prev_url, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($LANG_SEARCHRANK_1['prev'], ENT_QUOTES, 'UTF-8') . '</a>';
     }
-    $prev_link = '<div class="' . $class . '"><a href="' . $prev_url . '">' . $LANG_SEARCHRANK_1['prev'] . '</a></div>';
-
-    // Create a button to go to the next page of queries, if possible
-    $class = 'disabled';
-    $next_url = '#';
-    if (ceil(SEARCHRANK_numResults() / $_SR_CONF['itemsperpage']) > $page) {
-        $class = 'button';
-        $next_page = $page + 1;
-        $next_url = $back_url . '?action=showlog&amp;page=' . $next_page;
+    $retval .= '<span class="sr-page-indicator">' . (int) $page . ' / ' . (int) $totalPages . '</span>';
+    if ($page < $totalPages) {
+        $next_url = $back_url . '?action=showlog&page=' . ($page + 1);
+        $retval .= '<a class="sr-action" href="' . htmlspecialchars($next_url, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($LANG_SEARCHRANK_1['next'], ENT_QUOTES, 'UTF-8') . '</a>';
     }
-    $next_link = '<div class="' . $class . '"><a href="' . $next_url . '">' . $LANG_SEARCHRANK_1['next'] . '</a></div>';
-
-    // append the new buttons to the return variable
-    $retval .= "$prev_link $back_link $next_link<br" . XHTML . "><br" . XHTML . "><br" . XHTML . ">";
+    $retval .= '</nav>';
 
     return $retval;
 }
@@ -270,36 +292,46 @@ function plugin_dopluginsearch_searchrank($query, $datestart, $dateend, $topic, 
 
     SEARCHRANK_housekeeping();
     $today = strtotime(date("d-m-Y") . " 00:00:00"); // todays date
-    $hid = mt_rand(1000000, 9999999); // use random number 'hid'
-    // ensure that the random number is unique
-    while (DB_Count($_TABLES['searchrank_queries'], 'hid', $hid) != 0) {
-        $hid = mt_rand(1000000, 9999999);
+    // Do not store obvious secrets and personal identifiers from internal searches.
+    $query = MBYTE_substr(trim(strtolower((string) $query)), 0, 99);
+    if (preg_match('/(?:[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,}|(?:\\b\\d[ -]?){13,19}\\b)/i', $query)) {
+        return array();
     }
-    $query = MBYTE_substr(trim(strtolower($query)), 0, 99);
+    if ($query === '') {
+        return array();
+    }
     $query = DB_escapeString($query);
-    if (empty($query)) {
-        return array(); // Return an empty array
-    }
-    // Check if this query is already in the database
-    $q = DB_query("SELECT hid FROM {$_TABLES['searchrank_queries']} WHERE query='{$query}'");
-    $rows = DB_numRows($q);
-    if ($rows == 0) {
-        // Add a new row
-        DB_query("INSERT INTO {$_TABLES['searchrank_queries']} (query, hid) VALUES ('$query',$hid)");
-        DB_query("INSERT INTO {$_TABLES['searchrank_hits']} (hid, date, hits) VALUES ($hid, $today, 1)");
-    } else     {
-        // Increment by a hit
-        $data = DB_fetchArray($q);
-        $hid = $data['hid'];
-        $q = DB_query("SELECT date FROM {$_TABLES['searchrank_hits']} WHERE hid='{$hid}' AND date='{$today}'");
-        if (DB_numRows($q) == 0) {
-            // there is an entry for this query, but not for today
-            $sql = "INSERT INTO {$_TABLES['searchrank_hits']} (hid, date, hits) VALUES ($hid, $today, 1)";
+
+    // Legacy MyISAM tables lack unique indexes for (hid, date).
+    // Lock both tables as a unit so parallel searches cannot lose increments.
+    // No schema migration is necessary for existing 1.2.1 installations.
+    DB_query("LOCK TABLES {$_TABLES['searchrank_queries']} WRITE, {$_TABLES['searchrank_hits']} WRITE");
+    try {
+        $result = DB_query("SELECT hid FROM {$_TABLES['searchrank_queries']} WHERE query='{$query}'");
+        if (DB_numRows($result) > 0) {
+            $row = DB_fetchArray($result);
+            $hid = (int) $row['hid'];
         } else {
-            // there is already an entry for this query for today
-            $sql = "UPDATE {$_TABLES['searchrank_hits']} SET hits = hits + 1 WHERE hid='{$hid}' AND date='{$today}'";
+            // Allocate from the current maximum while holding the table lock.
+            $maxResult = DB_query("SELECT MAX(hid) AS last_hid FROM {$_TABLES['searchrank_queries']}");
+            $maxRow = DB_fetchArray($maxResult);
+            $maxHitsResult = DB_query("SELECT MAX(hid) AS last_hid FROM {$_TABLES['searchrank_hits']}");
+            $maxHitsRow = DB_fetchArray($maxHitsResult);
+            $hid = max(0, (int) $maxRow['last_hid'], (int) $maxHitsRow['last_hid']) + 1;
+            if ($hid > 4294967295) {
+                COM_errorLog('SearchRank: exhausted unsigned hid range');
+                return array();
+            }
+            DB_query("INSERT INTO {$_TABLES['searchrank_queries']} (query, hid) VALUES ('{$query}', {$hid})");
         }
-        DB_query($sql);    
+        $dayResult = DB_query("SELECT hid FROM {$_TABLES['searchrank_hits']} WHERE hid={$hid} AND date={$today}");
+        if (DB_numRows($dayResult) > 0) {
+            DB_query("UPDATE {$_TABLES['searchrank_hits']} SET hits=hits+1 WHERE hid={$hid} AND date={$today}");
+        } else {
+            DB_query("INSERT INTO {$_TABLES['searchrank_hits']} (hid, date, hits) VALUES ({$hid}, {$today}, 1)");
+        }
+    } finally {
+        DB_query('UNLOCK TABLES');
     }
      // Execute query
     return array(); // Return an empty array
@@ -315,12 +347,12 @@ function plugin_getheadercode_searchrank()
     if ($_SR_CONF['showblock'] && (!$_SR_CONF['rootonly'] || SEC_inGroup('Root'))) {
         // use this css for the block
         $retval = LB . '<link rel="stylesheet" type="text/css" href="'
-                . $_CONF['site_admin_url'] . '/plugins/searchrank/css/block.css"' . XHTML . '>' . LB;
+                . $_CONF['site_admin_url'] . '/plugins/searchrank/css/block.css?v=1.3.0"' . XHTML . '>' . LB;
     }
     // use this CSS only if we are on the plugin's pages
     if (substr_count($_SERVER['PHP_SELF'], '/searchrank/') > 0) {
         $retval .= '<link rel="stylesheet" type="text/css" href="'
-                . $_CONF['site_admin_url'] . '/plugins/searchrank/css/admin.css"' . XHTML . '>' . LB;
+                . $_CONF['site_admin_url'] . '/plugins/searchrank/css/admin.css?v=1.3.0.2"' . XHTML . '>' . LB;
     }
 
     return $retval;
@@ -371,7 +403,8 @@ function plugin_getBlocks_searchrank($side, $topic='')
                         $value['hits'] = (int)($value['hits'] / 1000) . "K";
                     }
                     $url = $_CONF['site_url'] . '/search.php?mode=search&amp;type=all&amp;keyType=all&amp;query=' . urlencode($title);
-                    $display .= "<div class='searchrank_item' title='{$title}'>";
+                    $safeTitle = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+                    $display .= "<div class='searchrank_item' title='{$safeTitle}'>";
                     $display .= COM_createLink($value['query'], $url, array('rel' => 'nofollow'));
                     $display .= "<div class='searchrank_entry'>{$value['hits']} {$LANG_SEARCHRANK_1['hits']}</div></div>";
                 }
@@ -572,6 +605,12 @@ function plugin_upgrade_searchrank()
         case '1.2.2':
             $current_version = '1.2.3';
             break;			
+
+        case '1.2.3':
+        case '1.2.4':
+            // 1.2.4 was a development-only build; no schema changes are required.
+            $current_version = '1.3.0';
+            break;
 
         default:
             $done = true;

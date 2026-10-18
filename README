@@ -1,1 +1,57 @@
-Please view the 'docs' folder.
+SearchRank 1.3.0 (release candidate)
+=================================
+
+SearchRank is a Geeklog plugin that records site-search phrases and displays
+rankings and administrative reports.
+
+Requirements
+------------
+- Geeklog 2.1.3 or newer (declared minimum; regression testing still required)
+- PHP 5.6.40 or newer; CI syntax checks run on PHP 5.6, 8.1 and 8.3
+- MySQL-compatible Geeklog database; PostgreSQL is not supported
+
+Installation and upgrades
+-------------------------
+Use the installable ZIP in dist/searchrank_1.3.0_2.1.3.zip.
+The ZIP contains a top-level searchrank/ directory. Back up the Geeklog
+database and plugin files before upgrading an existing installation.
+Keep all existing search logs; do not uninstall merely to update plugin files.
+For legacy installations reporting version 1.0.0, upgrade through the
+Geeklog plugin updater (1.0.0 -> 1.1.0 -> 1.1.1 -> 1.2.1 -> 1.3.0).
+Back up all SearchRank tables first and verify the upgraded configuration.
+The legacy upgrade path is present but has not yet been regression tested.
+
+Administration
+--------------
+Open Admin > SearchRank:
+- Dashboard: overview and ranking
+- Search Log: recorded phrases and counts
+- Analytics & CSV: filters for 7, 28, 90 or 365 days, daily SVG activity
+  chart, reverse-chronological day links, per-expression trends and CSV export
+- Help: configuration, privacy and troubleshooting guidance
+
+CSV export filenames contain the current site's hostname and export timestamp.
+The daily values list links to recorded search expressions for that date.
+Expired daily hit records are purged using local calendar-day boundaries.
+The built-in Geeklog scheduled-task hook runs retention cleanup at Geeklog's
+configured schedule; search and admin actions also trigger cleanup as a
+fallback. This is not a wall-clock cron on a site with zero traffic.
+Older search data may have been deleted by the retention policy. Counts
+reflect internal searches rather than external search engine impressions.
+
+Privacy and limitations
+-----------------------
+Search queries can include personal data. SearchRank skips a limited set
+of obvious email/card-like queries, but this is not comprehensive redaction.
+Review the public ranking block's visibility and retention settings.
+Searches with zero results are not measured separately by this version.
+
+Release status
+--------------
+This is an in-development 1.3.0 build, not an official release.
+CI success establishes syntax and packaging checks, not complete
+functional compatibility. Live checks for retention, concurrent writes,
+clean installations and Geeklog 2.1.3 are still pending.
+Additional language packs will be updated in a separate development phase.
+
+Additional documentation is in docs/ and ROADMAP.md.

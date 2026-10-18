@@ -1,42 +1,92 @@
-.button a {
-  float: left;
-  margin:             15px;
-  width:              200px;
-  padding:            4px 0px 6px 0px;
-  text-align:         center;
-  text-decoration:    none;
-  font-size:          13px;
-  display:            block;
-  color:              #eeeeec;
-  background:         #6a8bb9;
-  border:             solid 1px #555753;
+/* SearchRank admin: theme-independent, responsive controls. */
+.sr-admin-home { width: 100%; max-width: none; box-sizing: border-box; margin: 0; padding: 0; }
+.sr-intro { margin: 0 0 1rem; line-height: 1.55; }
+.sr-summary { padding: 1rem; margin: 0 0 1rem; border: 1px solid #c9cdd1; border-radius: 6px; }
+.sr-summary strong { font-size: 1.6rem; margin-right: .4rem; }
+.sr-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: 1.5rem; }
+.sr-config-form { margin: 0; }
+.sr-action { box-sizing: border-box; display: inline-block; min-height: 42px; padding: .65rem 1rem; border: 1px solid #718096; border-radius: 5px; background: transparent; color: inherit; font: inherit; text-decoration: none; cursor: pointer; }
+.sr-action:hover, .sr-action:focus { background: #e9edf0; color: #222; }
+.sr-danger { padding: 1rem; border: 1px solid #a77; border-radius: 6px; }
+.sr-danger h3 { margin-top: 0; }
+.sr-clear { min-height: 42px; padding: .65rem 1rem; border: 1px solid #a33; border-radius: 5px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.sr-clear:hover, .sr-clear:focus { background: #9b3030; color: #fff; }
+.sr-action:focus-visible, .sr-clear:focus-visible { outline: 3px solid #3665a0; outline-offset: 2px; }
+@media (max-width: 600px) { .sr-actions { display: block; } .sr-actions > * { display: block; width: 100%; margin: 0 0 .6rem; } .sr-action, .sr-clear { width: 100%; text-align: center; } }
+
+.sr-filter{display:flex;gap:.75rem;flex-wrap:wrap;align-items:end;margin:1rem 0}
+.sr-filter label{display:flex;flex-direction:column;gap:.3rem}
+.sr-filter input,.sr-filter select{min-height:42px;padding:.5rem}
+.sr-table-wrap{overflow-x:auto}
+.sr-report-table{width:100%;border-collapse:collapse;margin:1rem 0}
+.sr-report-table th,.sr-report-table td{padding:.65rem;border-bottom:1px solid #ccd;text-align:left}
+.sr-report-table th:last-child,.sr-report-table td:last-child{text-align:right}
+.sr-note{font-size:.9em;line-height:1.5}
+
+.sr-pagination{display:flex;flex-wrap:wrap;align-items:center;gap:.65rem;margin:1.25rem 0}
+.sr-page-indicator{padding:.5rem .75rem;font-variant-numeric:tabular-nums}
+
+.sr-log-toolbar{margin:0 0 1rem}
+.sr-back-link{display:inline-block;text-decoration:underline;text-underline-offset:.2em;padding:.2rem 0}
+.sr-back-link:hover,.sr-back-link:focus{text-decoration-thickness:2px}
+
+/* Shared Geeklog plugin administration navigation contract. */
+.plugin-admin-nav{margin:0 0 1.25rem}
+.plugin-admin-nav__primary{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.plugin-admin-nav__item{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-height:2.4rem;padding:.5rem .8rem;border:1px solid currentColor;border-radius:.35rem;background:transparent;color:inherit;font:inherit;text-decoration:none;cursor:pointer}
+.plugin-admin-nav__item.is-active{font-weight:700;box-shadow:inset 0 -2px 0 currentColor}
+.plugin-admin-nav__item:focus-visible{outline:3px solid currentColor;outline-offset:2px}
+.plugin-admin-nav__form{display:inline-block;margin:0}
+@media(max-width:640px){.plugin-admin-nav__primary{align-items:stretch;flex-direction:column}.plugin-admin-nav__item,.plugin-admin-nav__form,.plugin-admin-nav__form .plugin-admin-nav__item{width:100%}}
+
+/* Keep all admin page content aligned below the common navigation. */
+.plugin-admin-nav + .sr-admin-home,
+.plugin-admin-nav + .sr-log-content,
+.plugin-admin-nav + .sr-report-content { margin-top: 0; }
+
+/* Override theme link/button hover rules without touching other admin UI. */
+.plugin-admin-nav .plugin-admin-nav__primary > a.plugin-admin-nav__item,
+.plugin-admin-nav .plugin-admin-nav__form > button.plugin-admin-nav__item {
+    appearance: none;
+    -webkit-appearance: none;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    color: #25383b;
+    border: 1px solid #647774;
+    text-decoration: none;
+    text-shadow: none;
+    box-shadow: none;
+    font-weight: 400;
+    line-height: 1.4;
 }
-.button a:hover {
-  color:              #3c6aa7;
-  background:         #eeeeec;
+.plugin-admin-nav .plugin-admin-nav__primary > a.plugin-admin-nav__item:hover,
+.plugin-admin-nav .plugin-admin-nav__primary > a.plugin-admin-nav__item:focus,
+.plugin-admin-nav .plugin-admin-nav__form > button.plugin-admin-nav__item:hover,
+.plugin-admin-nav .plugin-admin-nav__form > button.plugin-admin-nav__item:focus {
+    background-color: #eaf1ed;
+    color: #173c30;
+    border-color: #2f6651;
+    text-decoration: none;
+    text-shadow: none;
 }
-.disabled a {
-  float: left;
-  margin:             15px;
-  width:              200px;
-  padding:            4px 0px 6px 0px;
-  text-align:         center;
-  text-decoration:    none;
-  font-size:          13px;
-  display:            block;
-  color:              #555753;
-  background:         #d3d7cf;
-  border:             solid 1px #555753;
+.plugin-admin-nav .plugin-admin-nav__primary > a.plugin-admin-nav__item.is-active {
+    color: #173c30;
+    font-weight: 700;
+    border-color: #335b4e;
+    box-shadow: inset 0 -3px 0 #335b4e;
+}
+.plugin-admin-nav .plugin-admin-nav__form > button.plugin-admin-nav__item {
+    margin: 0;
+    min-width: 0;
 }
 
-.sr_menuitem {
-  float:              left;
-  text-align:         center;
-  margin:             10px;
-  width:              200px;
-}
-
-.sr_menuitem a {
-  text-decoration:    none;
-}
-
+/* Search activity chart: scalable vector, theme-neutral, no JS dependency. */
+.sr-chart-figure{margin:1rem 0;max-width:100%}
+.sr-daily-chart{width:100%;height:auto;display:block;overflow:hidden;background:transparent;max-width:100%}
+.sr-chart-grid{stroke:#cbd5d1;stroke-width:1;stroke-dasharray:3 4}
+.sr-chart-label{font-size:12px;fill:#51635c}
+.sr-chart-line{fill:none;stroke:#27684e;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.sr-chart-point{fill:#27684e;stroke:#fff;stroke-width:1.5}
+.sr-chart-data{margin:1rem 0}
+.sr-chart-data summary{cursor:pointer;text-decoration:underline;text-underline-offset:.2em}
+.sr-chart-data summary:focus-visible{outline:2px solid #27684e;outline-offset:3px}

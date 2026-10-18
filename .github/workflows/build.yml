@@ -1,0 +1,146 @@
+name: SearchRank CI and installable ZIP
+on:
+  push:
+    branches: [develop-1.2.4]
+    paths-ignore:
+      - 'dist/**'
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: searchrank-dist-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  php-lint:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['5.6', '8.1', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: none
+      - name: PHP syntax
+        run: find . -path './dist' -prune -o -name '*.php' -type f -print0 | xargs -0 -n1 php -l
+      - name: English locale and admin contract
+        run: |
+          php -r '
+            $LANG09 = array(70 => "No results");
+            $LANG32 = array(9 => "Upgrade required");
+            require "language/english.php";
+            $plain = $LANG_SEARCHRANK_1;
+            require "language/english_utf-8.php";
+            $utf8 = $LANG_SEARCHRANK_1;
+            $keys = array("dashboard", "analytics", "help_link", "help_title",
+              "help_intro", "daily_activity", "trends_title", "total_summary",
+              "previous_summary", "no_variation", "variation", "export_link",
+              "invalid_request", "search_expression", "filter");
+            foreach ($keys as $key) {
+              if (!isset($plain[$key]) || !isset($utf8[$key]) ||
+                  trim($plain[$key]) === "" || trim($utf8[$key]) === "") {
+                fwrite(STDERR, "Missing English translation: " . $key . PHP_EOL);
+                exit(1);
+              }
+            }
+            if (sprintf($plain["total_summary"], 1, 7, 2) === "") {
+              exit(1);
+            }
+          '
+          grep -q 'function SEARCHRANK_adminNav(' functions.inc
+          grep -q 'aria-current="page"' functions.inc
+          grep -q 'plugin-admin-nav__form' functions.inc
+          grep -q 'SEARCHRANK_adminNav(' admin/index.php
+          grep -q 'function SEARCHRANK_reportTrends(' admin/reporting.inc.php
+          grep -q 'function SEARCHRANK_reportPeriods(' admin/reporting.inc.php
+          grep -Fq "add('ttl', 365" install_defaults.php
+          grep -Fq 'function plugin_runScheduledTask_searchrank(' functions.inc
+          grep -Fq 'local calendar days' functions.inc
+          grep -q 'function SEARCHRANK_reportDailyChart(' admin/reporting.inc.php
+      - name: Daily chart rendering smoke test
+        run: |
+          php -r '
+            $_SERVER["PHP_SELF"] = "/admin/plugins/searchrank/index.php";
+            require "admin/reporting.inc.php";
+            $daily = array(array("date" => "2026-10-17", "hits" => 2), array("date" => "2026-10-18", "hits" => 5));
+            $labels = array("empty" => "Empty", "description" => "Searches per day", "show_data" => "View values", "date" => "Date", "hits" => "Hits", "base_url" => "/admin/plugins/searchrank/index.php");
+            $html = SEARCHRANK_reportDailyChart($daily, $labels);
+            $zero = SEARCHRANK_reportDailyChart(array(array("date" => "2026-10-18", "hits" => 0)), $labels);
+            if (strpos($zero, "<svg") !== false || strpos($zero, "Empty") === false) { exit(1); }
+            if (strpos($html, "<svg") === false || strpos($html, "<path") === false || strpos($html, "action=day") === false || strrpos($html, "2026-10-18") > strrpos($html, "2026-10-17")) { exit(1); }
+          '
+
+          grep -q 'sr-daily-chart' admin/css/admin.css
+          test -f language/french_france_utf-8.php
+
+
+  dist:
+    name: Build and publish installable ZIP
+    needs: php-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Validate release version contract
+        run: |
+          grep -q "'pi_version'      => '1.3.0'" autoinstall.php
+          grep -q '"geeklog": "2.1.3"' plugin.json
+          grep -q 'admin.css?v=1.3.0' functions.inc
+          test -f admin/reporting.inc.php
+      - name: Build Geeklog archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          filename="searchrank_1.3.0_2.1.3.zip"
+          mkdir -p dist
+          staging="$(mktemp -d)"
+          mkdir -p "$staging/searchrank"
+          for item in admin autoinstall.php docs functions.inc install_defaults.php install_updates.php language plugin.json sql README; do
+            cp -R "$item" "$staging/searchrank/"
+          done
+          if find "$staging/searchrank" -iname '*pgsql*' | grep -q .; then
+            echo "PostgreSQL artifacts are not supported" >&2
+            exit 1
+          fi
+          (cd "$staging" && zip -X -q -r "$GITHUB_WORKSPACE/dist/$filename" searchrank)
+          unzip -t "dist/$filename"
+          unzip -Z -1 "dist/$filename" | grep -qx 'searchrank/autoinstall.php'
+          unzip -Z -1 "dist/$filename" | grep -qx 'searchrank/functions.inc'
+          unzip -Z -1 "dist/$filename" | grep -qx 'searchrank/sql/mysql_install.php'
+          unzip -Z -1 "dist/$filename" | grep -qx 'searchrank/admin/reporting.inc.php'
+          unzip -Z -1 "dist/$filename" | grep -qx 'searchrank/admin/css/admin.css'
+          unzip -Z -1 "dist/$filename" | grep -qx 'searchrank/admin/index.php'
+          rm -rf "$staging"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: searchrank_1.3.0_2.1.3
+          path: dist/searchrank_1.3.0_2.1.3.zip
+          if-no-files-found: error
+      - name: Commit archive in dist on development branch
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/develop-1.2.4'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Keep the freshly built ZIP while synchronizing source HEAD.
+          cp dist/searchrank_1.3.0_2.1.3.zip "$RUNNER_TEMP/searchrank.zip"
+          git fetch origin develop-1.2.4
+          git reset --hard origin/develop-1.2.4
+          mkdir -p dist
+          cp "$RUNNER_TEMP/searchrank.zip" dist/searchrank_1.3.0_2.1.3.zip
+          # Keep only the current release candidate in dist.
+          find dist -maxdepth 1 -type f -name 'searchrank_*.zip' ! -name 'searchrank_1.3.0_2.1.3.zip' -delete
+          git add -A -f dist/
+          if ! git diff --cached --quiet; then
+            git commit -m "build: refresh installable SearchRank ZIP [skip ci]"
+            git push origin HEAD:develop-1.2.4
+          fi

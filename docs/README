@@ -19,3 +19,6 @@
 | Created with the Geeklog Plugin Toolkit.                                  |
 +---------------------------------------------------------------------------+
 
+
+SearchRank 1.2.4 development supports MySQL-compatible Geeklog databases only.
+PostgreSQL is no longer supported; existing PostgreSQL data is not automatically migrated.
