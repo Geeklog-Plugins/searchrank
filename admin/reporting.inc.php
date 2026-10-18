@@ -306,13 +306,7 @@ function SEARCHRANK_reportPage()
     $html .= '<div class="sr-summary">' . $esc(sprintf($LANG_SEARCHRANK_1['total_summary'], $total, $days, count($rows))) . '</div>';
     $html .= '<p class="sr-note">' . $esc(sprintf($LANG_SEARCHRANK_1['previous_summary'], $days, $previous))
            . ' ' . $esc($trend === null ? $LANG_SEARCHRANK_1['no_variation'] : sprintf($LANG_SEARCHRANK_1['variation'], $trend)) . '</p>';
-    $html .= '<p><a href="' . $esc($base . '?action=export&days=' . $days . '&q=' . rawurlencode($filter)) . '">' . $esc($LANG_SEARCHRANK_1['export_link']) . '</a></p>';
-    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">Expression</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['hits']) . '</th></tr></thead><tbody>';
-    foreach ($rows as $row) {
-        $html .= '<tr><td>' . $esc($row['query']) . '</td><td>' . $row['hits'] . '</td></tr>';
-    }
-    if (!$rows) { $html .= '<tr><td colspan="2">' . $esc($LANG_SEARCHRANK_1['no_searches']) . '</td></tr>'; }
-    $html .= '</tbody></table></div><h3>' . $esc($LANG_SEARCHRANK_1['daily_activity']) . '</h3>';
+    $html .= '<h3>' . $esc($LANG_SEARCHRANK_1['daily_activity']) . '</h3>';
     $html .= SEARCHRANK_reportDailyChart($daily, array(
         'description' => isset($LANG_SEARCHRANK_1['chart_description']) ? $LANG_SEARCHRANK_1['chart_description'] : 'Searches per day',
         'show_data' => isset($LANG_SEARCHRANK_1['chart_show_data']) ? $LANG_SEARCHRANK_1['chart_show_data'] : 'View daily values',
@@ -321,6 +315,7 @@ function SEARCHRANK_reportPage()
         'hits' => $LANG_SEARCHRANK_1['hits'],
         'base_url' => $base
     ));
+    $html .= '<p><a href="' . $esc($base . '?action=export&days=' . $days . '&q=' . rawurlencode($filter)) . '">' . $esc($LANG_SEARCHRANK_1['export_link']) . '</a></p>';
     $trends = SEARCHRANK_reportTrends($days, 20);
     $html .= '<h3>' . $esc($LANG_SEARCHRANK_1['trends_title']) . '</h3>';
     $html .= '<p class="sr-note">' . $esc($LANG_SEARCHRANK_1['trends_note']) . '</p>';
@@ -335,6 +330,13 @@ function SEARCHRANK_reportPage()
     if (!$trends) {
         $html .= '<tr><td colspan="4">' . $esc($LANG_SEARCHRANK_1['empty_trends']) . '</td></tr>';
     }
+    $html .= '</tbody></table></div>';
+    $html .= '<h3>Most searched expressions</h3>';
+    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">Expression</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['hits']) . '</th></tr></thead><tbody>';
+    foreach ($rows as $row) {
+        $html .= '<tr><td>' . $esc($row['query']) . '</td><td>' . $row['hits'] . '</td></tr>';
+    }
+    if (!$rows) { $html .= '<tr><td colspan="2">' . $esc($LANG_SEARCHRANK_1['no_searches']) . '</td></tr>'; }
     $html .= '</tbody></table></div>';
     $html .= '<p class="sr-note">' . $esc($LANG_SEARCHRANK_1['retention_note']) . '</p></div>';
     return $html;
