@@ -70,6 +70,8 @@ jobs:
             $daily = array(array("date" => "2026-10-17", "hits" => 2), array("date" => "2026-10-18", "hits" => 5));
             $labels = array("empty" => "Empty", "description" => "Searches per day", "show_data" => "View values", "date" => "Date", "hits" => "Hits", "base_url" => "/admin/plugins/searchrank/index.php");
             $html = SEARCHRANK_reportDailyChart($daily, $labels);
+            $zero = SEARCHRANK_reportDailyChart(array(array("date" => "2026-10-18", "hits" => 0)), $labels);
+            if (strpos($zero, "<svg") !== false || strpos($zero, "Empty") === false) { exit(1); }
             if (strpos($html, "<svg") === false || strpos($html, "<path") === false || strpos($html, "action=day") === false || strrpos($html, "2026-10-18") > strrpos($html, "2026-10-17")) { exit(1); }
           '
 
