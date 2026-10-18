@@ -151,7 +151,18 @@ function SEARCHRANK_reportPage()
         'period' => 'Period',
         'days' => 'days',
         'search_expression' => 'Search expression',
-        'filter' => 'Filter'
+        'filter' => 'Filter',
+        'total_summary' => '%1$d searches over %2$d days (all expressions); %3$d matching expressions shown (maximum 200)',
+        'previous_summary' => 'Previous %1$d days: %2$d searches.',
+        'no_variation' => 'Variation not available (no previous data).',
+        'variation' => 'Change: %s%%.',
+        'no_searches' => 'No searches found for this period.',
+        'trends_title' => 'Search expression trends',
+        'trends_note' => 'Leading expressions compared with the preceding period; values depend on retained history.',
+        'no_previous' => 'No previous recorded hits',
+        'empty_trends' => 'No searches recorded for this period.',
+        'retention_note' => 'History is limited by retention. Counts are internal searches, not Google/Bing impressions. Zero-result searches are not measured yet.',
+        'export_link' => 'Export CSV (maximum 1,000 expressions)'
     );
     foreach ($fallback as $key => $value) {
         if (!isset($LANG_SEARCHRANK_1[$key])) {
