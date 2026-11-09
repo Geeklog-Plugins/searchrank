@@ -120,77 +120,66 @@ function SEARCHRANK_reportTrends($days, $limit)
  */
 function SEARCHRANK_reportDailyChart($daily, $labels)
 {
-    $escape = function ($value) {
-        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
-    };
+    $escape = function ($value) { return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8'); };
     $count = count($daily);
-    if ($count === 0) {
-        return '<p>' . $escape($labels['empty']) . '</p>';
-    }
+    if (!$count) { return '<p class="sr-note">' . $escape($labels['empty']) . '</p>'; }
     $max = 0;
-    foreach ($daily as $row) {
-        $max = max($max, (int) $row['hits']);
-    }
-    if ($max === 0) {
-        return '<p class="sr-note">' . $escape($labels['empty']) . '</p>';
-    }
-    $left = 48;
-    $right = 16;
-    $top = 16;
-    $bottom = 44;
-    $width = 900;
-    $height = 280;
+    foreach ($daily as $row) { $max = max($max, max(0, (int) $row['hits'])); }
+    if (!$max) { return '<p class="sr-note">' . $escape($labels['empty']) . '</p>'; }
+
+    // All SVG geometry uses explicit presentation attributes so Geeklog theme
+    // rules for generic path, line, circle or text elements cannot break it.
+    $width = 900; $height = 280; $left = 56; $right = 24; $top = 18; $bottom = 50;
     $plotWidth = $width - $left - $right;
     $plotHeight = $height - $top - $bottom;
-    $points = array();
-    $markers = '';
+    $step = max(1, (int) ceil($max / 4));
+    $axisMax = $step * 4;
+    $points = array(); $markers = '';
     foreach ($daily as $i => $row) {
         $hits = max(0, (int) $row['hits']);
-        $x = $left + ($count > 1 ? $i * $plotWidth / ($count - 1) : $plotWidth / 2);
-        $y = $top + $plotHeight * (1 - $hits / $max);
-        $x = round($x, 2);
-        $y = round($y, 2);
+        $x = round($left + ($count > 1 ? $i * $plotWidth / ($count - 1) : $plotWidth / 2), 2);
+        $y = round($top + $plotHeight * (1 - $hits / $axisMax), 2);
         $points[] = ($i === 0 ? 'M ' : 'L ') . $x . ' ' . $y;
         if ($count <= 31) {
-            $markers .= '<circle cx="' . $x . '" cy="' . $y . '" r="3" class="sr-chart-point">'
+            $markers .= '<circle cx="' . $x . '" cy="' . $y . '" r="3" fill="#27684e" stroke="#fff" stroke-width="1.5">'
                 . '<title>' . $escape($row['date'] . ': ' . $hits . ' ' . $labels['hits']) . '</title></circle>';
         }
     }
-    $svg = '<svg class="sr-daily-chart" viewBox="0 0 900 280" role="img" '
-         . 'aria-label="' . $escape($labels['description']) . '" xmlns="http://www.w3.org/2000/svg">';
+    $svg = '<svg class="sr-daily-chart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 280" '
+         . 'width="900" height="280" preserveAspectRatio="xMidYMid meet" role="img" '
+         . 'aria-label="' . $escape($labels['description']) . '">';
     for ($tick = 0; $tick <= 4; ++$tick) {
-        $value = $max * $tick / 4;
         $y = round($top + $plotHeight * (1 - $tick / 4), 2);
-        $svg .= '<line class="sr-chart-grid" x1="' . $left . '" x2="' . ($width - $right)
-              . '" y1="' . $y . '" y2="' . $y . '"/>'
-              . '<text class="sr-chart-label" x="' . ($left - 8) . '" y="' . ($y + 4)
-              . '" text-anchor="end">' . $escape((string) round($value, 1)) . '</text>';
+        $svg .= '<line x1="' . $left . '" x2="' . ($width - $right) . '" y1="' . $y
+              . '" y2="' . $y . '" stroke="#cbd5d1" stroke-width="1" stroke-dasharray="3 4"/>'
+              . '<text x="' . ($left - 10) . '" y="' . ($y + 4)
+              . '" text-anchor="end" fill="#51635c" font-size="12">' . ($step * $tick) . '</text>';
     }
-    $tickIndexes = array(0, (int) floor(($count - 1) / 2), $count - 1);
-    foreach (array_unique($tickIndexes) as $idx) {
+    // Use short dates and anchor the end labels inside the chart viewport.
+    $tickIndexes = array_unique(array(0, (int) floor(($count - 1) / 2), $count - 1));
+    foreach ($tickIndexes as $idx) {
         $x = round($left + ($count > 1 ? $idx * $plotWidth / ($count - 1) : $plotWidth / 2), 2);
-        $svg .= '<text class="sr-chart-label" x="' . $x . '" y="' . ($height - 13)
-              . '" text-anchor="middle">' . $escape($daily[$idx]['date']) . '</text>';
+        $anchor = $idx === 0 ? 'start' : ($idx === $count - 1 ? 'end' : 'middle');
+        $shortDate = date('d/m', strtotime($daily[$idx]['date']));
+        $svg .= '<text x="' . $x . '" y="' . ($height - 17) . '" text-anchor="' . $anchor
+              . '" fill="#51635c" font-size="12">' . $escape($shortDate) . '</text>';
     }
-    $svg .= '<path class="sr-chart-line" d="' . implode(' ', $points) . '"/>'
+    $svg .= '<path d="' . implode(' ', $points) . '" fill="none" stroke="#27684e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'
           . $markers . '</svg>';
     $html = '<figure class="sr-chart-figure">' . $svg . '<figcaption class="sr-note">'
           . $escape($labels['description']) . '</figcaption></figure>';
-    $html .= '<details class="sr-chart-data"><summary>' . $escape($labels['show_data']) . '</summary>';
-    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">'
+    $html .= '<details class="sr-chart-data"><summary>' . $escape($labels['show_data']) . '</summary>'
+          . '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">'
           . $escape($labels['date']) . '</th><th scope="col">' . $escape($labels['hits'])
           . '</th></tr></thead><tbody>';
     foreach (array_reverse($daily) as $row) {
         $url = $labels['base_url'] . '?action=day&date=' . rawurlencode($row['date']);
-        $html .= '<tr><td><a href="' . $escape($url) . '">'
-              . $escape($row['date']) . '</a></td><td>' . (int) $row['hits'] . '</td></tr>';
+        $html .= '<tr><td><a href="' . $escape($url) . '">' . $escape($row['date'])
+              . '</a></td><td>' . (int) $row['hits'] . '</td></tr>';
     }
     return $html . '</tbody></table></div></details>';
 }
 
-/**
- * Display terms recorded on one calendar day (administrator-only route).
- */
 function SEARCHRANK_reportDayPage($date)
 {
     global $_TABLES, $_CONF, $LANG_SEARCHRANK_1;
@@ -365,4 +354,91 @@ function SEARCHRANK_reportPage()
     $html .= '<p class="sr-note">' . $esc(sprintf(isset($LANG_SEARCHRANK_1['retention_period_note']) ? $LANG_SEARCHRANK_1['retention_period_note'] : 'Retention: %d days. Older data may be unavailable.', $retention)) . '</p>';
     $html .= '<p class="sr-note">' . $esc($LANG_SEARCHRANK_1['retention_note']) . '</p></div>';
     return $html;
+}
+
+
+/**
+ * Compact landing dashboard. Reuses read-only reporting queries and leaves
+ * detailed filters / CSV exports on the separate reporting page.
+ */
+function SEARCHRANK_dashboardPage()
+{
+    global $_CONF, $_SR_CONF, $LANG_SEARCHRANK_1;
+    SEARCHRANK_housekeeping();
+    $esc = function ($v) { return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'); };
+    $base = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
+    $days = SEARCHRANK_reportDays();
+    $daily = SEARCHRANK_reportDaily($days);
+    $total = 0;
+    foreach ($daily as $row) { $total += (int) $row['hits']; }
+    $top = SEARCHRANK_reportRows($days, '', 10);
+    // The top-ten list is limited; this query counts all distinct expressions.
+    $distinct = SEARCHRANK_reportDistinct($days);
+    $ttl = isset($_SR_CONF['ttl']) ? max(1, (int) $_SR_CONF['ttl']) : 28;
+    $canCompare = $ttl >= $days * 2;
+    $previous = $canCompare ? SEARCHRANK_reportTotals($days, $days) : 0;
+    $previousLabel = $canCompare && $previous > 0 ? (string) $previous : '—';
+    $locale = function ($key, $fallback) use ($LANG_SEARCHRANK_1) {
+        return isset($LANG_SEARCHRANK_1[$key]) ? $LANG_SEARCHRANK_1[$key] : $fallback;
+    };
+    $html = '<section class="sr-admin-home sr-dashboard"><h2>' . $esc($locale('dashboard', 'Dashboard')) . '</h2>';
+    $html .= '<form class="sr-filter" method="get" action="' . $esc($base) . '"><label>'
+          . $esc($locale('period', 'Period')) . ' <select name="days">';
+    foreach (SEARCHRANK_reportPeriods() as $period) {
+        $html .= '<option value="' . $period . '"' . ($period === $days ? ' selected' : '') . '>'
+              . $period . ' ' . $esc($locale('days', 'days')) . '</option>';
+    }
+    $html .= '</select></label><button class="sr-action" type="submit">'
+          . $esc($locale('filter', 'Filter')) . '</button></form>';
+    $cards = array(
+        array($locale('dashboard_searches', 'Searches in selected period'), $total),
+        array($locale('dashboard_distinct', 'Distinct search expressions'), $distinct),
+        array($locale('dashboard_previous', 'Searches in previous period'), $previousLabel)
+    );
+    $html .= '<div class="sr-kpi-grid">';
+    foreach ($cards as $card) {
+        $html .= '<div class="sr-kpi"><span class="sr-kpi-label">' . $esc($card[0])
+              . '</span><strong>' . $esc($card[1]) . '</strong></div>';
+    }
+    $html .= '</div>';
+    if (!$canCompare || !$previous) {
+        $html .= '<p class="sr-note">' . $esc($locale('no_variation', 'Previous-period comparison unavailable.')) . '</p>';
+    }
+    $html .= '<h3>' . $esc($locale('daily_activity', 'Daily activity')) . '</h3>';
+    $html .= SEARCHRANK_reportDailyChart($daily, array(
+        'description' => $locale('chart_description', 'Searches per day'),
+        'show_data' => $locale('chart_show_data', 'View daily values'),
+        'empty' => $locale('no_searches', 'No searches found for this period.'),
+        'date' => $locale('date', 'Date'),
+        'hits' => $locale('hits', 'Hits'),
+        'base_url' => $base
+    ));
+    $html .= '<div class="sr-dashboard-footer"><h3>' . $esc($locale('dashboard_top', 'Top search expressions')) . '</h3>';
+    if ($top) {
+        $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">'
+              . $esc($locale('search_expression', 'Search expression')) . '</th><th scope="col">'
+              . $esc($locale('hits', 'Hits')) . '</th></tr></thead><tbody>';
+        foreach ($top as $row) {
+            $html .= '<tr><td>' . $esc($row['query']) . '</td><td>' . (int) $row['hits'] . '</td></tr>';
+        }
+        $html .= '</tbody></table></div>';
+    } else {
+        $html .= '<p>' . $esc($locale('no_searches', 'No searches found for this period.')) . '</p>';
+    }
+    $html .= '<p><a class="sr-action" href="' . $esc($base . '?action=report&days=' . $days) . '">'
+          . $esc($locale('analytics', 'Analytics & CSV')) . '</a></p></div></section>';
+    return $html;
+}
+
+function SEARCHRANK_reportDistinct($days)
+{
+    global $_TABLES;
+    $start = SEARCHRANK_reportStart(max(1, (int) $days) - 1);
+    $end = strtotime('tomorrow');
+    $sql = "SELECT COUNT(DISTINCT q.query) AS total FROM {$_TABLES['searchrank_queries']} q "
+         . "INNER JOIN {$_TABLES['searchrank_hits']} h ON q.hid=h.hid "
+         . "WHERE h.date >= {$start} AND h.date < {$end}";
+    $result = DB_query($sql);
+    $row = DB_fetchArray($result);
+    return $row && isset($row['total']) ? (int) $row['total'] : 0;
 }
