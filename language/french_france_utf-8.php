@@ -93,6 +93,7 @@ $LANG_SEARCHRANK_1 = array(
     'no_previous' => 'Aucune occurrence sur la période précédente',
     'no_searches' => 'Aucune recherche pour cette période.',
     'total_summary' => '%1$d recherches sur %2$d jours (toutes expressions) ; %3$d expressions affichées (maximum 200)',
+    'report_page_summary' => '%1$d recherches sur %2$d jours ; %3$d expressions correspondantes ; affichage de %4$d à %5$d',
     'previous_summary' => '%2$d recherches sur les %1$d jours précédents.',
     'no_variation' => 'Variation indisponible (aucune donnée précédente).',
     'variation' => 'Variation : %s %%.',
