@@ -101,3 +101,27 @@ The dashboard uses the same read-only data as detailed reporting. Clear-log main
 ### Report pagination (1.4.0)
 
 Detailed reports show 25 ranked expressions per page with previous/next links anchored to the ranking. Page changes retain the search expression filter and selected period. The matching-expression count describes the full filtered result; export still independently returns up to 1,000 expressions, regardless of the displayed page. The preceding-period trends are collapsed by default to reduce scrolling.
+
+## Local interoperability services (1.4.0)
+
+Follows [Geeklog Plugin Capability Contract](https://github.com/hostellerie/memorandum/blob/main/plugin-capability-contract.md) and the [SEO and Measurement Interoperability Guide](https://github.com/hostellerie/memorandum/blob/main/seo-measurement-interoperability-guide.md).
+
+`plugin_getcapabilities_searchrank()` declares `dashboard.summary` and `searchrank.query.metrics`. Local Geeklog clients can feature-detect `PLG_invokeService()` and request:
+
+```php
+$output = array();
+$messages = array();
+$status = PLG_invokeService('searchrank', 'query_metrics',
+    array('days' => 28), $output, $messages);
+// Or: 'dashboard_summary' for metrics, alerts and administration links.
+```
+
+Both services are **read-only, administrator-only**, limited to periods of 1–365 days within the configured retention, and return aggregate counts only. No individual search terms, personal data or third-party SQL schema is exposed. The dispatcher requires the active Geeklog plugin; the callbacks reject web-service requests (`gl_svc`) and unauthorized users. A returned null for zero-result searches means **not measured**, not zero. These services do not measure Google/Bing queries and are not associated with a content URL.
+
+### Privacy behavior
+
+New internal searches containing recognizable emails, payment-card-like sequences, password/token parameters, bearer credentials or common token prefixes are not logged. Existing history is not silently rewritten, but the public Most Searched block excludes detected sensitive expressions. This is conservative heuristic filtering, **not comprehensive PII detection**: it cannot guarantee removal of all personal data. Site administrators should review stored history, retention and public block visibility; avoid publishing historical exports. No new configuration field or schema migration is required. To run isolated checks: `php tests/privacy-smoke.php`.
+
+### Outstanding runtime acceptance
+
+Validate services using `PLG_invokeService` with Geeklog 2.1.3/2.2.2 enabled/disabled states, administrator/non-admin users, and multisite installs. Confirm legacy history protection and concurrency/retention behavior with a staging database. Automated checks do not substitute for this acceptance.
