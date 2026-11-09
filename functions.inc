@@ -197,29 +197,23 @@ function SEARCHRANK_adminNav($active)
     return $out . '</div></nav>';
 }
 
-function SEARCHRANK_makeMenu()
+function SEARCHRANK_clearLogForm()
 {
     global $_CONF, $LANG_SEARCHRANK_1;
-
-    SEARCHRANK_housekeeping();
     $base = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
-    $config = $_CONF['site_admin_url'] . '/configuration.php';
-    $count = SEARCHRANK_numResults();
-
-    $html = '<section class="sr-admin-home">';
-    $html .= '<p class="sr-intro">' . htmlspecialchars($LANG_SEARCHRANK_1['info_main'], ENT_QUOTES, 'UTF-8') . '</p>';
-    $html .= '<div class="sr-summary"><strong>' . (int) $count . '</strong> '
-          . htmlspecialchars($LANG_SEARCHRANK_1['queries'], ENT_QUOTES, 'UTF-8') . '</div>';
-
-    $html .= '<section class="sr-danger"><h3>' . htmlspecialchars($LANG_SEARCHRANK_1['clear_link'], ENT_QUOTES, 'UTF-8') . '</h3>';
+    $html = '<section class="sr-danger"><h3>' . htmlspecialchars($LANG_SEARCHRANK_1['clear_link'], ENT_QUOTES, 'UTF-8') . '</h3>';
     $html .= '<form method="post" action="' . htmlspecialchars($base, ENT_QUOTES, 'UTF-8') . '" onsubmit="return confirm(this.getAttribute(\'data-confirm\'));" data-confirm="'
           . htmlspecialchars($LANG_SEARCHRANK_1['clear_confirm'], ENT_QUOTES, 'UTF-8') . '">'
           . '<input type="hidden" name="action" value="clear">'
           . '<input type="hidden" name="token" value="' . htmlspecialchars(SEC_createToken(), ENT_QUOTES, 'UTF-8') . '">'
           . '<button class="sr-clear" type="submit">' . htmlspecialchars($LANG_SEARCHRANK_1['clear_link'], ENT_QUOTES, 'UTF-8') . '</button></form>';
-    $html .= '</section></section>';
+    return $html . '</section>';
+}
 
-    return $html;
+function SEARCHRANK_makeMenu()
+{
+    // Backward-compatible alias for legacy integrations.
+    return SEARCHRANK_clearLogForm();
 }
 
 /**
