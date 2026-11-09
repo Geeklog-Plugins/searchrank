@@ -572,7 +572,13 @@ function plugin_showstats_searchrank ($showsitestats)
     if ($showsitestats != 1 && $_SR_CONF['showstats']) {
         require_once $_CONF['path_system'] . 'lib-admin.php';
 
-        $results = SEARCHRANK_getResults(0, 10);
+        $candidates = SEARCHRANK_getResults(0, 200);
+        $results = array();
+        foreach ($candidates as $candidate) {
+            if (SEARCHRANK_isSensitiveQuery($candidate['query'])) { continue; }
+            $results[] = $candidate;
+            if (count($results) >= 10) { break; }
+        }
         if (count($results) > 0) {
             $header_arr = array(
                 array('text'         => $LANG_SEARCHRANK_1['queries'],
