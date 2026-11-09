@@ -90,3 +90,18 @@
 .sr-chart-data{margin:1rem 0}
 .sr-chart-data summary{cursor:pointer;text-decoration:underline;text-underline-offset:.2em}
 .sr-chart-data summary:focus-visible{outline:2px solid #27684e;outline-offset:3px}
+
+
+/* 1.4.0 dashboard; avoid theme-wide layout rules. */
+.sr-dashboard .sr-kpi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin:1rem 0 1.5rem}
+.sr-dashboard .sr-kpi{box-sizing:border-box;min-width:0;border:1px solid #c9cdd1;border-radius:6px;padding:1rem}
+.sr-dashboard .sr-kpi-label{display:block;font-size:.9rem;line-height:1.4;margin-bottom:.5rem}
+.sr-dashboard .sr-kpi strong{display:block;font-size:1.8rem;font-variant-numeric:tabular-nums}
+.sr-dashboard-footer{margin-top:1.5rem}
+.sr-chart-figure{display:block;box-sizing:border-box;min-width:0;width:100%;max-width:100%;overflow:hidden;margin:1rem 0}
+.sr-chart-figure > svg.sr-daily-chart{display:block!important;box-sizing:border-box;width:100%!important;max-width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:900 / 280;overflow:visible;transform:none!important}
+.sr-chart-figure > svg.sr-daily-chart path{fill:none;stroke:#27684e;stroke-width:2.5}
+.sr-chart-figure > svg.sr-daily-chart line{stroke:#cbd5d1;stroke-width:1;stroke-dasharray:3 4}
+.sr-chart-figure > svg.sr-daily-chart text{font-size:12px;fill:#51635c;transform:none}
+.sr-chart-figure > svg.sr-daily-chart circle{fill:#27684e;stroke:#fff;stroke-width:1.5}
+@media(max-width:700px){.sr-dashboard .sr-kpi-grid{grid-template-columns:1fr}.sr-chart-figure > svg.sr-daily-chart{min-width:0}}
