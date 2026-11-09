@@ -45,7 +45,7 @@ Open **Geeklog Admin → SearchRank**.
 | --- | --- |
 | **Dashboard** | Period selector, KPI summary, daily chart, and top search phrases |
 | **Search Log** | Recorded phrases, occurrence counts, and pagination |
-| **Analytics & CSV** | Search-expression filters, rankings, period comparisons, and CSV export; the daily chart appears only on the dashboard |
+| **Analytics & CSV** | Filtered rankings paginated at 25 expressions per page, collapsible period comparisons, and CSV export; the daily chart appears only on the dashboard |
 | **Help** | Configuration, privacy, and troubleshooting guidance |
 
 ### Analytics and exports
@@ -97,3 +97,7 @@ See the [official SearchRank repository](https://github.com/Geeklog-Plugins/sear
 ## 1.4.0 dashboard acceptance
 
 The dashboard uses the same read-only data as detailed reporting. Clear-log maintenance is available on Help, not on the landing page. Verify 7/28/90/365-day plots (subject to configured retention), empty periods, integer y-axis ticks, short x-axis dates, narrow screens and CSS compatibility with Geeklog themes. Compare daily totals with the collapsible data table and ensure CSV/export, pagination, existing search history and CSRF-protected clear-log continue to work. No live database or theme acceptance is claimed by automated syntax checks.
+
+### Report pagination (1.4.0)
+
+Detailed reports show 25 ranked expressions per page with previous/next links anchored to the ranking. Page changes retain the search expression filter and selected period. The matching-expression count describes the full filtered result; export still independently returns up to 1,000 expressions, regardless of the displayed page. The preceding-period trends are collapsed by default to reduce scrolling.
