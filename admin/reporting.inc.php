@@ -36,7 +36,7 @@ function SEARCHRANK_reportStart($daysBack)
     return strtotime('-' . $daysBack . ' days', strtotime('today'));
 }
 
-function SEARCHRANK_reportRows($days, $filter, $limit)
+function SEARCHRANK_reportRows($days, $filter, $limit, $offset = 0)
 {
     global $_TABLES;
     $cutoff = SEARCHRANK_reportStart(max(1, (int) $days) - 1);
@@ -47,16 +47,39 @@ function SEARCHRANK_reportRows($days, $filter, $limit)
         $filterSql = " AND q.query LIKE '{$safe}'";
     }
     $limit = max(1, min(1000, (int) $limit));
+    $offset = max(0, (int) $offset);
     $sql = "SELECT q.query, SUM(h.hits) AS hits FROM {$_TABLES['searchrank_queries']} q "
          . "INNER JOIN {$_TABLES['searchrank_hits']} h ON q.hid=h.hid "
          . "WHERE h.date >= {$cutoff} AND h.date < {$tomorrow}{$filterSql} GROUP BY q.query "
-         . "ORDER BY hits DESC, q.query ASC LIMIT {$limit}";
+         . "ORDER BY hits DESC, q.query ASC LIMIT {$offset}, {$limit}";
     $query = DB_query($sql);
     $rows = array();
     while ($row = DB_fetchArray($query)) {
         $rows[] = array('query' => $row['query'], 'hits' => (int) $row['hits']);
     }
     return $rows;
+}
+
+/**
+ * Count distinct matching expressions before paginating the ranked list.
+ * Uses the same search/date predicate as SEARCHRANK_reportRows().
+ */
+function SEARCHRANK_reportCount($days, $filter)
+{
+    global $_TABLES;
+    $cutoff = SEARCHRANK_reportStart(max(1, (int) $days) - 1);
+    $tomorrow = strtotime('tomorrow');
+    $filterSql = '';
+    if ($filter !== '') {
+        $safe = DB_escapeString('%' . $filter . '%');
+        $filterSql = " AND q.query LIKE '{$safe}'";
+    }
+    $sql = "SELECT COUNT(DISTINCT q.query) AS total FROM {$_TABLES['searchrank_queries']} q "
+         . "INNER JOIN {$_TABLES['searchrank_hits']} h ON q.hid=h.hid "
+         . "WHERE h.date >= {$cutoff} AND h.date < {$tomorrow}{$filterSql}";
+    $result = DB_query($sql);
+    $row = DB_fetchArray($result);
+    return $row && isset($row['total']) ? (int) $row['total'] : 0;
 }
 
 function SEARCHRANK_reportDaily($days)
@@ -262,7 +285,14 @@ function SEARCHRANK_reportPage()
     $filter = isset($_GET['q']) && is_string($_GET['q']) ? trim($_GET['q']) : '';
     $filter = MBYTE_substr($filter, 0, 100);
     $base = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
-    $rows = SEARCHRANK_reportRows($days, $filter, 200);
+    $perPage = 25;
+    $matchCount = SEARCHRANK_reportCount($days, $filter);
+    $pageCount = max(1, (int) ceil($matchCount / $perPage));
+    $page = isset($_GET['page']) && is_scalar($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+    $page = min($page, $pageCount);
+    $rows = SEARCHRANK_reportRows($days, $filter, $perPage, ($page - 1) * $perPage);
+    $first = $matchCount ? (($page - 1) * $perPage + 1) : 0;
+    $last = $matchCount ? min($matchCount, $page * $perPage) : 0;
     $daily = SEARCHRANK_reportDaily($days);
     $total = 0;
     foreach ($daily as $day) { $total += $day['hits']; }
@@ -313,7 +343,7 @@ function SEARCHRANK_reportPage()
     $previous = $canCompare ? SEARCHRANK_reportTotals($days, $days) : 0;
     $current = SEARCHRANK_reportTotals($days, 0);
     $trend = $previous > 0 ? round((($current - $previous) * 100) / $previous, 1) : null;
-    $html .= '<div class="sr-summary">' . $esc(sprintf($LANG_SEARCHRANK_1['total_summary'], $total, $days, count($rows))) . '</div>';
+    $html .= '<div class="sr-summary">' . $esc(sprintf(isset($LANG_SEARCHRANK_1['report_page_summary']) ? $LANG_SEARCHRANK_1['report_page_summary'] : '%1$d searches over %2$d days; %3$d matching expressions; showing %4$d–%5$d', $total, $days, $matchCount, $first, $last)) . '</div>';
     if ($canCompare) {
     $html .= '<p class="sr-note">' . $esc(sprintf($LANG_SEARCHRANK_1['previous_summary'], $days, $previous))
            . ' ' . $esc($trend === null ? $LANG_SEARCHRANK_1['no_variation'] : sprintf($LANG_SEARCHRANK_1['variation'], $trend)) . '</p>';
@@ -328,9 +358,30 @@ function SEARCHRANK_reportPage()
            . $esc($base . '?days=' . $days) . '">'
            . $esc(isset($LANG_SEARCHRANK_1['dashboard']) ? $LANG_SEARCHRANK_1['dashboard'] : 'Dashboard')
            . '</a></div>';
+    $html .= '<h3 id="sr-ranking">' . $esc(isset($LANG_SEARCHRANK_1['ranked_queries']) ? $LANG_SEARCHRANK_1['ranked_queries'] : 'Most searched expressions') . '</h3>';
+    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">Expression</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['hits']) . '</th></tr></thead><tbody>';
+    foreach ($rows as $row) {
+        $html .= '<tr><td>' . $esc($row['query']) . '</td><td>' . $row['hits'] . '</td></tr>';
+    }
+    if (!$rows) { $html .= '<tr><td colspan="2">' . $esc($LANG_SEARCHRANK_1['no_searches']) . '</td></tr>'; }
+    $html .= '</tbody></table></div>';
+    if ($pageCount > 1) {
+        $url = $base . '?action=report&days=' . $days . '&q=' . rawurlencode($filter) . '&page=';
+        $html .= '<nav class="sr-pagination" aria-label="Search ranking pages">';
+        if ($page > 1) {
+            $html .= '<a class="sr-action" href="' . $esc($url . ($page - 1) . '#sr-ranking') . '">'
+                  . $esc(isset($LANG_SEARCHRANK_1['prev']) ? $LANG_SEARCHRANK_1['prev'] : 'Previous') . '</a>';
+        }
+        $html .= '<span class="sr-page-indicator">' . $page . ' / ' . $pageCount . '</span>';
+        if ($page < $pageCount) {
+            $html .= '<a class="sr-action" href="' . $esc($url . ($page + 1) . '#sr-ranking') . '">'
+                  . $esc(isset($LANG_SEARCHRANK_1['next']) ? $LANG_SEARCHRANK_1['next'] : 'Next') . '</a>';
+        }
+        $html .= '</nav>';
+    }
     $trends = $canCompare ? SEARCHRANK_reportTrends($days, 20) : array();
     if ($canCompare) {
-    $html .= '<h3>' . $esc($LANG_SEARCHRANK_1['trends_title']) . '</h3>';
+    $html .= '<details class="sr-report-trends"><summary>' . $esc($LANG_SEARCHRANK_1['trends_title']) . '</summary>';
     $html .= '<p class="sr-note">' . $esc($LANG_SEARCHRANK_1['trends_note']) . '</p>';
     $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">Expression</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['current']) . '</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['previous']) . '</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['change']) . '</th></tr></thead><tbody>';
     foreach ($trends as $entry) {
@@ -343,15 +394,8 @@ function SEARCHRANK_reportPage()
     if (!$trends) {
         $html .= '<tr><td colspan="4">' . $esc($LANG_SEARCHRANK_1['empty_trends']) . '</td></tr>';
     }
-    $html .= '</tbody></table></div>';
+    $html .= '</tbody></table></div></details>';
     }
-    $html .= '<h3>' . $esc(isset($LANG_SEARCHRANK_1['ranked_queries']) ? $LANG_SEARCHRANK_1['ranked_queries'] : 'Most searched expressions') . '</h3>';
-    $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">Expression</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['hits']) . '</th></tr></thead><tbody>';
-    foreach ($rows as $row) {
-        $html .= '<tr><td>' . $esc($row['query']) . '</td><td>' . $row['hits'] . '</td></tr>';
-    }
-    if (!$rows) { $html .= '<tr><td colspan="2">' . $esc($LANG_SEARCHRANK_1['no_searches']) . '</td></tr>'; }
-    $html .= '</tbody></table></div>';
     $html .= '<p class="sr-note">' . $esc(sprintf(isset($LANG_SEARCHRANK_1['retention_period_note']) ? $LANG_SEARCHRANK_1['retention_period_note'] : 'Retention: %d days. Older data may be unavailable.', $retention)) . '</p>';
     $html .= '<p class="sr-note">' . $esc($LANG_SEARCHRANK_1['retention_note']) . '</p></div>';
     return $html;
