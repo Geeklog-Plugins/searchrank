@@ -121,6 +121,8 @@ function SEARCHRANK_reportTrends($days, $limit)
 function SEARCHRANK_reportDailyChart($daily, $labels)
 {
     $escape = function ($value) { return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8'); };
+    // SVG attributes require a dot decimal separator regardless of setlocale().
+    $coord = function ($value) { return number_format((float) $value, 2, '.', ''); };
     $count = count($daily);
     if (!$count) { return '<p class="sr-note">' . $escape($labels['empty']) . '</p>'; }
     $max = 0;
@@ -137,8 +139,8 @@ function SEARCHRANK_reportDailyChart($daily, $labels)
     $points = array(); $markers = '';
     foreach ($daily as $i => $row) {
         $hits = max(0, (int) $row['hits']);
-        $x = round($left + ($count > 1 ? $i * $plotWidth / ($count - 1) : $plotWidth / 2), 2);
-        $y = round($top + $plotHeight * (1 - $hits / $axisMax), 2);
+        $x = $coord($left + ($count > 1 ? $i * $plotWidth / ($count - 1) : $plotWidth / 2));
+        $y = $coord($top + $plotHeight * (1 - $hits / $axisMax));
         $points[] = ($i === 0 ? 'M ' : 'L ') . $x . ' ' . $y;
         if ($count <= 31) {
             $markers .= '<circle cx="' . $x . '" cy="' . $y . '" r="3" fill="#27684e" stroke="#fff" stroke-width="1.5">'
@@ -149,16 +151,16 @@ function SEARCHRANK_reportDailyChart($daily, $labels)
          . 'width="900" height="280" preserveAspectRatio="xMidYMid meet" role="img" '
          . 'aria-label="' . $escape($labels['description']) . '">';
     for ($tick = 0; $tick <= 4; ++$tick) {
-        $y = round($top + $plotHeight * (1 - $tick / 4), 2);
+        $y = $coord($top + $plotHeight * (1 - $tick / 4));
         $svg .= '<line x1="' . $left . '" x2="' . ($width - $right) . '" y1="' . $y
               . '" y2="' . $y . '" stroke="#cbd5d1" stroke-width="1" stroke-dasharray="3 4"/>'
-              . '<text x="' . ($left - 10) . '" y="' . ($y + 4)
-              . '" text-anchor="end" fill="#51635c" font-size="12">' . ($step * $tick) . '</text>';
+              . '<text x="' . ($left - 10) . '" y="' . $coord((float) $y + 4)
+                      . '" text-anchor="end" fill="#51635c" font-size="12">' . ($step * $tick) . '</text>';
     }
     // Use short dates and anchor the end labels inside the chart viewport.
     $tickIndexes = array_unique(array(0, (int) floor(($count - 1) / 2), $count - 1));
     foreach ($tickIndexes as $idx) {
-        $x = round($left + ($count > 1 ? $idx * $plotWidth / ($count - 1) : $plotWidth / 2), 2);
+        $x = $coord($left + ($count > 1 ? $idx * $plotWidth / ($count - 1) : $plotWidth / 2));
         $anchor = $idx === 0 ? 'start' : ($idx === $count - 1 ? 'end' : 'middle');
         $shortDate = date('d/m', strtotime($daily[$idx]['date']));
         $svg .= '<text x="' . $x . '" y="' . ($height - 17) . '" text-anchor="' . $anchor
