@@ -17,10 +17,19 @@ Branch: `develop-1.4.0`. SearchRank 1.3.0 is deployed on Geeklog.net; 1.4.0 rema
 - [ ] Compare chart series against daily read-only table and exported aggregates; validate all existing report and CSV paths.
 - [ ] Verify upgrade from 1.3.0 with backup, confirm historical searches, clear-log CSRF and configuration controls.
 
+## Capability contract and privacy (2026-11-09)
+- [x] Implement memorandum-aligned capability discovery (`plugin_getcapabilities_searchrank`) and local, permission-protected `dashboard_summary` and `query_metrics` services.
+- [x] Restrict services to aggregate data, bound periods and avoid exposing raw queries or plugin database tables to consumers.
+- [x] Reject sensitive new search phrases and filter old detected sensitive phrases from the public block.
+- [x] Add isolated privacy/authorization CI smoke checks.
+- [ ] Exercise the native `PLG_invokeService` dispatcher, disabled-plugin behavior and multi-site separation on Geeklog staging.
+- [ ] Review false positive/negative examples and privacy of legacy stored terms; no claim of complete redaction.
+- [ ] Validate configured retention, concurrent MySQL logging and safe upgrade from 1.3.0.
+
 ## Further planned improvements
 - [ ] Add reliable zero-result search tracking only with supported Geeklog search callbacks.
 - [ ] Evaluate trending/new expressions and privacy-aware insight reporting.
-- [ ] Explore a read-only interoperability API for other Geeklog plugins.
+- [x] Deliver a minimal read-only interoperability service and capability declaration (staging acceptance pending).
 - [ ] Complete MySQL concurrency/retention and legacy upgrade regression tests; confirm 2.1.3 runtime compatibility.
 
 ## Release gate
