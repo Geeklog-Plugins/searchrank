@@ -320,16 +320,14 @@ function SEARCHRANK_reportPage()
     } else {
         $html .= '<p class="sr-note">' . $esc(isset($LANG_SEARCHRANK_1['comparison_unavailable']) ? $LANG_SEARCHRANK_1['comparison_unavailable'] : 'Comparison unavailable: retention is shorter than two complete periods.') . '</p>';
     }
-    $html .= '<h3>' . $esc($LANG_SEARCHRANK_1['daily_activity']) . '</h3>';
-    $html .= SEARCHRANK_reportDailyChart($daily, array(
-        'description' => isset($LANG_SEARCHRANK_1['chart_description']) ? $LANG_SEARCHRANK_1['chart_description'] : 'Searches per day',
-        'show_data' => isset($LANG_SEARCHRANK_1['chart_show_data']) ? $LANG_SEARCHRANK_1['chart_show_data'] : 'View daily values',
-        'empty' => $LANG_SEARCHRANK_1['no_searches'],
-        'date' => $LANG_SEARCHRANK_1['date'],
-        'hits' => $LANG_SEARCHRANK_1['hits'],
-        'base_url' => $base
-    ));
-    $html .= '<p><a href="' . $esc($base . '?action=export&days=' . $days . '&q=' . rawurlencode($filter)) . '">' . $esc($LANG_SEARCHRANK_1['export_link']) . '</a></p>';
+    // Only the dashboard contains the daily chart. Detailed reports stay
+    // focused on filters, period comparisons, ranked expressions and export.
+    $html .= '<div class="sr-report-actions"><a class="sr-action" href="'
+           . $esc($base . '?action=export&days=' . $days . '&q=' . rawurlencode($filter)) . '">'
+           . $esc($LANG_SEARCHRANK_1['export_link']) . '</a><a class="sr-back-link" href="'
+           . $esc($base . '?days=' . $days) . '">'
+           . $esc(isset($LANG_SEARCHRANK_1['dashboard']) ? $LANG_SEARCHRANK_1['dashboard'] : 'Dashboard')
+           . '</a></div>';
     $trends = $canCompare ? SEARCHRANK_reportTrends($days, 20) : array();
     if ($canCompare) {
     $html .= '<h3>' . $esc($LANG_SEARCHRANK_1['trends_title']) . '</h3>';
