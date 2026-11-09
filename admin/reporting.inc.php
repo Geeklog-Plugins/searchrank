@@ -355,10 +355,7 @@ function SEARCHRANK_reportPage()
     $html .= '<div class="sr-report-actions" role="group" aria-label="Report actions">'
            . '<a class="sr-report-export" href="'
            . $esc($base . '?action=export&days=' . $days . '&q=' . rawurlencode($filter)) . '">'
-           . $esc($LANG_SEARCHRANK_1['export_link']) . '</a>'
-           . '<a class="sr-report-return" href="' . $esc($base . '?days=' . $days) . '">'
-           . $esc(isset($LANG_SEARCHRANK_1['dashboard']) ? $LANG_SEARCHRANK_1['dashboard'] : 'Dashboard')
-           . '</a></div>';
+           . $esc($LANG_SEARCHRANK_1['export_link']) . '</a></div>';
     $html .= '<h3 id="sr-ranking">' . $esc(isset($LANG_SEARCHRANK_1['ranked_queries']) ? $LANG_SEARCHRANK_1['ranked_queries'] : 'Most searched expressions') . '</h3>';
     $html .= '<div class="sr-table-wrap"><table class="sr-report-table"><thead><tr><th scope="col">Expression</th><th scope="col">' . $esc($LANG_SEARCHRANK_1['hits']) . '</th></tr></thead><tbody>';
     foreach ($rows as $row) {
