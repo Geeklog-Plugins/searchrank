@@ -1,3 +1,30 @@
+# SearchRank 1.4.0 development roadmap
+
+Branch: `develop-1.4.0`. SearchRank 1.3.0 is deployed on Geeklog.net; 1.4.0 remains in development.
+
+## Admin UX and charts
+- [x] Add period-based dashboard cards, daily activity chart and top searches using the existing read-only reporting queries.
+- [x] Separate destructive clear-log action from dashboard into Help/maintenance.
+- [x] Use integer y-axis ticks, short dates and explicit SVG styles scoped against theme collisions.
+- [x] Keep detailed reporting, search log, CSV export and database schema unchanged.
+- [ ] Test the chart on real Geeklog themes, including the reported libre-office.fr layout failure.
+- [ ] Validate periods 7/28/90/365 (subject to TTL), DST and timezone boundaries, no-data cases, narrow/mobile layouts and screen readers.
+- [ ] Compare chart series against daily read-only table and exported aggregates; validate all existing report and CSV paths.
+- [ ] Verify upgrade from 1.3.0 with backup, confirm historical searches, clear-log CSRF and configuration controls.
+
+## Further planned improvements
+- [ ] Add reliable zero-result search tracking only with supported Geeklog search callbacks.
+- [ ] Evaluate trending/new expressions and privacy-aware insight reporting.
+- [ ] Explore a read-only interoperability API for other Geeklog plugins.
+- [ ] Complete MySQL concurrency/retention and legacy upgrade regression tests; confirm 2.1.3 runtime compatibility.
+
+## Release gate
+Do not publish or merge to upstream solely on successful lint/packaging. Real-world UI and data-preservation acceptance is still required.
+
+---
+
+## Previous 1.3.0 working checklist (historical)
+
 # SearchRank 1.3.0 release roadmap
 
 Development integration branch: `develop-1.2.4` (temporary historical name) — next public release: **1.3.0**, no 1.2.4 release.
