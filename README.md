@@ -129,3 +129,7 @@ Validate services using `PLG_invokeService` with Geeklog 2.1.3/2.2.2 enabled/dis
 ### Live upgrade feedback (2026-11-09)
 
 A site administrator reports a successful SearchRank 1.3.0 → 1.4.0 upgrade with existing search data preserved. This confirms one real-world upgrade path, not a complete regression suite for every supported Geeklog/PHP/database combination. Detailed reports now display separated export and dashboard actions with responsive styling and a French localized pagination summary.
+
+### Stylesheet cache versioning (1.4.0)
+
+Both `admin/css/admin.css` and `admin/css/block.css` use deterministic `?v=1.4.0-<filemtime>` URLs. The plugin currently does not load its own JavaScript asset. Report-page actions include only CSV export; the dashboard remains available in the primary navigation, avoiding duplicated links. Verify CSS refresh on a deployed install without a forced browser refresh.
