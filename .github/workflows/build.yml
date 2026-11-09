@@ -95,7 +95,9 @@ jobs:
         run: |
           grep -q "'pi_version'      => '1.4.0'" autoinstall.php
           grep -q '"geeklog": "2.1.3"' plugin.json
-          grep -q 'admin.css?v=1.4.0' functions.inc
+          grep -Fq "admin.css?v=" functions.inc
+          grep -Fq "block.css?v=" functions.inc
+          grep -Fq "filemtime(" functions.inc
           test -f admin/reporting.inc.php
       - name: Build Geeklog archive
         shell: bash
