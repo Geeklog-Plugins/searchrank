@@ -3,6 +3,7 @@
 Branch: `develop-1.4.0`. SearchRank 1.3.0 is deployed on Geeklog.net; 1.4.0 remains in development.
 
 ## Admin UX and charts
+- [x] Style CSV export and dashboard return as separate responsive report actions; localize French page-range summary.
 - [x] Paginate detailed rankings at 25 rows, preserving selected period and query in navigation.
 - [x] Keep CSV independent from page number and collapse trend comparison by default.
 - [ ] Verify filtered ranking counts, first/last page, empty datasets and query preservation in staging.
@@ -15,7 +16,8 @@ Branch: `develop-1.4.0`. SearchRank 1.3.0 is deployed on Geeklog.net; 1.4.0 rema
 - [ ] Test the chart on real Geeklog themes, including the reported libre-office.fr layout failure.
 - [ ] Validate periods 7/28/90/365 (subject to TTL), DST and timezone boundaries, no-data cases, narrow/mobile layouts and screen readers.
 - [ ] Compare chart series against daily read-only table and exported aggregates; validate all existing report and CSV paths.
-- [ ] Verify upgrade from 1.3.0 with backup, confirm historical searches, clear-log CSRF and configuration controls.
+- [x] User reports successful upgrade from SearchRank 1.3.0 to 1.4.0 with existing data preserved (2026-11-09).
+- [ ] Independently verify upgrade/rollback with backup, clear-log CSRF, configuration controls and additional environments.
 
 ## Capability contract and privacy (2026-11-09)
 - [x] Implement memorandum-aligned capability discovery (`plugin_getcapabilities_searchrank`) and local, permission-protected `dashboard_summary` and `query_metrics` services.
