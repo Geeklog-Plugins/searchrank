@@ -1,11 +1,11 @@
-# SearchRank 1.3.0
+# SearchRank 1.4.0
 
 **Release candidate · Geeklog search analytics plugin**
 
 SearchRank records internal site-search phrases and provides search rankings, daily activity charts, and administrative reports.
 
 > [!IMPORTANT]
-> **Release candidate:** SearchRank 1.3.0 is still under development. Automated checks do not replace functional testing, particularly for legacy upgrades and database maintenance.
+> **Release candidate:** SearchRank 1.4.0 is under development. Automated checks do not replace functional testing, particularly for legacy upgrades and database maintenance.
 
 ## Requirements
 
@@ -18,7 +18,7 @@ SearchRank records internal site-search phrases and provides search rankings, da
 
 ## Installation and upgrades
 
-Download the installable archive from [`dist/searchrank_1.3.0_2.1.3.zip`](dist/searchrank_1.3.0_2.1.3.zip). It contains a top-level `searchrank/` directory.
+Download the installable archive from [`dist/searchrank_1.4.0_2.1.3.zip`](dist/searchrank_1.4.0_2.1.3.zip). It contains a top-level `searchrank/` directory.
 
 1. **Back up** your Geeklog database, SearchRank tables, and existing plugin files.
 2. Install or upgrade using Geeklog's plugin administration tools.
@@ -43,16 +43,16 @@ Open **Geeklog Admin → SearchRank**.
 
 | Section | Features |
 | --- | --- |
-| **Dashboard** | Overview and search rankings |
+| **Dashboard** | Period selector, KPI summary, daily chart, and top search phrases |
 | **Search Log** | Recorded phrases, occurrence counts, and pagination |
-| **Analytics & CSV** | Retention-aware periods, daily SVG chart, day-by-day detail links, trends, rankings, and CSV export |
+| **Analytics & CSV** | Filtered rankings paginated at 25 expressions per page, collapsible period comparisons, and CSV export; the daily chart appears only on the dashboard |
 | **Help** | Configuration, privacy, and troubleshooting guidance |
 
 ### Analytics and exports
 
 - Choose a reporting period of **7, 28, 90, or 365 days**, subject to the configured retention limit.
-- View searches by day on a responsive SVG chart.
-- Open day links to inspect recorded expressions and occurrence counts.
+- View searches by day on the dashboard's responsive SVG chart (not repeated in detailed reports).
+- Open day links from the dashboard chart's accessible data table to inspect recorded expressions and occurrence counts.
 - Compare expressions with the preceding period when sufficient retention is configured.
 - Export a CSV whose filename includes the current site's hostname and a timestamp.
 
@@ -93,3 +93,43 @@ The statistics measure **internal site searches**, not Google or Bing impression
 ## Documentation
 
 See the [official SearchRank repository](https://github.com/Geeklog-Plugins/searchrank), its [`docs/`](https://github.com/Geeklog-Plugins/searchrank/tree/master/docs) directory and [`ROADMAP.md`](https://github.com/Geeklog-Plugins/searchrank/blob/master/ROADMAP.md) for additional technical details and outstanding checks.
+
+## 1.4.0 dashboard acceptance
+
+The dashboard uses the same read-only data as detailed reporting. Clear-log maintenance is available on Help, not on the landing page. Verify 7/28/90/365-day plots (subject to configured retention), empty periods, integer y-axis ticks, short x-axis dates, narrow screens and CSS compatibility with Geeklog themes. Compare daily totals with the collapsible data table and ensure CSV/export, pagination, existing search history and CSRF-protected clear-log continue to work. No live database or theme acceptance is claimed by automated syntax checks.
+
+### Report pagination (1.4.0)
+
+Detailed reports show 25 ranked expressions per page with previous/next links anchored to the ranking. Page changes retain the search expression filter and selected period. The matching-expression count describes the full filtered result; export still independently returns up to 1,000 expressions, regardless of the displayed page. The preceding-period trends are collapsed by default to reduce scrolling.
+
+## Local interoperability services (1.4.0)
+
+Follows [Geeklog Plugin Capability Contract](https://github.com/hostellerie/memorandum/blob/main/plugin-capability-contract.md) and the [SEO and Measurement Interoperability Guide](https://github.com/hostellerie/memorandum/blob/main/seo-measurement-interoperability-guide.md).
+
+`plugin_getcapabilities_searchrank()` declares `dashboard.summary` and `searchrank.query.metrics`. Local Geeklog clients can feature-detect `PLG_invokeService()` and request:
+
+```php
+$output = array();
+$messages = array();
+$status = PLG_invokeService('searchrank', 'query_metrics',
+    array('days' => 28), $output, $messages);
+// Or: 'dashboard_summary' for metrics, alerts and administration links.
+```
+
+Both services are **read-only, administrator-only**, limited to periods of 1–365 days within the configured retention, and return aggregate counts only. No individual search terms, personal data or third-party SQL schema is exposed. The dispatcher requires the active Geeklog plugin; the callbacks reject web-service requests (`gl_svc`) and unauthorized users. A returned null for zero-result searches means **not measured**, not zero. These services do not measure Google/Bing queries and are not associated with a content URL.
+
+### Privacy behavior
+
+New internal searches containing recognizable emails, payment-card-like sequences, password/token parameters, bearer credentials or common token prefixes are not logged. Existing history is not silently rewritten, but the public Most Searched block excludes detected sensitive expressions. This is conservative heuristic filtering, **not comprehensive PII detection**: it cannot guarantee removal of all personal data. Site administrators should review stored history, retention and public block visibility; avoid publishing historical exports. No new configuration field or schema migration is required. To run isolated checks: `php tests/privacy-smoke.php`.
+
+### Outstanding runtime acceptance
+
+Validate services using `PLG_invokeService` with Geeklog 2.1.3/2.2.2 enabled/disabled states, administrator/non-admin users, and multisite installs. Confirm legacy history protection and concurrency/retention behavior with a staging database. Automated checks do not substitute for this acceptance.
+
+### Live upgrade feedback (2026-11-09)
+
+A site administrator reports a successful SearchRank 1.3.0 → 1.4.0 upgrade with existing search data preserved. This confirms one real-world upgrade path, not a complete regression suite for every supported Geeklog/PHP/database combination. Detailed reports now display separated export and dashboard actions with responsive styling and a French localized pagination summary.
+
+### Stylesheet cache versioning (1.4.0)
+
+Both `admin/css/admin.css` and `admin/css/block.css` use deterministic `?v=1.4.0-<filemtime>` URLs. The plugin currently does not load its own JavaScript asset. Report-page actions include only CSV export; the dashboard remains available in the primary navigation, avoiding duplicated links. Verify CSS refresh on a deployed install without a forced browser refresh.

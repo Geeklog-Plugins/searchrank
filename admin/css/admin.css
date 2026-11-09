@@ -90,3 +90,33 @@
 .sr-chart-data{margin:1rem 0}
 .sr-chart-data summary{cursor:pointer;text-decoration:underline;text-underline-offset:.2em}
 .sr-chart-data summary:focus-visible{outline:2px solid #27684e;outline-offset:3px}
+
+
+/* 1.4.0 dashboard; avoid theme-wide layout rules. */
+.sr-dashboard .sr-kpi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin:1rem 0 1.5rem}
+.sr-dashboard .sr-kpi{box-sizing:border-box;min-width:0;border:1px solid #c9cdd1;border-radius:6px;padding:1rem}
+.sr-dashboard .sr-kpi-label{display:block;font-size:.9rem;line-height:1.4;margin-bottom:.5rem}
+.sr-dashboard .sr-kpi strong{display:block;font-size:1.8rem;font-variant-numeric:tabular-nums}
+.sr-dashboard-footer{margin-top:1.5rem}
+.sr-chart-figure{display:block;box-sizing:border-box;min-width:0;width:100%;max-width:100%;overflow:hidden;margin:1rem 0}
+.sr-chart-figure > svg.sr-daily-chart{display:block!important;box-sizing:border-box;width:100%!important;max-width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:900 / 280;overflow:visible;transform:none!important}
+.sr-chart-figure > svg.sr-daily-chart path{fill:none;stroke:#27684e;stroke-width:2.5}
+.sr-chart-figure > svg.sr-daily-chart line{stroke:#cbd5d1;stroke-width:1;stroke-dasharray:3 4}
+.sr-chart-figure > svg.sr-daily-chart text{font-size:12px;fill:#51635c;transform:none}
+.sr-chart-figure > svg.sr-daily-chart circle{fill:#27684e;stroke:#fff;stroke-width:1.5}
+@media(max-width:700px){.sr-dashboard .sr-kpi-grid{grid-template-columns:1fr}.sr-chart-figure > svg.sr-daily-chart{min-width:0}}
+
+/* Keep detailed reports compact; comparisons can be expanded when needed. */
+.sr-report-trends{margin:1.25rem 0;padding:.8rem 1rem;border:1px solid #c9cdd1;border-radius:6px}
+.sr-report-trends summary{cursor:pointer;font-weight:600}
+.sr-report-trends summary:focus-visible{outline:2px solid #27684e;outline-offset:3px}
+.sr-report-actions{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin:1rem 0}
+#sr-ranking{scroll-margin-top:1rem}
+
+/* Report actions: predictable spacing despite global Geeklog/theme link rules. */
+.sr-admin-home .sr-report-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin:1.25rem 0 1.5rem}
+.sr-admin-home .sr-report-actions > a{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-height:42px;margin:0;padding:.65rem 1rem;border:1px solid #647774;border-radius:5px;background:#fff;color:#25383b;text-decoration:none;font:inherit;line-height:1.4;text-shadow:none;box-shadow:none}
+.sr-admin-home .sr-report-actions > a.sr-report-export{background:#27684e;border-color:#27684e;color:#fff;font-weight:600}
+.sr-admin-home .sr-report-actions > a.sr-report-export:hover,.sr-admin-home .sr-report-actions > a.sr-report-export:focus{background:#194a37;border-color:#194a37;color:#fff;text-decoration:none}
+.sr-admin-home .sr-report-actions > a:focus-visible{outline:3px solid #3665a0;outline-offset:2px}
+@media(max-width:520px){.sr-admin-home .sr-report-actions{align-items:stretch;flex-direction:column}.sr-admin-home .sr-report-actions > a{width:100%;text-align:center}}

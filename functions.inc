@@ -79,6 +79,129 @@ if (!isset($_SR_CONF['maxresults'])) {
 $_TABLES['searchrank_queries'] = $_DB_table_prefix . 'searchrank_queries';
 $_TABLES['searchrank_hits'] = $_DB_table_prefix . 'searchrank_hits';
 
+
+/**
+ * SearchRank's provider-neutral, read-only interoperability declaration.
+ * This convention is optional in older Geeklog cores. A consumer must still
+ * check permissions and service availability at invocation time.
+ */
+function plugin_getcapabilities_searchrank()
+{
+    return array(
+        'schema' => 1,
+        'roles' => array('service'),
+        'capabilities' => array('dashboard.summary', 'searchrank.query.metrics')
+    );
+}
+
+/**
+ * Advertise the internal Geeklog service dispatcher, not a public data API.
+ * Every service rejects web-service requests and checks searchrank.admin.
+ */
+function plugin_wsEnabled_searchrank()
+{
+    return true;
+}
+
+function SEARCHRANK_serviceAuthorized($args)
+{
+    return is_array($args) && empty($args['gl_svc'])
+        && function_exists('SEC_hasRights') && SEC_hasRights('searchrank.admin');
+}
+
+/**
+ * Bounded site-wide query metrics for authorized local consumers.
+ *
+ * Example: PLG_invokeService('searchrank', 'query_metrics',
+ *     array('days' => 28, 'limit' => 10), $output, $message);
+ * No SQL schema knowledge required by the consuming plugin.
+ */
+function service_query_metrics_searchrank($args, &$output, &$svc_msg)
+{
+    global $_TABLES, $_SR_CONF;
+    $output = array();
+    if (!SEARCHRANK_serviceAuthorized($args)) {
+        $svc_msg = array('error' => 'permission-denied');
+        return PLG_RET_PERMISSION_DENIED;
+    }
+    $ttl = isset($_SR_CONF['ttl']) ? max(1, (int) $_SR_CONF['ttl']) : 28;
+    $days = isset($args['days']) && is_scalar($args['days']) ? (int) $args['days'] : 28;
+    $days = min($ttl, max(1, min(365, $days)));
+    $limit = isset($args['limit']) && is_scalar($args['limit']) ? (int) $args['limit'] : 10;
+    $limit = max(1, min(20, $limit));
+    $start = strtotime('-' . ($days - 1) . ' days', strtotime('today'));
+    $end = strtotime('tomorrow');
+    $hitsResult = DB_query("SELECT COALESCE(SUM(hits), 0) AS total FROM {$_TABLES['searchrank_hits']} "
+                         . "WHERE date >= {$start} AND date < {$end}");
+    $hitsRow = DB_fetchArray($hitsResult);
+    $distinctResult = DB_query("SELECT COUNT(DISTINCT q.query) AS total "
+                            . "FROM {$_TABLES['searchrank_queries']} q "
+                            . "INNER JOIN {$_TABLES['searchrank_hits']} h ON q.hid=h.hid "
+                            . "WHERE h.date >= {$start} AND h.date < {$end}");
+    $distinctRow = DB_fetchArray($distinctResult);
+    $rows = array();
+    // Never return individual phrases to generic consumers: the legacy log
+    // may contain sensitive text predating this version's input safeguards.
+    $output = array(
+        'schema' => 1,
+        'provider' => 'searchrank',
+        'status' => 'ok',
+        'period' => $days,
+        'searches' => (int) $hitsRow['total'],
+        'expressions' => (int) $distinctRow['total'],
+        'query_metrics' => array('zero_result_searches' => null),
+        'updated' => time()
+    );
+    $svc_msg = array();
+    return PLG_RET_OK;
+}
+
+/** A shared dashboard.summary provider for Hub, Eclipse and other clients. */
+function service_dashboard_summary_searchrank($args, &$output, &$svc_msg)
+{
+    global $_CONF;
+    $data = array();
+    $result = service_query_metrics_searchrank($args, $data, $svc_msg);
+    if ($result !== PLG_RET_OK) {
+        $output = array();
+        return $result;
+    }
+    $output = array(
+        'schema' => 1,
+        'status' => 'ok',
+        'metrics' => array(
+            array('id' => 'searches', 'label' => 'Internal searches (' . $data['period'] . ' days)', 'value' => $data['searches']),
+            array('id' => 'expressions', 'label' => 'Distinct expressions', 'value' => $data['expressions'])
+        ),
+        'alerts' => array(),
+        'links' => array(array('label' => 'SearchRank', 'url' => $_CONF['site_admin_url'] . '/plugins/searchrank/index.php')),
+        'updated' => $data['updated']
+    );
+    return PLG_RET_OK;
+}
+
+/**
+ * Conservative privacy gate for new search-log entries.
+ * Existing historical logs are left untouched; avoid modifying user queries.
+ * Reject likely credentials/PII rather than persisting redacted fragments.
+ */
+function SEARCHRANK_isSensitiveQuery($query)
+{
+    $query = trim((string) $query);
+    if ($query === '') { return false; }
+    if (preg_match('/[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}/i', $query)) { return true; }
+    // Payment-card-like numbers, formatted or contiguous (heuristic).
+    if (preg_match('/\b(?:\d[ -]?){12,18}\d\b/', $query)) { return true; }
+    // URL credentials and secrets passed as search parameters.
+    if (preg_match('~(?:https?://)[^/\s@]+:[^/\s@]+@~i', $query)) { return true; }
+    if (preg_match('/\b(?:password|passwd|pwd|api[_-]?key|access[_-]?token|refresh[_-]?token|authorization|secret)\s*[:=]\s*\S+/i', $query)) { return true; }
+    // Common private identifiers. Do not indiscriminately discard ordinary
+    // phone-sized integers, product codes, or short numeric search phrases.
+    if (preg_match('/\b(?:bearer)\s+[a-z0-9._~+\/=-]{12,}/i', $query)) { return true; }
+    if (preg_match('/\b(?:sk|ghp|gho|ghu|ghs)_[A-Za-z0-9_-]{12,}\b/', $query)) { return true; }
+    return false;
+}
+
 /**
 * Returns an array of search log entries 
 *
@@ -177,8 +300,8 @@ function SEARCHRANK_adminNav($active)
     $base = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
     $sections = array(
         'dashboard' => array($base, isset($LANG_SEARCHRANK_1['dashboard']) ? $LANG_SEARCHRANK_1['dashboard'] : 'Dashboard'),
-        'showlog' => array($base . '?action=showlog', $LANG_SEARCHRANK_1['viewlog_link']),
         'report' => array($base . '?action=report', isset($LANG_SEARCHRANK_1['analytics']) ? $LANG_SEARCHRANK_1['analytics'] : 'Analytics & CSV'),
+        'showlog' => array($base . '?action=showlog', $LANG_SEARCHRANK_1['viewlog_link']),
         'help' => array($base . '?action=help', isset($LANG_SEARCHRANK_1['help_link']) ? $LANG_SEARCHRANK_1['help_link'] : 'Help')
     );
     $out = '<nav class="plugin-admin-nav" aria-label="SearchRank administration"><div class="plugin-admin-nav__primary">';
@@ -197,29 +320,23 @@ function SEARCHRANK_adminNav($active)
     return $out . '</div></nav>';
 }
 
-function SEARCHRANK_makeMenu()
+function SEARCHRANK_clearLogForm()
 {
     global $_CONF, $LANG_SEARCHRANK_1;
-
-    SEARCHRANK_housekeeping();
     $base = $_CONF['site_admin_url'] . '/plugins/searchrank/index.php';
-    $config = $_CONF['site_admin_url'] . '/configuration.php';
-    $count = SEARCHRANK_numResults();
-
-    $html = '<section class="sr-admin-home">';
-    $html .= '<p class="sr-intro">' . htmlspecialchars($LANG_SEARCHRANK_1['info_main'], ENT_QUOTES, 'UTF-8') . '</p>';
-    $html .= '<div class="sr-summary"><strong>' . (int) $count . '</strong> '
-          . htmlspecialchars($LANG_SEARCHRANK_1['queries'], ENT_QUOTES, 'UTF-8') . '</div>';
-
-    $html .= '<section class="sr-danger"><h3>' . htmlspecialchars($LANG_SEARCHRANK_1['clear_link'], ENT_QUOTES, 'UTF-8') . '</h3>';
+    $html = '<section class="sr-danger"><h3>' . htmlspecialchars($LANG_SEARCHRANK_1['clear_link'], ENT_QUOTES, 'UTF-8') . '</h3>';
     $html .= '<form method="post" action="' . htmlspecialchars($base, ENT_QUOTES, 'UTF-8') . '" onsubmit="return confirm(this.getAttribute(\'data-confirm\'));" data-confirm="'
           . htmlspecialchars($LANG_SEARCHRANK_1['clear_confirm'], ENT_QUOTES, 'UTF-8') . '">'
           . '<input type="hidden" name="action" value="clear">'
           . '<input type="hidden" name="token" value="' . htmlspecialchars(SEC_createToken(), ENT_QUOTES, 'UTF-8') . '">'
           . '<button class="sr-clear" type="submit">' . htmlspecialchars($LANG_SEARCHRANK_1['clear_link'], ENT_QUOTES, 'UTF-8') . '</button></form>';
-    $html .= '</section></section>';
+    return $html . '</section>';
+}
 
-    return $html;
+function SEARCHRANK_makeMenu()
+{
+    // Backward-compatible alias for legacy integrations.
+    return SEARCHRANK_clearLogForm();
 }
 
 /**
@@ -293,8 +410,12 @@ function plugin_dopluginsearch_searchrank($query, $datestart, $dateend, $topic, 
     SEARCHRANK_housekeeping();
     $today = strtotime(date("d-m-Y") . " 00:00:00"); // todays date
     // Do not store obvious secrets and personal identifiers from internal searches.
-    $query = MBYTE_substr(trim(strtolower((string) $query)), 0, 99);
-    if (preg_match('/(?:[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,}|(?:\\b\\d[ -]?){13,19}\\b)/i', $query)) {
+    $query = trim(strtolower((string) $query));
+    if (SEARCHRANK_isSensitiveQuery($query)) {
+        return array();
+    }
+    $query = MBYTE_substr($query, 0, 99);
+    if (SEARCHRANK_isSensitiveQuery($query)) {
         return array();
     }
     if ($query === '') {
@@ -342,19 +463,30 @@ function plugin_getheadercode_searchrank()
     global $_CONF, $_SR_CONF;
 
     $retval = '';
-    
-    // Only include the CSS file for the block, if the block will be shown
-    if ($_SR_CONF['showblock'] && (!$_SR_CONF['rootonly'] || SEC_inGroup('Root'))) {
-        // use this css for the block
-        $retval = LB . '<link rel="stylesheet" type="text/css" href="'
-                . $_CONF['site_admin_url'] . '/plugins/searchrank/css/block.css?v=1.3.0"' . XHTML . '>' . LB;
-    }
-    // use this CSS only if we are on the plugin's pages
-    if (substr_count($_SERVER['PHP_SELF'], '/searchrank/') > 0) {
-        $retval .= '<link rel="stylesheet" type="text/css" href="'
-                . $_CONF['site_admin_url'] . '/plugins/searchrank/css/admin.css?v=1.3.0.2"' . XHTML . '>' . LB;
+    // Derive deterministic cache versions from the current plugin release
+    // and each asset's modification time. Use the plugin filesystem path;
+    // URLs and source files have different locations under Geeklog.
+    $assetRoot = dirname(__FILE__) . '/admin/css/';
+    $cssUrl = $_CONF['site_admin_url'] . '/plugins/searchrank/css/';
+    $assetVersion = function ($filename) use ($assetRoot) {
+        $path = $assetRoot . $filename;
+        $mtime = is_file($path) ? @filemtime($path) : false;
+        return '1.4.0-' . ($mtime !== false ? (int) $mtime : '0');
+    };
+
+    // Include the public ranking block stylesheet only when it is visible.
+    if (!empty($_SR_CONF['showblock'])
+        && (empty($_SR_CONF['rootonly']) || SEC_inGroup('Root'))) {
+        $retval .= LB . '<link rel="stylesheet" type="text/css" href="'
+                 . $cssUrl . 'block.css?v=' . $assetVersion('block.css') . '"' . XHTML . '>' . LB;
     }
 
+    // Load admin styling only on SearchRank plugin administration screens.
+    if (isset($_SERVER['PHP_SELF'])
+        && strpos($_SERVER['PHP_SELF'], '/admin/plugins/searchrank/') !== false) {
+        $retval .= LB . '<link rel="stylesheet" type="text/css" href="'
+                 . $cssUrl . 'admin.css?v=' . $assetVersion('admin.css') . '"' . XHTML . '>' . LB;
+    }
     return $retval;
 }
 
@@ -385,12 +517,21 @@ function plugin_getBlocks_searchrank($side, $topic='')
     // check if we need to show the block
     if ($_SR_CONF['showblock'] && (!$_SR_CONF['rootonly'] || SEC_inGroup('Root'))) {
         if (($side=='left' && $_SR_CONF['isleftblock'] == 1) || ($side=='right' && $_SR_CONF['isleftblock'] == 0)) { // Create a block
-            $results = SEARCHRANK_getResults(0, $_SR_CONF['maxresults']);
+            // Fetch extra candidates so historical sensitive expressions can be
+            // excluded without exposing them in the public ranking block.
+            $maxShown = max(1, min(200, (int) $_SR_CONF['maxresults']));
+            $candidates = SEARCHRANK_getResults(0, 200);
+            $results = array();
+            foreach ($candidates as $candidate) {
+                if (SEARCHRANK_isSensitiveQuery($candidate['query'])) { continue; }
+                $results[] = $candidate;
+                if (count($results) >= $maxShown) { break; }
+            }
             // Create the list
             $rows = count($results);
             if ($rows == 0) {
                 // No queries found
-                $display = "<div style='margin: 0;'>{$LANG_SEARCHRANK_1['noresults']}</div>";
+                $display = '<div class="searchrank">' . htmlspecialchars($LANG_SEARCHRANK_1['noresults'], ENT_QUOTES, 'UTF-8') . '</div>';
             } else {
                 $display = "<div class='searchrank'>";
                 foreach($results as $key => $value) {
@@ -412,11 +553,12 @@ function plugin_getBlocks_searchrank($side, $topic='')
             }
             $retval[] = array('name'           => 'searchrank',
                               'type'           => 'dynamic',
-                              'onleft'         => 1,
+                              'onleft'         => $_SR_CONF['isleftblock'],
                               'title'          => $LANG_SEARCHRANK_1['title'],
                               'blockorder'     => $_SR_CONF['blockorder'],
                               'content'        => $display,
                               'allow_autotags' => false,
+                              'convert_newlines' => false,
                               'help'           => '');
         }
     }
@@ -441,7 +583,13 @@ function plugin_showstats_searchrank ($showsitestats)
     if ($showsitestats != 1 && $_SR_CONF['showstats']) {
         require_once $_CONF['path_system'] . 'lib-admin.php';
 
-        $results = SEARCHRANK_getResults(0, 10);
+        $candidates = SEARCHRANK_getResults(0, 200);
+        $results = array();
+        foreach ($candidates as $candidate) {
+            if (SEARCHRANK_isSensitiveQuery($candidate['query'])) { continue; }
+            $results[] = $candidate;
+            if (count($results) >= 10) { break; }
+        }
         if (count($results) > 0) {
             $header_arr = array(
                 array('text'         => $LANG_SEARCHRANK_1['queries'],

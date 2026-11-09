@@ -81,7 +81,7 @@ if ($action == 'clear') {
     } else {
         $display .= COM_showMessageText(isset($LANG_SEARCHRANK_1['invalid_request']) ? $LANG_SEARCHRANK_1['invalid_request'] : 'Invalid request or security token.', $LANG_SEARCHRANK_1['info']);
     }
-    $display .= SEARCHRANK_makeMenu();
+    $display .= SEARCHRANK_dashboardPage();
 } else if ($action == 'help') {
     $helpFallback = array(
         'help_title' => 'SearchRank — Getting started',
@@ -116,6 +116,8 @@ if ($action == 'clear') {
     $display .= '<h3>' . htmlspecialchars($LANG_SEARCHRANK_1['help_troubleshooting_title'], ENT_QUOTES, 'UTF-8') . '</h3>';
     $display .= '<p>' . htmlspecialchars($LANG_SEARCHRANK_1['help_troubleshooting_text'], ENT_QUOTES, 'UTF-8') . '</p>';
     $display .= '</div>';
+    // Destructive maintenance is intentionally separated from the dashboard.
+    $display .= SEARCHRANK_clearLogForm();
 } else if ($action == 'report') {
     $display .= SEARCHRANK_reportPage();
 } else if ($action == 'day') {
@@ -123,7 +125,7 @@ if ($action == 'clear') {
 } else if ($action == 'showlog') {
     $display .= SEARCHRANK_showLog();
 } else {
-    $display .= SEARCHRANK_makeMenu();
+    $display .= SEARCHRANK_dashboardPage();
 }
 $display .= COM_endBlock();
 $display = COM_createHTMLDocument($display, array('what' => 'menu'));

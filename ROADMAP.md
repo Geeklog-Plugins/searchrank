@@ -1,3 +1,46 @@
+# SearchRank 1.4.0 development roadmap
+
+Branch: `develop-1.4.0`. SearchRank 1.3.0 is deployed on Geeklog.net; 1.4.0 remains in development.
+
+## Admin UX and charts
+- [x] Style CSV export and dashboard return as separate responsive report actions; localize French page-range summary.
+- [x] Paginate detailed rankings at 25 rows, preserving selected period and query in navigation.
+- [x] Keep CSV independent from page number and collapse trend comparison by default.
+- [ ] Verify filtered ranking counts, first/last page, empty datasets and query preservation in staging.
+- [x] Add period-based dashboard cards, daily activity chart and top searches using the existing read-only reporting queries.
+- [x] Separate destructive clear-log action from dashboard into Help/maintenance.
+- [x] Use integer y-axis ticks, short dates and explicit SVG styles scoped against theme collisions.
+- [x] Keep the chart exclusively on the dashboard; detailed reports show filtered rankings, comparisons and CSV export without duplicated visualization.
+- [x] Put Reports before Search Log in primary navigation; preserve contextual dashboard/CSV navigation.
+- [x] Keep detailed reporting, search log, CSV export and database schema unchanged.
+- [ ] Test the chart on real Geeklog themes, including the reported libre-office.fr layout failure.
+- [ ] Validate periods 7/28/90/365 (subject to TTL), DST and timezone boundaries, no-data cases, narrow/mobile layouts and screen readers.
+- [ ] Compare chart series against daily read-only table and exported aggregates; validate all existing report and CSV paths.
+- [x] User reports successful upgrade from SearchRank 1.3.0 to 1.4.0 with existing data preserved (2026-11-09).
+- [ ] Independently verify upgrade/rollback with backup, clear-log CSRF, configuration controls and additional environments.
+
+## Capability contract and privacy (2026-11-09)
+- [x] Implement memorandum-aligned capability discovery (`plugin_getcapabilities_searchrank`) and local, permission-protected `dashboard_summary` and `query_metrics` services.
+- [x] Restrict services to aggregate data, bound periods and avoid exposing raw queries or plugin database tables to consumers.
+- [x] Reject sensitive new search phrases and filter old detected sensitive phrases from the public block.
+- [x] Add isolated privacy/authorization CI smoke checks.
+- [ ] Exercise the native `PLG_invokeService` dispatcher, disabled-plugin behavior and multi-site separation on Geeklog staging.
+- [ ] Review false positive/negative examples and privacy of legacy stored terms; no claim of complete redaction.
+- [ ] Validate configured retention, concurrent MySQL logging and safe upgrade from 1.3.0.
+
+## Further planned improvements
+- [ ] Add reliable zero-result search tracking only with supported Geeklog search callbacks.
+- [ ] Evaluate trending/new expressions and privacy-aware insight reporting.
+- [x] Deliver a minimal read-only interoperability service and capability declaration (staging acceptance pending).
+- [ ] Complete MySQL concurrency/retention and legacy upgrade regression tests; confirm 2.1.3 runtime compatibility.
+
+## Release gate
+Do not publish or merge to upstream solely on successful lint/packaging. Real-world UI and data-preservation acceptance is still required.
+
+---
+
+## Previous 1.3.0 working checklist (historical)
+
 # SearchRank 1.3.0 release roadmap
 
 Development integration branch: `develop-1.2.4` (temporary historical name) — next public release: **1.3.0**, no 1.2.4 release.
