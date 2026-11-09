@@ -3,6 +3,9 @@
 Branch: `develop-1.4.0`. SearchRank 1.3.0 is deployed on Geeklog.net; 1.4.0 remains in development.
 
 ## Admin UX and charts
+- [x] Paginate detailed rankings at 25 rows, preserving selected period and query in navigation.
+- [x] Keep CSV independent from page number and collapse trend comparison by default.
+- [ ] Verify filtered ranking counts, first/last page, empty datasets and query preservation in staging.
 - [x] Add period-based dashboard cards, daily activity chart and top searches using the existing read-only reporting queries.
 - [x] Separate destructive clear-log action from dashboard into Help/maintenance.
 - [x] Use integer y-axis ticks, short dates and explicit SVG styles scoped against theme collisions.
