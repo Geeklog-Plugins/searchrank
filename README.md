@@ -5,7 +5,7 @@
 SearchRank records internal site-search phrases and provides search rankings, daily activity charts, and administrative reports.
 
 > [!IMPORTANT]
-> **Release candidate:** SearchRank 1.3.0 is still under development. Automated checks do not replace functional testing, particularly for legacy upgrades and database maintenance.
+> **Release candidate:** SearchRank 1.4.0 is under development. Automated checks do not replace functional testing, particularly for legacy upgrades and database maintenance.
 
 ## Requirements
 
@@ -18,7 +18,7 @@ SearchRank records internal site-search phrases and provides search rankings, da
 
 ## Installation and upgrades
 
-Download the installable archive from [`dist/searchrank_1.3.0_2.1.3.zip`](dist/searchrank_1.3.0_2.1.3.zip). It contains a top-level `searchrank/` directory.
+Download the installable archive from [`dist/searchrank_1.4.0_2.1.3.zip`](dist/searchrank_1.4.0_2.1.3.zip). It contains a top-level `searchrank/` directory.
 
 1. **Back up** your Geeklog database, SearchRank tables, and existing plugin files.
 2. Install or upgrade using Geeklog's plugin administration tools.
@@ -43,9 +43,9 @@ Open **Geeklog Admin → SearchRank**.
 
 | Section | Features |
 | --- | --- |
-| **Dashboard** | Overview and search rankings |
+| **Dashboard** | Period selector, KPI summary, daily chart, and top search phrases |
 | **Search Log** | Recorded phrases, occurrence counts, and pagination |
-| **Analytics & CSV** | Retention-aware periods, daily SVG chart, day-by-day detail links, trends, rankings, and CSV export |
+| **Analytics & CSV** | Detailed filters, daily chart, day-by-day links, trend comparisons, and CSV export |
 | **Help** | Configuration, privacy, and troubleshooting guidance |
 
 ### Analytics and exports
@@ -93,3 +93,7 @@ The statistics measure **internal site searches**, not Google or Bing impression
 ## Documentation
 
 See the [official SearchRank repository](https://github.com/Geeklog-Plugins/searchrank), its [`docs/`](https://github.com/Geeklog-Plugins/searchrank/tree/master/docs) directory and [`ROADMAP.md`](https://github.com/Geeklog-Plugins/searchrank/blob/master/ROADMAP.md) for additional technical details and outstanding checks.
+
+## 1.4.0 dashboard acceptance
+
+The dashboard uses the same read-only data as detailed reporting. Clear-log maintenance is available on Help, not on the landing page. Verify 7/28/90/365-day plots (subject to configured retention), empty periods, integer y-axis ticks, short x-axis dates, narrow screens and CSS compatibility with Geeklog themes. Compare daily totals with the collapsible data table and ensure CSV/export, pagination, existing search history and CSRF-protected clear-log continue to work. No live database or theme acceptance is claimed by automated syntax checks.
