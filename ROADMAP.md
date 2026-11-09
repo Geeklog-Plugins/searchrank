@@ -6,6 +6,8 @@ Branch: `develop-1.4.0`. SearchRank 1.3.0 is deployed on Geeklog.net; 1.4.0 rema
 - [x] Add period-based dashboard cards, daily activity chart and top searches using the existing read-only reporting queries.
 - [x] Separate destructive clear-log action from dashboard into Help/maintenance.
 - [x] Use integer y-axis ticks, short dates and explicit SVG styles scoped against theme collisions.
+- [x] Keep the chart exclusively on the dashboard; detailed reports show filtered rankings, comparisons and CSV export without duplicated visualization.
+- [x] Put Reports before Search Log in primary navigation; preserve contextual dashboard/CSV navigation.
 - [x] Keep detailed reporting, search log, CSV export and database schema unchanged.
 - [ ] Test the chart on real Geeklog themes, including the reported libre-office.fr layout failure.
 - [ ] Validate periods 7/28/90/365 (subject to TTL), DST and timezone boundaries, no-data cases, narrow/mobile layouts and screen readers.
