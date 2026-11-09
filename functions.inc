@@ -79,6 +79,129 @@ if (!isset($_SR_CONF['maxresults'])) {
 $_TABLES['searchrank_queries'] = $_DB_table_prefix . 'searchrank_queries';
 $_TABLES['searchrank_hits'] = $_DB_table_prefix . 'searchrank_hits';
 
+
+/**
+ * SearchRank's provider-neutral, read-only interoperability declaration.
+ * This convention is optional in older Geeklog cores. A consumer must still
+ * check permissions and service availability at invocation time.
+ */
+function plugin_getcapabilities_searchrank()
+{
+    return array(
+        'schema' => 1,
+        'roles' => array('service'),
+        'capabilities' => array('dashboard.summary', 'searchrank.query.metrics')
+    );
+}
+
+/**
+ * Advertise the internal Geeklog service dispatcher, not a public data API.
+ * Every service rejects web-service requests and checks searchrank.admin.
+ */
+function plugin_wsEnabled_searchrank()
+{
+    return true;
+}
+
+function SEARCHRANK_serviceAuthorized($args)
+{
+    return is_array($args) && empty($args['gl_svc'])
+        && function_exists('SEC_hasRights') && SEC_hasRights('searchrank.admin');
+}
+
+/**
+ * Bounded site-wide query metrics for authorized local consumers.
+ *
+ * Example: PLG_invokeService('searchrank', 'query_metrics',
+ *     array('days' => 28, 'limit' => 10), $output, $message);
+ * No SQL schema knowledge required by the consuming plugin.
+ */
+function service_query_metrics_searchrank($args, &$output, &$svc_msg)
+{
+    global $_TABLES, $_SR_CONF;
+    $output = array();
+    if (!SEARCHRANK_serviceAuthorized($args)) {
+        $svc_msg = array('error' => 'permission-denied');
+        return PLG_RET_PERMISSION_DENIED;
+    }
+    $ttl = isset($_SR_CONF['ttl']) ? max(1, (int) $_SR_CONF['ttl']) : 28;
+    $days = isset($args['days']) && is_scalar($args['days']) ? (int) $args['days'] : 28;
+    $days = min($ttl, max(1, min(365, $days)));
+    $limit = isset($args['limit']) && is_scalar($args['limit']) ? (int) $args['limit'] : 10;
+    $limit = max(1, min(20, $limit));
+    $start = strtotime('-' . ($days - 1) . ' days', strtotime('today'));
+    $end = strtotime('tomorrow');
+    $hitsResult = DB_query("SELECT COALESCE(SUM(hits), 0) AS total FROM {$_TABLES['searchrank_hits']} "
+                         . "WHERE date >= {$start} AND date < {$end}");
+    $hitsRow = DB_fetchArray($hitsResult);
+    $distinctResult = DB_query("SELECT COUNT(DISTINCT q.query) AS total "
+                            . "FROM {$_TABLES['searchrank_queries']} q "
+                            . "INNER JOIN {$_TABLES['searchrank_hits']} h ON q.hid=h.hid "
+                            . "WHERE h.date >= {$start} AND h.date < {$end}");
+    $distinctRow = DB_fetchArray($distinctResult);
+    $rows = array();
+    // Never return individual phrases to generic consumers: the legacy log
+    // may contain sensitive text predating this version's input safeguards.
+    $output = array(
+        'schema' => 1,
+        'provider' => 'searchrank',
+        'status' => 'ok',
+        'period' => $days,
+        'searches' => (int) $hitsRow['total'],
+        'expressions' => (int) $distinctRow['total'],
+        'query_metrics' => array('zero_result_searches' => null),
+        'updated' => time()
+    );
+    $svc_msg = array();
+    return PLG_RET_OK;
+}
+
+/** A shared dashboard.summary provider for Hub, Eclipse and other clients. */
+function service_dashboard_summary_searchrank($args, &$output, &$svc_msg)
+{
+    global $_CONF;
+    $data = array();
+    $result = service_query_metrics_searchrank($args, $data, $svc_msg);
+    if ($result !== PLG_RET_OK) {
+        $output = array();
+        return $result;
+    }
+    $output = array(
+        'schema' => 1,
+        'status' => 'ok',
+        'metrics' => array(
+            array('id' => 'searches', 'label' => 'Internal searches (' . $data['period'] . ' days)', 'value' => $data['searches']),
+            array('id' => 'expressions', 'label' => 'Distinct expressions', 'value' => $data['expressions'])
+        ),
+        'alerts' => array(),
+        'links' => array(array('label' => 'SearchRank', 'url' => $_CONF['site_admin_url'] . '/plugins/searchrank/index.php')),
+        'updated' => $data['updated']
+    );
+    return PLG_RET_OK;
+}
+
+/**
+ * Conservative privacy gate for new search-log entries.
+ * Existing historical logs are left untouched; avoid modifying user queries.
+ * Reject likely credentials/PII rather than persisting redacted fragments.
+ */
+function SEARCHRANK_isSensitiveQuery($query)
+{
+    $query = trim((string) $query);
+    if ($query === '') { return false; }
+    if (preg_match('/[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}/i', $query)) { return true; }
+    // Payment-card-like numbers, formatted or contiguous (heuristic).
+    if (preg_match('/(?:\b\d[ -]?){13,19}\b/', $query)) { return true; }
+    // URL credentials and secrets passed as search parameters.
+    if (preg_match('~(?:https?://)[^/\s@]+:[^/\s@]+@~i', $query)) { return true; }
+    if (preg_match('/\b(?:password|passwd|pwd|api[_-]?key|access[_-]?token|refresh[_-]?token|authorization|secret)\s*[:=]\s*\S+/i', $query)) { return true; }
+    // Common private identifiers. Do not indiscriminately discard ordinary
+    // phone-sized integers, product codes, or short numeric search phrases.
+    if (preg_match('/\b(?:bearer)\s+[a-z0-9._~+\/=-]{12,}/i', $query)) { return true; }
+    if (preg_match('/\b(?:sk|ghp|gho|ghu|ghs)_[A-Za-z0-9_-]{12,}\b/', $query)) { return true; }
+    return false;
+}
+
 /**
 * Returns an array of search log entries 
 *
@@ -288,7 +411,7 @@ function plugin_dopluginsearch_searchrank($query, $datestart, $dateend, $topic, 
     $today = strtotime(date("d-m-Y") . " 00:00:00"); // todays date
     // Do not store obvious secrets and personal identifiers from internal searches.
     $query = MBYTE_substr(trim(strtolower((string) $query)), 0, 99);
-    if (preg_match('/(?:[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,}|(?:\\b\\d[ -]?){13,19}\\b)/i', $query)) {
+    if (SEARCHRANK_isSensitiveQuery($query)) {
         return array();
     }
     if ($query === '') {
