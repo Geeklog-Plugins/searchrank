@@ -45,14 +45,14 @@ Open **Geeklog Admin → SearchRank**.
 | --- | --- |
 | **Dashboard** | Period selector, KPI summary, daily chart, and top search phrases |
 | **Search Log** | Recorded phrases, occurrence counts, and pagination |
-| **Analytics & CSV** | Detailed filters, daily chart, day-by-day links, trend comparisons, and CSV export |
+| **Analytics & CSV** | Search-expression filters, rankings, period comparisons, and CSV export; the daily chart appears only on the dashboard |
 | **Help** | Configuration, privacy, and troubleshooting guidance |
 
 ### Analytics and exports
 
 - Choose a reporting period of **7, 28, 90, or 365 days**, subject to the configured retention limit.
-- View searches by day on a responsive SVG chart.
-- Open day links to inspect recorded expressions and occurrence counts.
+- View searches by day on the dashboard's responsive SVG chart (not repeated in detailed reports).
+- Open day links from the dashboard chart's accessible data table to inspect recorded expressions and occurrence counts.
 - Compare expressions with the preceding period when sufficient retention is configured.
 - Export a CSV whose filename includes the current site's hostname and a timestamp.
 
