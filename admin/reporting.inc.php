@@ -244,7 +244,8 @@ function SEARCHRANK_reportTotals($days, $offsetDays)
     $days = max(1, (int) $days);
     $offsetDays = max(0, (int) $offsetDays);
     $start = SEARCHRANK_reportStart($days + $offsetDays - 1);
-    $endExclusive = SEARCHRANK_reportStart($offsetDays - 1);
+    // Offset zero must end at tomorrow (include all of today), not today.
+    $endExclusive = $offsetDays === 0 ? strtotime('tomorrow') : SEARCHRANK_reportStart($offsetDays - 1);
     $sql = "SELECT SUM(hits) AS total FROM {$_TABLES['searchrank_hits']} "
          . "WHERE date >= {$start} AND date < {$endExclusive}";
     $result = DB_query($sql);
