@@ -125,3 +125,7 @@ New internal searches containing recognizable emails, payment-card-like sequence
 ### Outstanding runtime acceptance
 
 Validate services using `PLG_invokeService` with Geeklog 2.1.3/2.2.2 enabled/disabled states, administrator/non-admin users, and multisite installs. Confirm legacy history protection and concurrency/retention behavior with a staging database. Automated checks do not substitute for this acceptance.
+
+### Live upgrade feedback (2026-11-09)
+
+A site administrator reports a successful SearchRank 1.3.0 → 1.4.0 upgrade with existing search data preserved. This confirms one real-world upgrade path, not a complete regression suite for every supported Geeklog/PHP/database combination. Detailed reports now display separated export and dashboard actions with responsive styling and a French localized pagination summary.
