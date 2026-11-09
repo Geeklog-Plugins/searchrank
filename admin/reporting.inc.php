@@ -352,10 +352,11 @@ function SEARCHRANK_reportPage()
     }
     // Only the dashboard contains the daily chart. Detailed reports stay
     // focused on filters, period comparisons, ranked expressions and export.
-    $html .= '<div class="sr-report-actions"><a class="sr-action" href="'
+    $html .= '<div class="sr-report-actions" role="group" aria-label="Report actions">'
+           . '<a class="sr-report-export" href="'
            . $esc($base . '?action=export&days=' . $days . '&q=' . rawurlencode($filter)) . '">'
-           . $esc($LANG_SEARCHRANK_1['export_link']) . '</a><a class="sr-back-link" href="'
-           . $esc($base . '?days=' . $days) . '">'
+           . $esc($LANG_SEARCHRANK_1['export_link']) . '</a>'
+           . '<a class="sr-report-return" href="' . $esc($base . '?days=' . $days) . '">'
            . $esc(isset($LANG_SEARCHRANK_1['dashboard']) ? $LANG_SEARCHRANK_1['dashboard'] : 'Dashboard')
            . '</a></div>';
     $html .= '<h3 id="sr-ranking">' . $esc(isset($LANG_SEARCHRANK_1['ranked_queries']) ? $LANG_SEARCHRANK_1['ranked_queries'] : 'Most searched expressions') . '</h3>';
