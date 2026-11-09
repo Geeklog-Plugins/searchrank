@@ -191,7 +191,7 @@ function SEARCHRANK_isSensitiveQuery($query)
     if ($query === '') { return false; }
     if (preg_match('/[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}/i', $query)) { return true; }
     // Payment-card-like numbers, formatted or contiguous (heuristic).
-    if (preg_match('/(?:\b\d[ -]?){13,19}\b/', $query)) { return true; }
+    if (preg_match('/\b(?:\d[ -]?){12,18}\d\b/', $query)) { return true; }
     // URL credentials and secrets passed as search parameters.
     if (preg_match('~(?:https?://)[^/\s@]+:[^/\s@]+@~i', $query)) { return true; }
     if (preg_match('/\b(?:password|passwd|pwd|api[_-]?key|access[_-]?token|refresh[_-]?token|authorization|secret)\s*[:=]\s*\S+/i', $query)) { return true; }
