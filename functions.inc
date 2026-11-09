@@ -463,19 +463,30 @@ function plugin_getheadercode_searchrank()
     global $_CONF, $_SR_CONF;
 
     $retval = '';
-    
-    // Only include the CSS file for the block, if the block will be shown
-    if ($_SR_CONF['showblock'] && (!$_SR_CONF['rootonly'] || SEC_inGroup('Root'))) {
-        // use this css for the block
-        $retval = LB . '<link rel="stylesheet" type="text/css" href="'
-                . $_CONF['site_admin_url'] . '/plugins/searchrank/css/block.css?v=1.3.0"' . XHTML . '>' . LB;
-    }
-    // use this CSS only if we are on the plugin's pages
-    if (substr_count($_SERVER['PHP_SELF'], '/searchrank/') > 0) {
-        $retval .= '<link rel="stylesheet" type="text/css" href="'
-                . $_CONF['site_admin_url'] . '/plugins/searchrank/css/admin.css?v=1.4.0"' . XHTML . '>' . LB;
+    // Derive deterministic cache versions from the current plugin release
+    // and each asset's modification time. Use the plugin filesystem path;
+    // URLs and source files have different locations under Geeklog.
+    $assetRoot = dirname(__FILE__) . '/admin/css/';
+    $cssUrl = $_CONF['site_admin_url'] . '/plugins/searchrank/css/';
+    $assetVersion = function ($filename) use ($assetRoot) {
+        $path = $assetRoot . $filename;
+        $mtime = is_file($path) ? @filemtime($path) : false;
+        return '1.4.0-' . ($mtime !== false ? (int) $mtime : '0');
+    };
+
+    // Include the public ranking block stylesheet only when it is visible.
+    if (!empty($_SR_CONF['showblock'])
+        && (empty($_SR_CONF['rootonly']) || SEC_inGroup('Root'))) {
+        $retval .= LB . '<link rel="stylesheet" type="text/css" href="'
+                 . $cssUrl . 'block.css?v=' . $assetVersion('block.css') . '"' . XHTML . '>' . LB;
     }
 
+    // Load admin styling only on SearchRank plugin administration screens.
+    if (isset($_SERVER['PHP_SELF'])
+        && strpos($_SERVER['PHP_SELF'], '/admin/plugins/searchrank/') !== false) {
+        $retval .= LB . '<link rel="stylesheet" type="text/css" href="'
+                 . $cssUrl . 'admin.css?v=' . $assetVersion('admin.css') . '"' . XHTML . '>' . LB;
+    }
     return $retval;
 }
 
