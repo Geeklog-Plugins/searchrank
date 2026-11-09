@@ -410,7 +410,11 @@ function plugin_dopluginsearch_searchrank($query, $datestart, $dateend, $topic, 
     SEARCHRANK_housekeeping();
     $today = strtotime(date("d-m-Y") . " 00:00:00"); // todays date
     // Do not store obvious secrets and personal identifiers from internal searches.
-    $query = MBYTE_substr(trim(strtolower((string) $query)), 0, 99);
+    $query = trim(strtolower((string) $query));
+    if (SEARCHRANK_isSensitiveQuery($query)) {
+        return array();
+    }
+    $query = MBYTE_substr($query, 0, 99);
     if (SEARCHRANK_isSensitiveQuery($query)) {
         return array();
     }
@@ -502,7 +506,16 @@ function plugin_getBlocks_searchrank($side, $topic='')
     // check if we need to show the block
     if ($_SR_CONF['showblock'] && (!$_SR_CONF['rootonly'] || SEC_inGroup('Root'))) {
         if (($side=='left' && $_SR_CONF['isleftblock'] == 1) || ($side=='right' && $_SR_CONF['isleftblock'] == 0)) { // Create a block
-            $results = SEARCHRANK_getResults(0, $_SR_CONF['maxresults']);
+            // Fetch extra candidates so historical sensitive expressions can be
+            // excluded without exposing them in the public ranking block.
+            $maxShown = max(1, min(200, (int) $_SR_CONF['maxresults']));
+            $candidates = SEARCHRANK_getResults(0, 200);
+            $results = array();
+            foreach ($candidates as $candidate) {
+                if (SEARCHRANK_isSensitiveQuery($candidate['query'])) { continue; }
+                $results[] = $candidate;
+                if (count($results) >= $maxShown) { break; }
+            }
             // Create the list
             $rows = count($results);
             if ($rows == 0) {
